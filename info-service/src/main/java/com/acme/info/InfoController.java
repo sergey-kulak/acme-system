@@ -5,8 +5,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RequestMapping
-@RestController("/api/info")
+@RestController
+@RequestMapping("/api/info")
 public class InfoController {
     @Value("${acme.app.version}")
     private String appVersion;
@@ -14,8 +14,9 @@ public class InfoController {
     @Value("${acme.app.name}")
     private String appName;
 
-    @GetMapping("welcome")
+    @GetMapping("/welcome")
     public String welcome() {
         return String.format("%s %s", appName, appVersion);
     }
 }
+

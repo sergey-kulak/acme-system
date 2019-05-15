@@ -22,6 +22,7 @@
         <start-class>com.acme.info.Application</start-class>
         <docker.image.name>acme/info-service</docker.image.name>
         <docker.image.tag>${project.version}</docker.image.tag>
+        <spring.cloud.version>Greenwich.SR1</spring.cloud.version>
     </properties>
 
     <dependencyManagement>
@@ -29,7 +30,7 @@
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
-                <version>Greenwich.SR1</version>
+                <version>${spring.cloud.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -44,7 +45,7 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.boot</groupId>
+            <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-config</artifactId>
         </dependency>
     </dependencies>

@@ -1,0 +1,18 @@
+version: '3.1'
+
+services:
+  pg:
+    image: postgres:11.3
+    container_name: acme-inv-pg
+    ports:
+      - 5700:5432
+    environment:
+      - POSTGRES_USER=invUser
+      - POSTGRES_PASSWORD=invPass
+      - POSTGRES_DB=inv
+
+
+networks:
+  default:
+    external:
+      name: acme-network

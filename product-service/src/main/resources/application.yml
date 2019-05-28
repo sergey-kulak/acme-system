@@ -1,3 +1,6 @@
+server:
+  port: 7001
+
 spring:
   data:
     rest:
@@ -5,4 +8,13 @@ spring:
 
 logging:
   level:
-    org.springframework: debug
+    org.springframework: info
+
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://localhost:7761/eureka/

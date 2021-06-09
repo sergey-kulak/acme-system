@@ -1,3 +1,17 @@
 logging:
   level:
-    org.springframework: DEBUG
+    org.springframework: INFO
+
+spring:
+  application:
+    name: info-service
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        service-id: config-service
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:7761/eureka/

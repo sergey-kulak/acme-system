@@ -12,17 +12,20 @@
     </parent>
 
     <groupId>com.acme</groupId>
-    <artifactId>info-service</artifactId>
+    <artifactId>user-service</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <properties>
         <java.version>1.8</java.version>
 
-        <start-class>com.acme.info.Application</start-class>
-        <docker.image.name>acme/info-service</docker.image.name>
+        <start-class>com.acme.user.Application</start-class>
+        <docker.image.name>acme/user-service</docker.image.name>
         <docker.image.tag>${project.version}</docker.image.tag>
         <spring.cloud.version>2020.0.3</spring.cloud.version>
+        <liquibase.version>4.4.0</liquibase.version>
+        <r2dbc-pg.version>0.8.8.RELEASE</r2dbc-pg.version>
+        <pg-jdbc.version>42.2.22</pg-jdbc.version>
     </properties>
 
     <dependencyManagement>
@@ -39,8 +42,36 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+            <version>${liquibase.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${pg-jdbc.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-r2dbc</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.r2dbc</groupId>
+            <artifactId>r2dbc-postgresql</artifactId>
+            <version>${r2dbc-pg.version}</version>
         </dependency>
 
         <dependency>
@@ -52,6 +83,7 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
         </dependency>
+
     </dependencies>
 
 </project>

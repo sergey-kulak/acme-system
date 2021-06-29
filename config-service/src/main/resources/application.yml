@@ -1,5 +1,5 @@
 server:
-  port: 8888
+  port: 7000
 
 spring:
   application:
@@ -11,6 +11,8 @@ spring:
           uri: https://github.com/sergey-kulak/acme-config-repo
 
 eureka:
+  ##instance:
+  ##  preferIpAddress: true
   client:
     serviceUrl:
-      defaultZone: http://localhost:7761/eureka/
+      defaultZone: http://localhost:7002/eureka/

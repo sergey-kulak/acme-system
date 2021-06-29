@@ -1,0 +1,18 @@
+version: '3.1'
+
+services:
+  db:
+    image: postgres:13.3
+    container_name: acme-user-db
+    ports:
+      - 7011:5432
+    environment:
+      POSTGRES_DB: userdb
+      POSTGRES_USER: usUser
+      POSTGRES_PASSWORD: usPass
+
+
+networks:
+  default:
+    external:
+      name: acme-network

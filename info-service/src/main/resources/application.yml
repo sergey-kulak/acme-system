@@ -1,10 +1,15 @@
+server:
+  port: 7004
+
 logging:
   level:
-    org.springframework: INFO
+    org.springframework: info
 
 spring:
   application:
     name: info-service
+  config:
+    import: configserver:http://config-service
   cloud:
     config:
       discovery:
@@ -14,4 +19,4 @@ spring:
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://localhost:7761/eureka/
+      defaultZone: http://localhost:7002/eureka/

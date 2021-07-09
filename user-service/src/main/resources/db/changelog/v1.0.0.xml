@@ -5,9 +5,78 @@
 
     <changeSet id="1" author="sergey.kulak">
         <sql>
-            CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+            create extension if not exists "uuid-ossp";
         </sql>
     </changeSet>
 
+    <changeSet id="2" author="sergey.kulak">
+        <sql>
+            create type company_status as enum ('INACTIVE','ACTIVE','SUSPENDED','STOPPED');
+        </sql>
+
+        <createTable tableName="company">
+            <column name="id" type="UUID" defaultValueComputed="uuid_generate_v4()">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="full_name" type="varchar(300)"/>
+            <column name="country" type="varchar(2)"/>
+            <column name="city" type="varchar(50)"/>
+            <column name="address" type="varchar(300)"/>
+            <column name="site" type="varchar(100)"/>
+            <column name="email" type="varchar(100)"/>
+            <column name="phone" type="varchar(50)"/>
+            <column name="reg_number" type="varchar(50)"/>
+            <column name="vatin" type="varchar(50)"/>
+            <column name="status" type="company_status"/>
+        </createTable>
+
+        <sql>
+            create type user_role as enum ('ADMIN','COMPANY_OWNER','PP_MANAGER','WAITER','ACCOUNTANT','COOK');
+        </sql>
+        <sql>
+            create type user_status as enum ('ACTIVE','INACTIVE');
+        </sql>
+
+        <createTable tableName="user">
+            <column name="id" type="UUID" defaultValueComputed="uuid_generate_v4()">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="first_name" type="varchar(50)"/>
+            <column name="last_name" type="varchar(50)"/>
+            <column name="email" type="varchar(100)"/>
+            <column name="password" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="phone" type="varchar(50)"/>
+            <column name="status" type="user_status" defaultValue="INACTIVE"/>
+            <column name="company_id" type="UUID"/>
+            <column name="role" type="user_role">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="user"
+                                 baseColumnNames="company_id"
+                                 constraintName="fk_user_company_id"
+                                 referencedTableName="company"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="3" author="sergey.kulak">
+        <insert tableName="user">
+            <column name="first_name" value="Admin"/>
+            <column name="last_name" value="Adminov"/>
+            <column name="email" value="admin@acme.com"/>
+            <column name="password" value="123"/>
+            <column name="status" value="ACTIVE"/>
+            <column name="role" value="ADMIN"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="4" author="sergey.kulak">
+        <createIndex tableName="user" indexName="idx_user_company">
+            <column name="company_id"/>
+        </createIndex>
+    </changeSet>
 
 </databaseChangeLog>

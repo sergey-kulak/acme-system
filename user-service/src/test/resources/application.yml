@@ -1,21 +1,11 @@
-server:
-  port: 7010
-
 logging:
   level:
     org.springframework: info
     io.r2dbc.postgresql.QUERY: debug
 
 spring:
-  application:
-    name: user-service
   config:
-    import: configserver:http://config-service
-  cloud:
-    config:
-      discovery:
-        enabled: true
-        service-id: config-service
+    import: optional:configserver:http://config-service
   liquibase:
     enabled: true
     change-log: db/changelog/master.xml
@@ -30,13 +20,10 @@ spring:
       initial-size: 5
       max-size: 10
 
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: http://localhost:7002/eureka/
-
 user-srv:
   db:
     url: postgresql://localhost:7011/userdb
     user: usUser
     password: usPass
+  security:
+    hash-strength: 7

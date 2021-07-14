@@ -8,6 +8,7 @@ import com.acme.usersrv.company.dto.CompanyFilter;
 import com.acme.usersrv.company.dto.RegisterCompanyDto;
 import com.acme.usersrv.company.dto.SaveOwnerDto;
 import com.acme.usersrv.company.exception.DuplicateCompanyException;
+import com.acme.usersrv.company.exception.IllegalStatusChange;
 import com.acme.usersrv.company.repository.CompanyRepository;
 import com.acme.usersrv.test.RandomTestUtils;
 import com.acme.usersrv.test.ServiceIntegrationTest;
@@ -29,6 +30,7 @@ import reactor.test.StepVerifier;
 import javax.validation.ConstraintViolationException;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
@@ -40,6 +42,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ServiceIntegrationTest
@@ -200,4 +203,67 @@ public class CompanyServiceIntegrationTest {
     public void findByJooqWithEmptyPagination() {
         findWithEmptyPagination((filter, pageable) -> companyService.findByJooq(filter, pageable));
     }
+
+    @Test
+    public void inactiveStatusToActive() {
+        allowedStatusChange(CompanyStatus.INACTIVE, CompanyStatus.ACTIVE);
+    }
+
+    @Test
+    public void inactiveStatusToSuspended() {
+        disallowedStatusChange(CompanyStatus.INACTIVE, CompanyStatus.SUSPENDED);
+    }
+
+    @Test
+    public void inactiveStatusToStopped() {
+        allowedStatusChange(CompanyStatus.INACTIVE, CompanyStatus.STOPPED);
+    }
+
+    @Test
+    public void activeStatusToStopped() {
+        allowedStatusChange(CompanyStatus.ACTIVE, CompanyStatus.STOPPED);
+    }
+
+    @Test
+    public void activeStatusToSuspended() {
+        allowedStatusChange(CompanyStatus.ACTIVE, CompanyStatus.SUSPENDED);
+    }
+
+    @Test
+    public void suspendedStatusToActive() {
+        allowedStatusChange(CompanyStatus.SUSPENDED, CompanyStatus.ACTIVE);
+    }
+
+    @Test
+    public void stoppedStatusToActive() {
+        disallowedStatusChange(CompanyStatus.STOPPED, CompanyStatus.ACTIVE);
+    }
+
+    private void allowedStatusChange(CompanyStatus fromStatus, CompanyStatus toStatus) {
+        testEntityHelper.createCompany(fromStatus)
+                .flatMap(company ->
+                        companyService.changeStatus(company.getId(), toStatus)
+                                .then(companyRepository.findById(company.getId()))
+                )
+                .as(TxStepVerifier::withRollback)
+                .assertNext(updatedCompany -> assertEquals(toStatus, updatedCompany.getStatus()))
+                .verifyComplete();
+    }
+
+    private void disallowedStatusChange(CompanyStatus fromStatus, CompanyStatus toStatus) {
+        testEntityHelper.createCompany(fromStatus)
+                .flatMap(company -> companyService.changeStatus(company.getId(), toStatus))
+                .as(TxStepVerifier::withRollback)
+                .expectError(IllegalStatusChange.class)
+                .verify();
+    }
+
+    @Test
+    public void changeStatusValidation() {
+        companyService.changeStatus(UUID.randomUUID(), null)
+                .as(StepVerifier::create)
+                .expectError(ConstraintViolationException.class)
+                .verify();
+    }
+
 }

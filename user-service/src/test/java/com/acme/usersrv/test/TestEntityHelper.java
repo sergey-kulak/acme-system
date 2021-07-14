@@ -7,9 +7,7 @@ import com.acme.usersrv.user.User;
 import com.acme.usersrv.user.UserRole;
 import com.acme.usersrv.user.UserStatus;
 import com.acme.usersrv.user.repository.UserRepository;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 public class TestEntityHelper {
@@ -19,6 +17,10 @@ public class TestEntityHelper {
     private UserRepository userRepository;
 
     public Mono<Company> createCompany() {
+        return createCompany(CompanyStatus.ACTIVE);
+    }
+
+    public Mono<Company> createCompany(CompanyStatus status) {
         Company company = new Company();
         company.setFullName(RandomTestUtils.randomString("Company"));
         company.setCountry("BY");
@@ -27,7 +29,7 @@ public class TestEntityHelper {
         company.setEmail(RandomTestUtils.randomEmail());
         company.setVatin(RandomTestUtils.randomString("BY"));
         company.setRegNumber(RandomTestUtils.randomString("REG"));
-        company.setStatus(CompanyStatus.ACTIVE);
+        company.setStatus(status);
         return companyRepository.save(company);
     }
 

@@ -2,6 +2,7 @@ package com.acme.usersrv.common.advice;
 
 import com.acme.usersrv.common.dto.ValidationErrorDto;
 import com.acme.usersrv.company.exception.DuplicateCompanyException;
+import com.acme.usersrv.company.exception.IllegalStatusChange;
 import com.acme.usersrv.user.exception.DuplicateUserException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,11 @@ public class ControllerAdvice {
     @ExceptionHandler
     public ResponseEntity<Object> handle(ConstraintViolationException ex) {
         return ResponseEntity.badRequest().body(new ValidationErrorDto(ex));
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Object> handle(IllegalStatusChange ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
     }
 
     @ExceptionHandler

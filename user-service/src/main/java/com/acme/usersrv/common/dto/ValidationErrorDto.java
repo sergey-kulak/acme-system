@@ -16,6 +16,7 @@ import static com.acme.usersrv.common.utils.StreamUtils.mapToSet;
 @Data
 public class ValidationErrorDto {
     private static final String DEFAULT_ERROR_MSG = "Validation error";
+    private static final int MAX_ROOT_LEVEL = 2;
     private String message;
     private Set<String> constraintViolations;
 
@@ -36,10 +37,13 @@ public class ValidationErrorDto {
     }
 
     private String extractRealField(Path propertyPath) {
-        return StreamSupport.stream(propertyPath.spliterator(), false)
-                .skip(2)
-                .map(Objects::toString)
-                .collect(Collectors.joining("."));
+        return removeFirstPart(propertyPath.toString(), 0);
+    }
+
+    private String removeFirstPart(String path, int level) {
+        int dotPos = path.indexOf(".");
+        return dotPos > 0 & level < MAX_ROOT_LEVEL ?
+                removeFirstPart(path.substring(dotPos + 1), level + 1) : path;
     }
 
 }

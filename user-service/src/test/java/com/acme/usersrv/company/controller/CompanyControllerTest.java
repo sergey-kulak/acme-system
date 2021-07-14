@@ -1,13 +1,20 @@
 package com.acme.usersrv.company.controller;
 
+import com.acme.usersrv.company.CompanyStatus;
+import com.acme.usersrv.company.dto.CompanyFilter;
+import com.acme.usersrv.company.dto.CompanyStatusDto;
 import com.acme.usersrv.company.dto.RegisterCompanyDto;
 import com.acme.usersrv.company.exception.DuplicateCompanyException;
+import com.acme.usersrv.company.exception.IllegalStatusChange;
 import com.acme.usersrv.company.service.CompanyService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
@@ -50,6 +57,47 @@ public class CompanyControllerTest {
                 .expectStatus().isEqualTo(HttpStatus.CONFLICT)
                 .expectBody(String.class)
                 .isEqualTo("Company with specified vatin, reg number or full name already registered");
+    }
+
+    @Test
+    public void findWithEmptyPagination() {
+        when(companyService.find(any(CompanyFilter.class), any(Pageable.class)))
+                .thenReturn(Mono.just(Page.empty()));
+
+        webClient.get()
+                .uri("/api/companies")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isEqualTo(HttpStatus.OK)
+                .expectBody().jsonPath("$.totalElements").isEqualTo(0);
+    }
+
+    @Test
+    public void changeStatusAllowed() {
+        UUID id = UUID.randomUUID();
+        CompanyStatusDto statusDto = new CompanyStatusDto(CompanyStatus.ACTIVE);
+        when(companyService.changeStatus(id, statusDto.getStatus()))
+                .thenReturn(Mono.empty());
+
+        webClient.put()
+                .uri("/api/companies/{id}/status", id)
+                .bodyValue(statusDto)
+                .exchange()
+                .expectStatus().isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void changeStatusDisallowed() {
+        UUID id = UUID.randomUUID();
+        CompanyStatusDto statusDto = new CompanyStatusDto(CompanyStatus.ACTIVE);
+        when(companyService.changeStatus(id, statusDto.getStatus()))
+                .thenReturn(Mono.error(IllegalStatusChange::new));
+
+        webClient.put()
+                .uri("/api/companies/{id}/status", id)
+                .bodyValue(statusDto)
+                .exchange()
+                .expectStatus().isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
 }

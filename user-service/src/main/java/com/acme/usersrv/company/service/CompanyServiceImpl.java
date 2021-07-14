@@ -7,6 +7,7 @@ import com.acme.usersrv.company.dto.CompanyFilter;
 import com.acme.usersrv.company.dto.RegisterCompanyDto;
 import com.acme.usersrv.company.dto.SaveOwnerDto;
 import com.acme.usersrv.company.exception.DuplicateCompanyException;
+import com.acme.usersrv.company.exception.IllegalStatusChange;
 import com.acme.usersrv.company.mapper.CompanyMapper;
 import com.acme.usersrv.company.repository.CompanyRepository;
 import com.acme.usersrv.user.UserRole;
@@ -20,11 +21,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class CompanyServiceImpl implements CompanyService {
+    private static final Map<CompanyStatus, List<CompanyStatus>> ALLOWED_NEXT_STATUSES = Map.of(
+            CompanyStatus.INACTIVE, List.of(CompanyStatus.ACTIVE, CompanyStatus.STOPPED),
+            CompanyStatus.ACTIVE, List.of(CompanyStatus.SUSPENDED, CompanyStatus.STOPPED),
+            CompanyStatus.SUSPENDED, List.of(CompanyStatus.ACTIVE)
+    );
+
     private final CompanyRepository companyRepository;
     private final UserService userService;
     private final CompanyMapper companyMapper;
@@ -74,5 +84,23 @@ public class CompanyServiceImpl implements CompanyService {
     public Mono<Page<CompanyDto>> findByJooq(CompanyFilter filter, Pageable pageable) {
         return companyRepository.findByJooq(filter, pageable)
                 .map(page -> page.map(companyMapper::toDto));
+    }
+
+    @Override
+    @Transactional
+    public Mono<Void> changeStatus(UUID id, CompanyStatus newStatus) {
+        return companyRepository.findById(id)
+                .flatMap(company -> isValidChange(company, newStatus))
+                .flatMap(company -> {
+                    company.setStatus(newStatus);
+                    return companyRepository.save(company);
+                })
+                .then();
+    }
+
+    private Mono<Company> isValidChange(Company company, CompanyStatus newStatus) {
+        List<CompanyStatus> nextStatuses =
+                ALLOWED_NEXT_STATUSES.getOrDefault(company.getStatus(), Collections.emptyList());
+        return nextStatuses.contains(newStatus) ? Mono.just(company) : Mono.error(IllegalStatusChange::new);
     }
 }

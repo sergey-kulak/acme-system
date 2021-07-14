@@ -7,7 +7,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
-public interface CompanyRepository extends ReactiveSortingRepository<Company, UUID> {
+public interface CompanyRepository extends ReactiveSortingRepository<Company, UUID>, CompanyRepositoryCustom {
 
     @Query("select count(1) > 0 from company " +
             "where vatin = upper($1) or reg_number = upper($2) or lower(full_name) = lower($3)")

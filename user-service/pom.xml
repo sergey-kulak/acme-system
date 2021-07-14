@@ -17,7 +17,7 @@
     <packaging>jar</packaging>
 
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>11</java.version>
 
         <start-class>com.acme.usersrv.Application</start-class>
         <docker.image.name>acme/user-service</docker.image.name>
@@ -28,6 +28,10 @@
         <pg-jdbc.version>42.2.22</pg-jdbc.version>
         <lombok.version>1.18.20</lombok.version>
         <mapstruct.version>1.4.2.Final</mapstruct.version>
+        <commons-lang3.version>3.12.0</commons-lang3.version>
+        <openapi-ui.version>1.5.9</openapi-ui.version>
+        <jooq.version>3.15.0</jooq.version>
+        <testcontainers.version>1.15.3</testcontainers.version>
     </properties>
 
     <dependencyManagement>
@@ -89,6 +93,27 @@
         </dependency>
 
         <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <version>${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>r2dbc</artifactId>
+            <version>${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
         </dependency>
@@ -117,7 +142,19 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.12.0</version>
+            <version>${commons-lang3.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-webflux-ui</artifactId>
+            <version>${openapi-ui.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jooq</groupId>
+            <artifactId>jooq</artifactId>
+            <version>${jooq.version}</version>
         </dependency>
 
     </dependencies>
@@ -143,6 +180,127 @@
                             <version>${mapstruct.version}</version>
                         </path>
                     </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
+                <version>${liquibase.version}</version>
+                <configuration>
+                    <changeLogFile>src/main/resources/db/changelog/master.xml</changeLogFile>
+                    <driver>org.testcontainers.jdbc.ContainerDatabaseDriver</driver>
+                    <url>jdbc:tc:postgresql:13.3-alpine:///gendb?TC_DAEMON=true&amp;TC_REUSABLE=true</url>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.postgresql</groupId>
+                        <artifactId>postgresql</artifactId>
+                        <version>${postgresql.version}</version>
+                    </dependency>
+
+                    <dependency>
+                        <groupId>org.testcontainers</groupId>
+                        <artifactId>testcontainers</artifactId>
+                        <version>${testcontainers.version}</version>
+                    </dependency>
+
+                    <dependency>
+                        <groupId>org.testcontainers</groupId>
+                        <artifactId>postgresql</artifactId>
+                        <version>${testcontainers.version}</version>
+                    </dependency>
+
+                    <dependency>
+                        <groupId>junit</groupId>
+                        <artifactId>junit</artifactId>
+                        <version>${junit.version}</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>update</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.jooq</groupId>
+                <artifactId>jooq-codegen-maven</artifactId>
+
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+
+                <dependencies>
+                    <dependency>
+                        <groupId>org.postgresql</groupId>
+                        <artifactId>postgresql</artifactId>
+                        <version>${postgresql.version}</version>
+                    </dependency>
+
+                    <dependency>
+                        <groupId>org.testcontainers</groupId>
+                        <artifactId>testcontainers</artifactId>
+                        <version>${testcontainers.version}</version>
+                    </dependency>
+
+                    <dependency>
+                        <groupId>org.testcontainers</groupId>
+                        <artifactId>postgresql</artifactId>
+                        <version>${testcontainers.version}</version>
+                    </dependency>
+
+                    <dependency>
+                        <groupId>junit</groupId>
+                        <artifactId>junit</artifactId>
+                        <version>${junit.version}</version>
+                    </dependency>
+                </dependencies>
+
+                <configuration>
+                    <jdbc>
+                        <driver>org.testcontainers.jdbc.ContainerDatabaseDriver</driver>
+                        <url>jdbc:tc:postgresql:13.3-alpine:///gendb?TC_DAEMON=true&amp;TC_REUSABLE=true</url>
+                    </jdbc>
+
+                    <generator>
+                        <database>
+                            <name>org.jooq.meta.postgres.PostgresDatabase</name>
+                            <includes>.*</includes>
+                            <includeRoutines>false</includeRoutines>
+                            <includePackages>false</includePackages>
+                            <includePackageRoutines>false</includePackageRoutines>
+                            <includePackageUDTs>false</includePackageUDTs>
+                            <includePackageConstants>false</includePackageConstants>
+                            <includeUDTs>false</includeUDTs>
+                            <includeDomains>false</includeDomains>
+                            <excludes>databasechangelog|databasechangeloglock</excludes>
+                            <schemata>
+                                <schema>
+                                    <inputSchema>public</inputSchema>
+                                </schema>
+                            </schemata>
+                        </database>
+
+                        <generate>
+                            <javaTimeTypes>true</javaTimeTypes>
+                            <daos>false</daos>
+                            <sequences>true</sequences>
+                        </generate>
+
+                        <target>
+                            <packageName>com.acme.usersrv.jooq</packageName>
+                        </target>
+
+                    </generator>
                 </configuration>
             </plugin>
         </plugins>

@@ -3,10 +3,13 @@ package com.acme.usersrv.company.service;
 
 import com.acme.usersrv.company.Company;
 import com.acme.usersrv.company.CompanyStatus;
+import com.acme.usersrv.company.dto.CompanyDto;
+import com.acme.usersrv.company.dto.CompanyFilter;
 import com.acme.usersrv.company.dto.RegisterCompanyDto;
 import com.acme.usersrv.company.dto.SaveOwnerDto;
 import com.acme.usersrv.company.exception.DuplicateCompanyException;
 import com.acme.usersrv.company.repository.CompanyRepository;
+import com.acme.usersrv.test.RandomTestUtils;
 import com.acme.usersrv.test.ServiceIntegrationTest;
 import com.acme.usersrv.test.TestEntityHelper;
 import com.acme.usersrv.test.TxStepVerifier;
@@ -16,13 +19,20 @@ import com.acme.usersrv.user.UserStatus;
 import com.acme.usersrv.user.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import javax.validation.ConstraintViolationException;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 
+import static com.acme.usersrv.common.utils.StreamUtils.mapToList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasProperty;
@@ -30,6 +40,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ServiceIntegrationTest
 public class CompanyServiceIntegrationTest {
@@ -134,5 +145,59 @@ public class CompanyServiceIntegrationTest {
                 .as(TxStepVerifier::withRollback)
                 .expectError(DuplicateCompanyException.class)
                 .verify();
+    }
+
+    @Test
+    public void findWithPagination() {
+        findWithPagination((filter, pageable) -> companyService.find(filter, pageable));
+    }
+
+    private void findWithPagination(BiFunction<CompanyFilter, Pageable, Mono<Page<CompanyDto>>> finder) {
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Order.asc("full_name")));
+        testEntityHelper.createCompany()
+                .zipWhen(company -> {
+                            CompanyFilter filter = CompanyFilter.builder()
+                                    .namePattern(company.getFullName().substring(0, 9))
+                                    .statuses(Collections.singleton(company.getStatus()))
+                                    .country(company.getCountry())
+                                    .vatin(company.getVatin())
+                                    .build();
+                            return finder.apply(filter, pageable);
+                        }
+                )
+                .as(TxStepVerifier::withRollback)
+                .assertNext(data -> {
+                    Company company = data.getT1();
+                    Page<CompanyDto> page = data.getT2();
+                    assertThat(page.getTotalElements(), is(1L));
+                    assertTrue(mapToList(page.getContent(), CompanyDto::getId).contains(company.getId()));
+                })
+                .verifyComplete();
+    }
+
+    @Test
+    public void findWithEmptyPagination() {
+        findWithEmptyPagination((filter, pageable) -> companyService.find(filter, pageable));
+    }
+
+    private void findWithEmptyPagination(BiFunction<CompanyFilter, Pageable, Mono<Page<CompanyDto>>> finder) {
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Order.asc("full_name")));
+        CompanyFilter filter = CompanyFilter.builder()
+                .vatin(RandomTestUtils.randomString("EU"))
+                .build();
+        finder.apply(filter, pageable)
+                .as(TxStepVerifier::withRollback)
+                .assertNext(page -> assertThat(page.getTotalElements(), is(0L)))
+                .verifyComplete();
+    }
+
+    @Test
+    public void findByJooqWithPagination() {
+        findWithPagination((filter, pageable) -> companyService.findByJooq(filter, pageable));
+    }
+
+    @Test
+    public void findByJooqWithEmptyPagination() {
+        findWithEmptyPagination((filter, pageable) -> companyService.findByJooq(filter, pageable));
     }
 }

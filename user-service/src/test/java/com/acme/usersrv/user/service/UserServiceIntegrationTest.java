@@ -1,5 +1,6 @@
 package com.acme.usersrv.user.service;
 
+import com.acme.usersrv.company.dto.RegisterCompanyDto;
 import com.acme.usersrv.test.RandomTestUtils;
 import com.acme.usersrv.test.ServiceIntegrationTest;
 import com.acme.usersrv.test.TestEntityHelper;
@@ -11,7 +12,9 @@ import com.acme.usersrv.user.repository.UserRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import reactor.test.StepVerifier;
 
+import javax.validation.ConstraintViolationException;
 import java.util.UUID;
 
 @ServiceIntegrationTest
@@ -22,6 +25,14 @@ public class UserServiceIntegrationTest {
     UserRepository userRepository;
     @Autowired
     TestEntityHelper testEntityHelper;
+
+    @Test
+    public void creationValidation() {
+        userService.create(new CreateUserDto())
+                .as(StepVerifier::create)
+                .expectError(ConstraintViolationException.class)
+                .verify();
+    }
 
     @Test
     public void existsByEmail() {

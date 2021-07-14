@@ -1,9 +1,9 @@
 package com.acme.usersrv.company.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.Tolerate;
-import org.springframework.data.relational.core.mapping.Column;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
@@ -11,11 +11,14 @@ import javax.validation.constraints.NotBlank;
 
 @Data
 @Builder
+@Schema(name = "Company registration request")
 public class RegisterCompanyDto {
     @NotBlank
     private String fullName;
     @NotBlank
+    @Schema(description = "VAT identification number")
     private String vatin;
+    @Schema(description = "Registration number number")
     private String regNumber;
     @Email
     private String email;

@@ -2,6 +2,7 @@ package com.acme.usersrv.company.dto;
 
 import com.acme.usersrv.common.validation.PasswordHandler;
 import com.acme.usersrv.common.validation.PasswordMatch;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.Tolerate;
@@ -12,6 +13,7 @@ import javax.validation.constraints.Size;
 @Data
 @Builder
 @PasswordMatch
+@Schema(name = "Owner info")
 public class SaveOwnerDto implements PasswordHandler {
     @NotBlank
     private String firstName;
@@ -20,6 +22,7 @@ public class SaveOwnerDto implements PasswordHandler {
     @NotBlank
     private String email;
     private String phone;
+    @NotBlank
     @Size(min = 6)
     private String password;
     private String confirmPassword;

@@ -17,7 +17,7 @@
     <packaging>jar</packaging>
 
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>11</java.version>
 
         <start-class>com.acme.info.Application</start-class>
         <docker.image.name>acme/info-service</docker.image.name>

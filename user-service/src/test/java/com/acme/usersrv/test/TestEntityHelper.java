@@ -1,6 +1,7 @@
 package com.acme.usersrv.test;
 
 import com.acme.usersrv.company.Company;
+import com.acme.usersrv.company.CompanyStatus;
 import com.acme.usersrv.company.repository.CompanyRepository;
 import com.acme.usersrv.user.User;
 import com.acme.usersrv.user.UserRole;
@@ -26,6 +27,7 @@ public class TestEntityHelper {
         company.setEmail(RandomTestUtils.randomEmail());
         company.setVatin(RandomTestUtils.randomString("BY"));
         company.setRegNumber(RandomTestUtils.randomString("REG"));
+        company.setStatus(CompanyStatus.ACTIVE);
         return companyRepository.save(company);
     }
 

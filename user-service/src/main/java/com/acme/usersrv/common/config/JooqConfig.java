@@ -11,7 +11,6 @@ import org.springframework.data.r2dbc.dialect.DialectResolver;
 import org.springframework.data.r2dbc.dialect.MySqlDialect;
 import org.springframework.data.r2dbc.dialect.PostgresDialect;
 import org.springframework.data.r2dbc.dialect.R2dbcDialect;
-import org.springframework.r2dbc.core.DatabaseClient;
 
 @Configuration
 public class JooqConfig {

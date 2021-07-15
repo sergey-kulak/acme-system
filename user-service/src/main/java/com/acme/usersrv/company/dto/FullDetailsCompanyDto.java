@@ -13,7 +13,6 @@ import java.util.UUID;
 @Data
 @Builder
 @Schema(name = "Full details company")
-@EqualsAndHashCode
 public class FullDetailsCompanyDto {
     private UUID id;
     private String fullName;

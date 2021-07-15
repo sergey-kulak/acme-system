@@ -17,26 +17,20 @@ import java.util.UUID;
 @Data
 @Builder
 @PasswordMatch
-@Schema(name = "Create user request")
-public class CreateUserDto implements PasswordHandler {
+@Schema(name = "Update user request")
+public class UpdateUserDto implements PasswordHandler {
     @NotBlank
     private String firstName;
     @NotBlank
     private String lastName;
-    @NotBlank
-    @Email
-    private String email;
     private String phone;
-    @NotBlank
     @Size(min = 6)
     private String password;
     private String confirmPassword;
     @NotNull
-    private UUID companyId;
-    @NotNull
     private UserRole role;
 
     @Tolerate
-    public CreateUserDto() {
+    public UpdateUserDto() {
     }
 }

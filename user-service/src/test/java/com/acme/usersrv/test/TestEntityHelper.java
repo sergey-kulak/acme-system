@@ -8,6 +8,7 @@ import com.acme.usersrv.user.UserRole;
 import com.acme.usersrv.user.UserStatus;
 import com.acme.usersrv.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import reactor.core.publisher.Mono;
 
 public class TestEntityHelper {
@@ -15,6 +16,8 @@ public class TestEntityHelper {
     private CompanyRepository companyRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public Mono<Company> createCompany() {
         return createCompany(CompanyStatus.ACTIVE);
@@ -39,7 +42,7 @@ public class TestEntityHelper {
         user.setLastName(RandomTestUtils.randomString("lastName"));
         user.setEmail(RandomTestUtils.randomEmail());
         user.setStatus(UserStatus.ACTIVE);
-        user.setPassword(RandomTestUtils.randomString("pasW"));
+        user.setPassword(passwordEncoder.encode(RandomTestUtils.randomString("pasW")));
         user.setCompanyId(company.getId());
         user.setRole(role);
         return userRepository.save(user);

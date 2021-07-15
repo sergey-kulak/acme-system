@@ -1,7 +1,8 @@
 package com.acme.usersrv.user.service;
 
-import com.acme.usersrv.user.User;
 import com.acme.usersrv.user.dto.CreateUserDto;
+import com.acme.usersrv.user.dto.UpdateUserDto;
+import com.acme.usersrv.user.dto.UserDto;
 import com.acme.usersrv.user.dto.UserFilter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,5 +18,9 @@ public interface UserService {
 
     Mono<Boolean> existsByEmail(String email);
 
-    Mono<Page<User>> find(UserFilter userFilter, Pageable pageable);
+    Mono<Page<UserDto>> find(UserFilter userFilter, Pageable pageable);
+
+    Mono<UserDto> findById(UUID id);
+
+    Mono<Void> update(UUID id, @Valid UpdateUserDto dto);
 }

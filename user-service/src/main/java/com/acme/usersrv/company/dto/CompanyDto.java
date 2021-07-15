@@ -12,7 +12,6 @@ import java.util.UUID;
 @Data
 @Builder
 @Schema(name = "Company")
-@EqualsAndHashCode
 public class CompanyDto {
     private UUID id;
     private String fullName;

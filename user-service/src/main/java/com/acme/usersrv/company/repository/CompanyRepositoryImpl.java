@@ -3,6 +3,7 @@ package com.acme.usersrv.company.repository;
 
 import com.acme.usersrv.common.repository.AbstractCustomJooqRepository;
 import com.acme.usersrv.common.utils.CollectionUtils;
+import com.acme.usersrv.common.utils.StreamUtils;
 import com.acme.usersrv.company.Company;
 import com.acme.usersrv.company.dto.CompanyFilter;
 import com.acme.usersrv.jooq.enums.CompanyStatus;
@@ -74,7 +75,7 @@ public class CompanyRepositoryImpl extends AbstractCustomJooqRepository implemen
     private Condition buildWhere(CompanyFilter filter) {
         Condition where = DSL.noCondition();
         if (CollectionUtils.isNotEmpty(filter.getStatuses())) {
-            where = where.and(COMPANY.STATUS.in(CompanyStatus.ACTIVE));
+            where = where.and(COMPANY.STATUS.in(filter.getStatuses()));
         }
         if (StringUtils.isNotBlank(filter.getNamePattern())) {
             where = where.and(COMPANY.FULL_NAME

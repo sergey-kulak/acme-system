@@ -8,7 +8,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
-public interface UserRepository extends ReactiveSortingRepository<User, UUID> {
+public interface UserRepository extends ReactiveSortingRepository<User, UUID>, UserRepositoryCustom {
 
     @Query("select * from \"user\" where company_id = $1 and role = 'COMPANY_OWNER'")
     Flux<User> findCompanyOwners(UUID companyId);

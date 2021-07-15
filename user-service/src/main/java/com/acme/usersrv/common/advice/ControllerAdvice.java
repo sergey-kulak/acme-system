@@ -1,6 +1,7 @@
 package com.acme.usersrv.common.advice;
 
 import com.acme.usersrv.common.dto.ValidationErrorDto;
+import com.acme.usersrv.common.exception.EntityNotFoundException;
 import com.acme.usersrv.company.exception.DuplicateCompanyException;
 import com.acme.usersrv.company.exception.IllegalStatusChange;
 import com.acme.usersrv.user.exception.DuplicateUserException;
@@ -21,6 +22,11 @@ public class ControllerAdvice {
     @ExceptionHandler
     public ResponseEntity<Object> handle(IllegalStatusChange ex) {
         return ResponseEntity.badRequest().body(ex.getMessage());
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Object> handle(EntityNotFoundException ex) {
+        return ResponseEntity.notFound().build();
     }
 
     @ExceptionHandler

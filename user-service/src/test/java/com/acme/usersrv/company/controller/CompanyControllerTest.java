@@ -1,12 +1,16 @@
 package com.acme.usersrv.company.controller;
 
+import com.acme.usersrv.common.exception.EntityNotFoundException;
 import com.acme.usersrv.company.CompanyStatus;
+import com.acme.usersrv.company.dto.CompanyDto;
 import com.acme.usersrv.company.dto.CompanyFilter;
 import com.acme.usersrv.company.dto.CompanyStatusDto;
+import com.acme.usersrv.company.dto.FullDetailsCompanyDto;
 import com.acme.usersrv.company.dto.RegisterCompanyDto;
 import com.acme.usersrv.company.exception.DuplicateCompanyException;
 import com.acme.usersrv.company.exception.IllegalStatusChange;
 import com.acme.usersrv.company.service.CompanyService;
+import com.acme.usersrv.test.RandomTestUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
@@ -98,6 +102,62 @@ public class CompanyControllerTest {
                 .bodyValue(statusDto)
                 .exchange()
                 .expectStatus().isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    public void findByNotExistingId() {
+        UUID id = UUID.randomUUID();
+        when(companyService.findById(id))
+                .thenReturn(Mono.error(new EntityNotFoundException(id)));
+
+        webClient.get()
+                .uri("/api/companies/{id}", id)
+                .exchange()
+                .expectStatus().isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    public void findByExistingId() {
+        UUID id = UUID.randomUUID();
+        CompanyDto dto = CompanyDto.builder()
+                .id(id)
+                .fullName(RandomTestUtils.randomString("name"))
+                .status(CompanyStatus.ACTIVE)
+                .build();
+        when(companyService.findById(id))
+                .thenReturn(Mono.just(dto));
+
+        webClient.get()
+                .uri("/api/companies/{id}", id)
+                .exchange()
+                .expectStatus().isEqualTo(HttpStatus.OK)
+                .expectBody(CompanyDto.class)
+                .isEqualTo(dto);
+    }
+
+    @Test
+    public void findFullDetailsByExistingId() {
+        UUID id = UUID.randomUUID();
+        FullDetailsCompanyDto dto = FullDetailsCompanyDto.builder()
+                .id(id)
+                .fullName(RandomTestUtils.randomString("name"))
+                .status(CompanyStatus.ACTIVE)
+                .address(RandomTestUtils.randomString("address"))
+                .site(RandomTestUtils.randomString("site"))
+                .email(RandomTestUtils.randomEmail())
+                .country("BY")
+                .city("Minsk")
+                .vatin(RandomTestUtils.randomString("BY"))
+                .build();
+        when(companyService.findFullDetailsById(id))
+                .thenReturn(Mono.just(dto));
+
+        webClient.get()
+                .uri("/api/companies/{id}/full-details", id)
+                .exchange()
+                .expectStatus().isEqualTo(HttpStatus.OK)
+                .expectBody(FullDetailsCompanyDto.class)
+                .isEqualTo(dto);
     }
 
 }

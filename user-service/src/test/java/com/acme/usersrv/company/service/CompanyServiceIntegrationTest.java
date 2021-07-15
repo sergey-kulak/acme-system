@@ -1,12 +1,15 @@
 package com.acme.usersrv.company.service;
 
 
+import com.acme.usersrv.common.exception.EntityNotFoundException;
 import com.acme.usersrv.company.Company;
 import com.acme.usersrv.company.CompanyStatus;
 import com.acme.usersrv.company.dto.CompanyDto;
 import com.acme.usersrv.company.dto.CompanyFilter;
+import com.acme.usersrv.company.dto.FullDetailsCompanyDto;
 import com.acme.usersrv.company.dto.RegisterCompanyDto;
 import com.acme.usersrv.company.dto.SaveOwnerDto;
+import com.acme.usersrv.company.dto.UpdateCompanyDto;
 import com.acme.usersrv.company.exception.DuplicateCompanyException;
 import com.acme.usersrv.company.exception.IllegalStatusChange;
 import com.acme.usersrv.company.repository.CompanyRepository;
@@ -266,4 +269,88 @@ public class CompanyServiceIntegrationTest {
                 .verify();
     }
 
+    @Test
+    public void findById() {
+        testEntityHelper.createCompany()
+                .zipWhen(company -> companyService.findById(company.getId()))
+                .as(TxStepVerifier::withRollback)
+                .assertNext(data -> {
+                    Company company = data.getT1();
+                    CompanyDto dto = data.getT2();
+                    assertThat(dto, allOf(
+                            hasProperty("id", is(company.getId())),
+                            hasProperty("fullName", is(company.getFullName())),
+                            hasProperty("status", is(company.getStatus()))
+                    ));
+                })
+                .verifyComplete();
+    }
+
+    @Test
+    public void findByNotExistingId() {
+        companyService.findById(UUID.randomUUID())
+                .as(StepVerifier::create)
+                .expectError(EntityNotFoundException.class)
+                .verify();
+    }
+
+    @Test
+    public void findByIdFullDetails() {
+        testEntityHelper.createCompany()
+                .zipWhen(company -> companyService.findFullDetailsById(company.getId()))
+                .as(TxStepVerifier::withRollback)
+                .assertNext(data -> {
+                    Company company = data.getT1();
+                    FullDetailsCompanyDto dto = data.getT2();
+                    assertThat(dto, allOf(
+                            hasProperty("id", is(company.getId())),
+                            hasProperty("fullName", is(company.getFullName())),
+                            hasProperty("status", is(company.getStatus())),
+                            hasProperty("country", is(company.getCountry())),
+                            hasProperty("city", is(company.getCity())),
+                            hasProperty("address", is(company.getAddress())),
+                            hasProperty("regNumber", is(company.getRegNumber())),
+                            hasProperty("vatin", is(company.getVatin())),
+                            hasProperty("email", is(company.getEmail())),
+                            hasProperty("site", is(company.getSite())),
+                            hasProperty("phone", is(company.getPhone()))
+                    ));
+                })
+                .verifyComplete();
+    }
+
+    @Test
+    public void update() {
+        UpdateCompanyDto dto = UpdateCompanyDto.builder()
+                .address(RandomTestUtils.randomString("address"))
+                .site(RandomTestUtils.randomString("site"))
+                .email(RandomTestUtils.randomEmail())
+                .phone(RandomTestUtils.randomString("phone"))
+                .city("Brest")
+                .build();
+        testEntityHelper.createCompany()
+                .zipWhen(company ->
+                        companyService.update(company.getId(), dto)
+                                .then(companyRepository.findById(company.getId()))
+                )
+                .as(TxStepVerifier::withRollback)
+                .assertNext(data -> {
+                    Company company = data.getT1();
+                    Company updCompany = data.getT2();
+                    assertThat(updCompany, allOf(
+                            hasProperty("id", is(company.getId())),
+                            hasProperty("fullName", is(company.getFullName())),
+                            hasProperty("status", is(company.getStatus())),
+                            hasProperty("country", is(company.getCountry())),
+                            hasProperty("city", is(dto.getCity())),
+                            hasProperty("address", is(dto.getAddress())),
+                            hasProperty("regNumber", is(company.getRegNumber())),
+                            hasProperty("vatin", is(company.getVatin())),
+                            hasProperty("email", is(dto.getEmail())),
+                            hasProperty("site", is(dto.getSite())),
+                            hasProperty("phone", is(dto.getPhone()))
+                    ));
+                })
+                .verifyComplete();
+    }
 }

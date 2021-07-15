@@ -1,11 +1,14 @@
 package com.acme.usersrv.company.service;
 
+import com.acme.usersrv.common.exception.EntityNotFoundException;
 import com.acme.usersrv.company.Company;
 import com.acme.usersrv.company.CompanyStatus;
 import com.acme.usersrv.company.dto.CompanyDto;
 import com.acme.usersrv.company.dto.CompanyFilter;
+import com.acme.usersrv.company.dto.FullDetailsCompanyDto;
 import com.acme.usersrv.company.dto.RegisterCompanyDto;
 import com.acme.usersrv.company.dto.SaveOwnerDto;
+import com.acme.usersrv.company.dto.UpdateCompanyDto;
 import com.acme.usersrv.company.exception.DuplicateCompanyException;
 import com.acme.usersrv.company.exception.IllegalStatusChange;
 import com.acme.usersrv.company.mapper.CompanyMapper;
@@ -25,6 +28,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
@@ -95,6 +99,7 @@ public class CompanyServiceImpl implements CompanyService {
                     company.setStatus(newStatus);
                     return companyRepository.save(company);
                 })
+                .switchIfEmpty(EntityNotFoundException.of(id))
                 .then();
     }
 
@@ -102,5 +107,34 @@ public class CompanyServiceImpl implements CompanyService {
         List<CompanyStatus> nextStatuses =
                 ALLOWED_NEXT_STATUSES.getOrDefault(company.getStatus(), Collections.emptyList());
         return nextStatuses.contains(newStatus) ? Mono.just(company) : Mono.error(IllegalStatusChange::new);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Mono<CompanyDto> findById(UUID id) {
+        return findById(id, companyMapper::toDto);
+    }
+
+    private <T> Mono<T> findById(UUID id, Function<Company, T> mapper) {
+        return companyRepository.findById(id)
+                .map(mapper)
+                .switchIfEmpty(EntityNotFoundException.of(id));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Mono<FullDetailsCompanyDto> findFullDetailsById(UUID id) {
+        return findById(id, companyMapper::toFullDetailsDto);
+    }
+
+    @Override
+    public Mono<Void> update(UUID id, UpdateCompanyDto dto) {
+        return companyRepository.findById(id)
+                .flatMap(company -> {
+                    companyMapper.update(company, dto);
+                    return companyRepository.save(company);
+                })
+                .switchIfEmpty(EntityNotFoundException.of(id))
+                .then();
     }
 }

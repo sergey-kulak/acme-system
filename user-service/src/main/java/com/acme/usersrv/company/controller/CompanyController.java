@@ -3,13 +3,16 @@ package com.acme.usersrv.company.controller;
 import com.acme.usersrv.common.dto.IdDto;
 import com.acme.usersrv.common.openapi.ConflictErrorResponse;
 import com.acme.usersrv.common.openapi.EntityCreatedResponse;
+import com.acme.usersrv.common.openapi.EntityNotFoundResponse;
 import com.acme.usersrv.common.openapi.OpenApiPage;
 import com.acme.usersrv.common.openapi.ValidationErrorResponse;
 import com.acme.usersrv.common.utils.ResponseUtils;
 import com.acme.usersrv.company.dto.CompanyDto;
 import com.acme.usersrv.company.dto.CompanyFilter;
-import com.acme.usersrv.company.dto.RegisterCompanyDto;
 import com.acme.usersrv.company.dto.CompanyStatusDto;
+import com.acme.usersrv.company.dto.FullDetailsCompanyDto;
+import com.acme.usersrv.company.dto.RegisterCompanyDto;
+import com.acme.usersrv.company.dto.UpdateCompanyDto;
 import com.acme.usersrv.company.service.CompanyService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -63,8 +66,33 @@ public class CompanyController {
     @PutMapping("/{id}/status")
     @Operation(description = "Change company status")
     @ApiResponse(responseCode = "400", description = "Validation errors or not allowed status change", content = @Content(schema = @Schema(hidden = true)))
+    @EntityNotFoundResponse
     public Mono<Void> changeStatus(@PathVariable UUID id, @RequestBody CompanyStatusDto statusDto) {
         return companyService.changeStatus(id, statusDto.getStatus());
+    }
+
+    @GetMapping("/{id}")
+    @Operation(description = "Find company by id")
+    @ApiResponse(responseCode = "200")
+    @EntityNotFoundResponse
+    public Mono<CompanyDto> findById(@PathVariable UUID id) {
+        return companyService.findById(id);
+    }
+
+    @GetMapping("/{id}/full-details")
+    @Operation(description = "Find company with full details by id")
+    @ApiResponse(responseCode = "200")
+    @EntityNotFoundResponse
+    public Mono<FullDetailsCompanyDto> findFullDetailsById(@PathVariable UUID id) {
+        return companyService.findFullDetailsById(id);
+    }
+
+    @PutMapping("/{id}")
+    @Operation(description = "Update company")
+    @ApiResponse(responseCode = "200")
+    @EntityNotFoundResponse
+    public Mono<Void> update(@PathVariable UUID id, @RequestBody UpdateCompanyDto dto) {
+        return companyService.update(id, dto);
     }
 
     @Schema(name = "Company page")

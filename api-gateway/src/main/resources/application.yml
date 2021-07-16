@@ -1,0 +1,38 @@
+server:
+  port: 7004
+
+logging:
+  level:
+    org.springframework: debug
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+          include-expression: "!serviceId.equals('CONFIG-SERVICE')"
+          filters:
+          - name: RewritePath
+            args:
+              regexp: "'/' + serviceId + '/?(?<remaining>.*)'"
+              replacement: "'/api/${remaining}'"
+
+eureka:
+  client:
+    registerWithEureka: false
+    registryFetchIntervalSeconds: 10
+    serviceUrl:
+      defaultZone: http://localhost:7002/eureka/
+
+management:
+  endpoint:
+    gateway:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: gateway

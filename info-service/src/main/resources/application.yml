@@ -1,5 +1,5 @@
 server:
-  port: 7004
+  port: 7006
 
 logging:
   level:
@@ -8,6 +8,7 @@ logging:
 spring:
   application:
     name: info-service
+    id: ${random.uuid}
   config:
     import: configserver:http://config-service
   cloud:
@@ -17,6 +18,11 @@ spring:
         service-id: config-service
 
 eureka:
+  instance:
+    leaseRenewalIntervalInSeconds: 5
+    leaseExpirationDurationInSeconds: 16
   client:
+    initialInstanceInfoReplicationIntervalSeconds: 5
+    instanceInfoReplicationIntervalSeconds: 5
     serviceUrl:
       defaultZone: http://localhost:7002/eureka/

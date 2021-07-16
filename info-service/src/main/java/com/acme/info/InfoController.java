@@ -14,9 +14,12 @@ public class InfoController {
     @Value("${acme.app.name}")
     private String appName;
 
-    @GetMapping("/welcome")
+    @Value("${spring.application.id}")
+    private String appId;
+
+    @GetMapping("")
     public String welcome() {
-        return String.format("%s %s", appName, appVersion);
+        return String.format("%s %s, id: %s", appName, appVersion, appId);
     }
 }
 

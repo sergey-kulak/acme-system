@@ -31,7 +31,12 @@ spring:
       max-size: 10
 
 eureka:
+  instance:
+    leaseRenewalIntervalInSeconds: 5
+    leaseExpirationDurationInSeconds: 16
   client:
+    initialInstanceInfoReplicationIntervalSeconds: 5
+    instanceInfoReplicationIntervalSeconds: 5
     serviceUrl:
       defaultZone: http://localhost:7002/eureka/
 

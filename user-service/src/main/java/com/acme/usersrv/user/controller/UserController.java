@@ -5,6 +5,7 @@ import com.acme.usersrv.common.openapi.ConflictErrorResponse;
 import com.acme.usersrv.common.openapi.EntityCreatedResponse;
 import com.acme.usersrv.common.openapi.EntityNotFoundResponse;
 import com.acme.usersrv.common.openapi.OpenApiPage;
+import com.acme.usersrv.common.openapi.SecureOperation;
 import com.acme.usersrv.common.openapi.ValidationErrorResponse;
 import com.acme.usersrv.common.utils.ResponseUtils;
 import com.acme.usersrv.user.dto.CreateUserDto;
@@ -12,7 +13,6 @@ import com.acme.usersrv.user.dto.UpdateUserDto;
 import com.acme.usersrv.user.dto.UserDto;
 import com.acme.usersrv.user.dto.UserFilter;
 import com.acme.usersrv.user.service.UserService;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -37,12 +37,12 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
-@Tag(name = "User API", description = "User management API")
+@Tag(name = "User Api", description = "User management Api")
 public class UserController {
     private final UserService userService;
 
     @PostMapping
-    @Operation(description = "Create an user")
+    @SecureOperation(description = "Create an user")
     @EntityCreatedResponse
     @ValidationErrorResponse
     @ConflictErrorResponse(description = "User with specified email already created")
@@ -53,7 +53,7 @@ public class UserController {
     }
 
     @GetMapping("{id}")
-    @Operation(description = "Find user by id")
+    @SecureOperation(description = "Find user by id")
     @ApiResponse(responseCode = "200")
     @EntityNotFoundResponse
     public Mono<UserDto> findById(@PathVariable UUID id) {
@@ -61,7 +61,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    @Operation(description = "Update user")
+    @SecureOperation(description = "Update user")
     @ApiResponse(responseCode = "200")
     @EntityNotFoundResponse
     public Mono<Void> update(@PathVariable UUID id, @RequestBody UpdateUserDto dto) {
@@ -69,7 +69,7 @@ public class UserController {
     }
 
     @GetMapping
-    @Operation(description = "Find users with pagination")
+    @SecureOperation(description = "Find users with pagination")
     @ApiResponse(responseCode = "200",
             content = @Content(schema = @Schema(implementation = UserApiPage.class)))
     public Mono<Page<UserDto>> find(@ParameterObject UserFilter filter,

@@ -10,9 +10,11 @@ import com.acme.usersrv.company.dto.RegisterCompanyDto;
 import com.acme.usersrv.company.exception.DuplicateCompanyException;
 import com.acme.usersrv.company.exception.IllegalStatusChange;
 import com.acme.usersrv.company.service.CompanyService;
+import com.acme.usersrv.test.ControllerTest;
 import com.acme.usersrv.test.RandomTestUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
@@ -27,7 +29,7 @@ import java.util.UUID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-@WebFluxTest(controllers = {CompanyController.class})
+@ControllerTest(CompanyController.class)
 public class CompanyControllerTest {
     @Autowired
     WebTestClient webClient;

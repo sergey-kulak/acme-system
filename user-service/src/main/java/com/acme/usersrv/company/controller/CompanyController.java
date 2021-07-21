@@ -5,6 +5,7 @@ import com.acme.usersrv.common.openapi.ConflictErrorResponse;
 import com.acme.usersrv.common.openapi.EntityCreatedResponse;
 import com.acme.usersrv.common.openapi.EntityNotFoundResponse;
 import com.acme.usersrv.common.openapi.OpenApiPage;
+import com.acme.usersrv.common.openapi.SecureOperation;
 import com.acme.usersrv.common.openapi.ValidationErrorResponse;
 import com.acme.usersrv.common.utils.ResponseUtils;
 import com.acme.usersrv.company.dto.CompanyDto;
@@ -39,7 +40,7 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/companies")
-@Tag(name = "Company API", description = "Company management API")
+@Tag(name = "Company Api", description = "Company management Api")
 public class CompanyController {
     private final CompanyService companyService;
 
@@ -55,7 +56,7 @@ public class CompanyController {
     }
 
     @GetMapping
-    @Operation(description = "Find companies with pagination")
+    @SecureOperation(description = "Find companies with pagination")
     @ApiResponse(responseCode = "200",
             content = @Content(schema = @Schema(implementation = CompanyApiPage.class)))
     public Mono<Page<CompanyDto>> find(@ParameterObject CompanyFilter companyFilter,
@@ -64,7 +65,7 @@ public class CompanyController {
     }
 
     @PutMapping("/{id}/status")
-    @Operation(description = "Change company status")
+    @SecureOperation(description = "Change company status")
     @ApiResponse(responseCode = "400", description = "Validation errors or not allowed status change", content = @Content(schema = @Schema(hidden = true)))
     @EntityNotFoundResponse
     public Mono<Void> changeStatus(@PathVariable UUID id, @RequestBody CompanyStatusDto statusDto) {
@@ -72,7 +73,7 @@ public class CompanyController {
     }
 
     @GetMapping("/{id}")
-    @Operation(description = "Find company by id")
+    @SecureOperation(description = "Find company by id")
     @ApiResponse(responseCode = "200")
     @EntityNotFoundResponse
     public Mono<CompanyDto> findById(@PathVariable UUID id) {
@@ -80,7 +81,7 @@ public class CompanyController {
     }
 
     @GetMapping("/{id}/full-details")
-    @Operation(description = "Find company with full details by id")
+    @SecureOperation(description = "Find company with full details by id")
     @ApiResponse(responseCode = "200")
     @EntityNotFoundResponse
     public Mono<FullDetailsCompanyDto> findFullDetailsById(@PathVariable UUID id) {
@@ -88,7 +89,7 @@ public class CompanyController {
     }
 
     @PutMapping("/{id}")
-    @Operation(description = "Update company")
+    @SecureOperation(description = "Update company")
     @ApiResponse(responseCode = "200")
     @EntityNotFoundResponse
     public Mono<Void> update(@PathVariable UUID id, @RequestBody UpdateCompanyDto dto) {

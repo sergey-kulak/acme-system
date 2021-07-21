@@ -22,6 +22,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.test.context.support.WithMockUser;
 import reactor.test.StepVerifier;
 
 import javax.validation.ConstraintViolationException;
@@ -141,6 +142,7 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = "COMPANY_OWNER")
     public void updateWithPassword() {
         String password = RandomStringUtils.randomAlphanumeric(8);
         UpdateUserDto dto = buildUpdateDto();
@@ -171,6 +173,7 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = "COMPANY_OWNER")
     public void updateWithoutPassword() {
         UpdateUserDto dto = buildUpdateDto();
         testEntityHelper.createCompany()
@@ -198,13 +201,16 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = "COMPANY_OWNER")
     public void updateValidation() {
         UpdateUserDto dto = buildUpdateDto();
         dto.setPassword("qwe");
-        assertThrows(ConstraintViolationException.class, () -> userService.update(UUID.randomUUID(), dto));
+        assertThrows(ConstraintViolationException.class,
+                () -> userService.update(UUID.randomUUID(), dto).block());
     }
 
     @Test
+    @WithMockUser(roles = "PP_MANAGER")
     public void findWithPagination() {
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Order.asc("last_name")));
         testEntityHelper.createCompany()

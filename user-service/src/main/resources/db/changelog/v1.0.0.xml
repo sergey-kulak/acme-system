@@ -67,7 +67,7 @@
             <column name="first_name" value="Admin"/>
             <column name="last_name" value="Adminov"/>
             <column name="email" value="admin@acme.com"/>
-            <column name="password" value="123"/>
+            <column name="password" value="$2a$05$CUMHnSqJatohgykZchy/F.dT3DpJdOXOCTNMloed0uqyUmXh/JBEe"/>
             <column name="status" value="ACTIVE"/>
             <column name="role" value="ADMIN"/>
         </insert>

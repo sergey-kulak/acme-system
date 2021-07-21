@@ -27,6 +27,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.test.context.support.WithMockUser;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -154,6 +155,7 @@ public class CompanyServiceIntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     public void findWithPagination() {
         findWithPagination((filter, pageable) -> companyService.find(filter, pageable));
     }
@@ -182,6 +184,7 @@ public class CompanyServiceIntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     public void findWithEmptyPagination() {
         findWithEmptyPagination((filter, pageable) -> companyService.find(filter, pageable));
     }
@@ -198,46 +201,55 @@ public class CompanyServiceIntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     public void findByJooqWithPagination() {
         findWithPagination((filter, pageable) -> companyService.findByJooq(filter, pageable));
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     public void findByJooqWithEmptyPagination() {
         findWithEmptyPagination((filter, pageable) -> companyService.findByJooq(filter, pageable));
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     public void inactiveStatusToActive() {
         allowedStatusChange(CompanyStatus.INACTIVE, CompanyStatus.ACTIVE);
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     public void inactiveStatusToSuspended() {
         disallowedStatusChange(CompanyStatus.INACTIVE, CompanyStatus.SUSPENDED);
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     public void inactiveStatusToStopped() {
         allowedStatusChange(CompanyStatus.INACTIVE, CompanyStatus.STOPPED);
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     public void activeStatusToStopped() {
         allowedStatusChange(CompanyStatus.ACTIVE, CompanyStatus.STOPPED);
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     public void activeStatusToSuspended() {
         allowedStatusChange(CompanyStatus.ACTIVE, CompanyStatus.SUSPENDED);
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     public void suspendedStatusToActive() {
         allowedStatusChange(CompanyStatus.SUSPENDED, CompanyStatus.ACTIVE);
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     public void stoppedStatusToActive() {
         disallowedStatusChange(CompanyStatus.STOPPED, CompanyStatus.ACTIVE);
     }
@@ -262,6 +274,7 @@ public class CompanyServiceIntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     public void changeStatusValidation() {
         companyService.changeStatus(UUID.randomUUID(), null)
                 .as(StepVerifier::create)
@@ -320,6 +333,7 @@ public class CompanyServiceIntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = "COMPANY_OWNER")
     public void update() {
         UpdateCompanyDto dto = UpdateCompanyDto.builder()
                 .address(RandomTestUtils.randomString("address"))

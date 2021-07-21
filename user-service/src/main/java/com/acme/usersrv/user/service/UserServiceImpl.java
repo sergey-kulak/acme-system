@@ -54,7 +54,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public Mono<Boolean> existsByEmail(String email) {
-        return userRepository.existsByEmail(email.toLowerCase());
+        return userRepository.existsActiveByEmail(email.toLowerCase());
     }
 
     @Override

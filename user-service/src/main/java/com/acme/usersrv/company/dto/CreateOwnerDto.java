@@ -14,7 +14,7 @@ import javax.validation.constraints.Size;
 @Builder
 @PasswordMatch
 @Schema(name = "Owner info")
-public class SaveOwnerDto implements PasswordHandler {
+public class CreateOwnerDto implements PasswordHandler {
     @NotBlank
     private String firstName;
     @NotBlank
@@ -28,6 +28,6 @@ public class SaveOwnerDto implements PasswordHandler {
     private String confirmPassword;
 
     @Tolerate
-    public SaveOwnerDto() {
+    public CreateOwnerDto() {
     }
 }

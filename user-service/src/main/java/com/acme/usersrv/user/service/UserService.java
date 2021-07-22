@@ -1,5 +1,6 @@
 package com.acme.usersrv.user.service;
 
+import com.acme.usersrv.company.dto.CreateOwnerDto;
 import com.acme.usersrv.user.dto.CreateUserDto;
 import com.acme.usersrv.user.dto.UpdateUserDto;
 import com.acme.usersrv.user.dto.UserDto;
@@ -15,16 +16,19 @@ import java.util.UUID;
 
 @Validated
 public interface UserService {
-    // TODO ??? change
-    Mono<UUID> create(@Valid CreateUserDto saveDto);
+    Mono<UUID> createCompanyOwner(UUID companyId, @Valid CreateOwnerDto createDto);
+
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'COMPANY_OWNER')")
+    Mono<UUID> create(@Valid CreateUserDto createDto);
 
     Mono<Boolean> existsByEmail(String email);
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'COMPANY_OWNER', 'PP_MANAGER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'COMPANY_OWNER', 'PP_MANAGER')")
     Mono<Page<UserDto>> find(UserFilter userFilter, Pageable pageable);
 
+    @PreAuthorize("isAuthenticated()")
     Mono<UserDto> findById(UUID id);
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'COMPANY_OWNER')")
+    @PreAuthorize("isAuthenticated()")
     Mono<Void> update(UUID id, @Valid UpdateUserDto dto);
 }

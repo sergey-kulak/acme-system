@@ -33,7 +33,7 @@ public class RegisterCompanyDto {
     private String phone;
 
     @Valid
-    private SaveOwnerDto owner;
+    private CreateOwnerDto owner;
 
     @Tolerate
     public RegisterCompanyDto() {

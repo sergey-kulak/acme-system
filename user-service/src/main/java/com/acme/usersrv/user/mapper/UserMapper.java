@@ -1,7 +1,7 @@
 package com.acme.usersrv.user.mapper;
 
 import com.acme.usersrv.common.mapper.StringMapper;
-import com.acme.usersrv.company.dto.SaveOwnerDto;
+import com.acme.usersrv.company.dto.CreateOwnerDto;
 import com.acme.usersrv.user.User;
 import com.acme.usersrv.user.dto.CreateUserDto;
 import com.acme.usersrv.user.dto.UpdateUserDto;
@@ -12,7 +12,7 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring", uses = {StringMapper.class})
 public interface UserMapper {
-    CreateUserDto convert(SaveOwnerDto dto);
+    CreateUserDto convert(CreateOwnerDto dto);
 
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "email", source = "email", qualifiedByName = {"String", "toLowercase"})
@@ -21,6 +21,7 @@ public interface UserMapper {
     UserDto toDto(User source);
 
     @Mapping(target = "password", ignore = true)
+    @Mapping(target = "role", ignore = true)
     void update(@MappingTarget User target, UpdateUserDto dto);
 
 }

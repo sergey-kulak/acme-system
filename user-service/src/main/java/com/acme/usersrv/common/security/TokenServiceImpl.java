@@ -12,7 +12,6 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.SneakyThrows;
 import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.UUID;
@@ -56,6 +55,7 @@ public class TokenServiceImpl implements TokenService {
                 .subject(userDetails.getUsername())
                 .issueTime(new Date())
                 .expirationTime(new Date(new Date().getTime() + ttlInSec * 1000))
+                .claim(JwtClaims.ID, userDetails.getId().toString())
                 .claim(JwtClaims.ROLE, role)
                 .claim(JwtClaims.COMPANY_ID, companyId == null ? null : companyId.toString())
                 .build();

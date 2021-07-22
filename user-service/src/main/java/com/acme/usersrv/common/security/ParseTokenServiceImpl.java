@@ -1,5 +1,6 @@
 package com.acme.usersrv.common.security;
 
+import com.acme.usersrv.user.UserRole;
 import com.nimbusds.jose.JOSEObjectType;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.jwk.JWK;
@@ -60,14 +61,13 @@ public class ParseTokenServiceImpl implements ParseTokenService {
 
             String username = claimsSet.getSubject();
             String role = claimsSet.getStringClaim(JwtClaims.ROLE);
-            String companyId = claimsSet.getStringClaim(JwtClaims.COMPANY_ID);
-            List<SimpleGrantedAuthority> roles = Collections.singletonList(new SimpleGrantedAuthority(role));
+            String companyIdText = claimsSet.getStringClaim(JwtClaims.COMPANY_ID);
+            UUID companyId = StringUtils.isBlank(companyIdText) ? null : UUID.fromString(companyIdText);
+            UUID id = UUID.fromString(claimsSet.getStringClaim(JwtClaims.ID));
 
-            CompanyUser user = new CompanyUser(
-                    StringUtils.isBlank(companyId) ? null : UUID.fromString(companyId),
-                    username, StringUtils.EMPTY, roles);
+            CompanyUser user = new CompanyUser(id, companyId,username, StringUtils.EMPTY, UserRole.valueOf(role));
 
-            return Mono.just(new UsernamePasswordAuthenticationToken(user, null, roles));
+            return Mono.just(new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities()));
         } catch (Exception exception) {
             return Mono.error(new BadCredentialsException("Wrong token", exception));
         }

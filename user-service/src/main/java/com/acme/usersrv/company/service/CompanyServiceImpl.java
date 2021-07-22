@@ -1,21 +1,19 @@
 package com.acme.usersrv.company.service;
 
 import com.acme.usersrv.common.exception.EntityNotFoundException;
+import com.acme.usersrv.common.utils.SecurityUtils;
 import com.acme.usersrv.company.Company;
 import com.acme.usersrv.company.CompanyStatus;
 import com.acme.usersrv.company.dto.CompanyDto;
 import com.acme.usersrv.company.dto.CompanyFilter;
+import com.acme.usersrv.company.dto.CreateOwnerDto;
 import com.acme.usersrv.company.dto.FullDetailsCompanyDto;
 import com.acme.usersrv.company.dto.RegisterCompanyDto;
-import com.acme.usersrv.company.dto.SaveOwnerDto;
 import com.acme.usersrv.company.dto.UpdateCompanyDto;
 import com.acme.usersrv.company.exception.DuplicateCompanyException;
 import com.acme.usersrv.company.exception.IllegalStatusChange;
 import com.acme.usersrv.company.mapper.CompanyMapper;
 import com.acme.usersrv.company.repository.CompanyRepository;
-import com.acme.usersrv.user.UserRole;
-import com.acme.usersrv.user.dto.CreateUserDto;
-import com.acme.usersrv.user.mapper.UserMapper;
 import com.acme.usersrv.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -42,7 +40,6 @@ public class CompanyServiceImpl implements CompanyService {
     private final CompanyRepository companyRepository;
     private final UserService userService;
     private final CompanyMapper companyMapper;
-    private final UserMapper userMapper;
 
     @Override
     @Transactional
@@ -65,15 +62,12 @@ public class CompanyServiceImpl implements CompanyService {
     private Mono<RegisterCompanyDto> duplicatesCheck(RegisterCompanyDto dto) {
         return companyRepository.existByMainParams(dto.getVatin(), dto.getRegNumber(), dto.getFullName())
                 .filter(exits -> !exits)
-                .map(exits -> dto)
+                .map(notExists -> dto)
                 .switchIfEmpty(Mono.error(DuplicateCompanyException::new));
     }
 
-    private Mono<UUID> addOwner(Company company, SaveOwnerDto ownerDto) {
-        CreateUserDto saveUserDto = userMapper.convert(ownerDto);
-        saveUserDto.setCompanyId(company.getId());
-        saveUserDto.setRole(UserRole.COMPANY_OWNER);
-        return userService.create(saveUserDto);
+    private Mono<UUID> addOwner(Company company, CreateOwnerDto ownerDto) {
+        return userService.createCompanyOwner(company.getId(), ownerDto);
     }
 
     @Override
@@ -116,7 +110,8 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     private <T> Mono<T> findById(UUID id, Function<Company, T> mapper) {
-        return companyRepository.findById(id)
+        return SecurityUtils.hasCompanyAccess(id)
+                .flatMap(companyRepository::findById)
                 .map(mapper)
                 .switchIfEmpty(EntityNotFoundException.of(id));
     }
@@ -129,7 +124,8 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     public Mono<Void> update(UUID id, UpdateCompanyDto dto) {
-        return companyRepository.findById(id)
+        return SecurityUtils.hasCompanyAccess(id)
+                .flatMap(companyRepository::findById)
                 .flatMap(company -> {
                     companyMapper.update(company, dto);
                     return companyRepository.save(company);

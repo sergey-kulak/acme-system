@@ -50,10 +50,6 @@ public class WebSecurityConfig {
                 .httpBasic().disable()
                 .formLogin().disable()
                 .logout().disable()
-                .authorizeExchange()
-                .pathMatchers(HttpMethod.POST, "/api/companies").permitAll()
-                .anyExchange().authenticated()
-                .and()
                 .addFilterBefore(bearerTokenAuthenticationFilter(), SecurityWebFiltersOrder.AUTHENTICATION)
                 .addFilterAt(jsonBodyAuthenticationFilter(), SecurityWebFiltersOrder.AUTHENTICATION)
                 .build();

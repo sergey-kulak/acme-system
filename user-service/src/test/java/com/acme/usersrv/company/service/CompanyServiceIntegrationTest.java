@@ -6,9 +6,9 @@ import com.acme.usersrv.company.Company;
 import com.acme.usersrv.company.CompanyStatus;
 import com.acme.usersrv.company.dto.CompanyDto;
 import com.acme.usersrv.company.dto.CompanyFilter;
+import com.acme.usersrv.company.dto.CreateOwnerDto;
 import com.acme.usersrv.company.dto.FullDetailsCompanyDto;
 import com.acme.usersrv.company.dto.RegisterCompanyDto;
-import com.acme.usersrv.company.dto.SaveOwnerDto;
 import com.acme.usersrv.company.dto.UpdateCompanyDto;
 import com.acme.usersrv.company.exception.DuplicateCompanyException;
 import com.acme.usersrv.company.exception.IllegalStatusChange;
@@ -17,6 +17,10 @@ import com.acme.usersrv.test.RandomTestUtils;
 import com.acme.usersrv.test.ServiceIntegrationTest;
 import com.acme.usersrv.test.TestEntityHelper;
 import com.acme.usersrv.test.TxStepVerifier;
+import com.acme.usersrv.test.WithMockAdmin;
+import com.acme.usersrv.test.WithMockCompanyOwner;
+import com.acme.usersrv.test.WithMockPpManager;
+import com.acme.usersrv.test.WithMockWaiter;
 import com.acme.usersrv.user.User;
 import com.acme.usersrv.user.UserRole;
 import com.acme.usersrv.user.UserStatus;
@@ -27,7 +31,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.access.AccessDeniedException;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -78,7 +82,7 @@ public class CompanyServiceIntegrationTest {
                 .phone("+37291234567")
                 .site("company.com")
                 .vatin("by1234567890")
-                .owner(SaveOwnerDto.builder()
+                .owner(CreateOwnerDto.builder()
                         .firstName("firstName")
                         .lastName("lastName")
                         .email("ls@company.com")
@@ -113,7 +117,7 @@ public class CompanyServiceIntegrationTest {
                     ));
                     List<User> users = data.getT2();
                     assertThat(users, hasSize(1));
-                    SaveOwnerDto ownerDto = registerDto.getOwner();
+                    CreateOwnerDto ownerDto = registerDto.getOwner();
                     assertThat(users.get(0), allOf(
                             hasProperty("firstName", is(ownerDto.getFirstName())),
                             hasProperty("lastName", is(ownerDto.getLastName())),
@@ -155,7 +159,7 @@ public class CompanyServiceIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockAdmin
     public void findWithPagination() {
         findWithPagination((filter, pageable) -> companyService.find(filter, pageable));
     }
@@ -184,7 +188,7 @@ public class CompanyServiceIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockAdmin
     public void findWithEmptyPagination() {
         findWithEmptyPagination((filter, pageable) -> companyService.find(filter, pageable));
     }
@@ -201,55 +205,55 @@ public class CompanyServiceIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockAdmin
     public void findByJooqWithPagination() {
         findWithPagination((filter, pageable) -> companyService.findByJooq(filter, pageable));
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockAdmin
     public void findByJooqWithEmptyPagination() {
         findWithEmptyPagination((filter, pageable) -> companyService.findByJooq(filter, pageable));
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockAdmin
     public void inactiveStatusToActive() {
         allowedStatusChange(CompanyStatus.INACTIVE, CompanyStatus.ACTIVE);
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockAdmin
     public void inactiveStatusToSuspended() {
         disallowedStatusChange(CompanyStatus.INACTIVE, CompanyStatus.SUSPENDED);
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockAdmin
     public void inactiveStatusToStopped() {
         allowedStatusChange(CompanyStatus.INACTIVE, CompanyStatus.STOPPED);
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockAdmin
     public void activeStatusToStopped() {
         allowedStatusChange(CompanyStatus.ACTIVE, CompanyStatus.STOPPED);
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockAdmin
     public void activeStatusToSuspended() {
         allowedStatusChange(CompanyStatus.ACTIVE, CompanyStatus.SUSPENDED);
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockAdmin
     public void suspendedStatusToActive() {
         allowedStatusChange(CompanyStatus.SUSPENDED, CompanyStatus.ACTIVE);
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockAdmin
     public void stoppedStatusToActive() {
         disallowedStatusChange(CompanyStatus.STOPPED, CompanyStatus.ACTIVE);
     }
@@ -274,7 +278,7 @@ public class CompanyServiceIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockAdmin
     public void changeStatusValidation() {
         companyService.changeStatus(UUID.randomUUID(), null)
                 .as(StepVerifier::create)
@@ -283,8 +287,10 @@ public class CompanyServiceIntegrationTest {
     }
 
     @Test
+    @WithMockWaiter
     public void findById() {
         testEntityHelper.createCompany()
+                .flatMap(testEntityHelper::linkWithCurrentUser)
                 .zipWhen(company -> companyService.findById(company.getId()))
                 .as(TxStepVerifier::withRollback)
                 .assertNext(data -> {
@@ -300,6 +306,18 @@ public class CompanyServiceIntegrationTest {
     }
 
     @Test
+    @WithMockWaiter
+    public void findByIdOtherCompany() {
+        testEntityHelper.createCompany()
+                .flatMap(testEntityHelper::linkOtherCompanyWithCurrentUser)
+                .zipWhen(company -> companyService.findById(company.getId()))
+                .as(TxStepVerifier::withRollback)
+                .expectError(AccessDeniedException.class)
+                .verify();
+    }
+
+    @Test
+    @WithMockAdmin
     public void findByNotExistingId() {
         companyService.findById(UUID.randomUUID())
                 .as(StepVerifier::create)
@@ -308,8 +326,10 @@ public class CompanyServiceIntegrationTest {
     }
 
     @Test
+    @WithMockPpManager
     public void findByIdFullDetails() {
         testEntityHelper.createCompany()
+                .flatMap(testEntityHelper::linkWithCurrentUser)
                 .zipWhen(company -> companyService.findFullDetailsById(company.getId()))
                 .as(TxStepVerifier::withRollback)
                 .assertNext(data -> {
@@ -333,16 +353,22 @@ public class CompanyServiceIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = "COMPANY_OWNER")
-    public void update() {
-        UpdateCompanyDto dto = UpdateCompanyDto.builder()
-                .address(RandomTestUtils.randomString("address"))
-                .site(RandomTestUtils.randomString("site"))
-                .email(RandomTestUtils.randomEmail())
-                .phone(RandomTestUtils.randomString("phone"))
-                .city("Brest")
-                .build();
+    @WithMockWaiter
+    public void findByIdFullDetailsOtherCompany() {
         testEntityHelper.createCompany()
+                .flatMap(testEntityHelper::linkOtherCompanyWithCurrentUser)
+                .zipWhen(company -> companyService.findFullDetailsById(company.getId()))
+                .as(TxStepVerifier::withRollback)
+                .expectError(AccessDeniedException.class)
+                .verify();
+    }
+
+    @Test
+    @WithMockCompanyOwner
+    public void update() {
+        UpdateCompanyDto dto = createUpdateDto();
+        testEntityHelper.createCompany()
+                .flatMap(testEntityHelper::linkWithCurrentUser)
                 .zipWhen(company ->
                         companyService.update(company.getId(), dto)
                                 .then(companyRepository.findById(company.getId()))
@@ -366,5 +392,27 @@ public class CompanyServiceIntegrationTest {
                     ));
                 })
                 .verifyComplete();
+    }
+
+    private UpdateCompanyDto createUpdateDto() {
+        return UpdateCompanyDto.builder()
+                .address(RandomTestUtils.randomString("address"))
+                .site(RandomTestUtils.randomString("site"))
+                .email(RandomTestUtils.randomEmail())
+                .phone(RandomTestUtils.randomString("phone"))
+                .city("Brest")
+                .build();
+    }
+
+    @Test
+    @WithMockCompanyOwner
+    public void updateOtherCompany() {
+        UpdateCompanyDto dto = createUpdateDto();
+        testEntityHelper.createCompany()
+                .flatMap(testEntityHelper::linkOtherCompanyWithCurrentUser)
+                .zipWhen(company -> companyService.update(company.getId(), dto))
+                .as(TxStepVerifier::withRollback)
+                .expectError(AccessDeniedException.class)
+                .verify();
     }
 }

@@ -5,6 +5,10 @@ import com.acme.usersrv.test.RandomTestUtils;
 import com.acme.usersrv.test.ServiceIntegrationTest;
 import com.acme.usersrv.test.TestEntityHelper;
 import com.acme.usersrv.test.TxStepVerifier;
+import com.acme.usersrv.test.WithMockAdmin;
+import com.acme.usersrv.test.WithMockCompanyOwner;
+import com.acme.usersrv.test.WithMockPpManager;
+import com.acme.usersrv.test.WithMockWaiter;
 import com.acme.usersrv.user.User;
 import com.acme.usersrv.user.UserRole;
 import com.acme.usersrv.user.dto.CreateUserDto;
@@ -21,6 +25,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import reactor.test.StepVerifier;
@@ -49,6 +54,7 @@ public class UserServiceIntegrationTest {
     PasswordEncoder passwordEncoder;
 
     @Test
+    @WithMockAdmin
     public void creationValidation() {
         userService.create(new CreateUserDto())
                 .as(StepVerifier::create)
@@ -75,7 +81,24 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
+    @WithMockCompanyOwner
     public void createDuplicate() {
+        testEntityHelper.createCompany()
+                .flatMap(testEntityHelper::createUserForLoggedUser)
+                .map(user -> {
+                    CreateUserDto createDto = buildCreateDto(user.getCompanyId());
+                    createDto.setEmail(user.getEmail());
+                    return createDto;
+                })
+                .flatMap(userService::create)
+                .as(TxStepVerifier::withRollback)
+                .expectError(DuplicateUserException.class)
+                .verify();
+    }
+
+    @Test
+    @WithMockCompanyOwner
+    public void createDuplicateForOtherCompany() {
         testEntityHelper.createCompany()
                 .flatMap(testEntityHelper::createCompanyOwner)
                 .map(user -> {
@@ -85,7 +108,7 @@ public class UserServiceIntegrationTest {
                 })
                 .flatMap(userService::create)
                 .as(TxStepVerifier::withRollback)
-                .expectError(DuplicateUserException.class)
+                .expectError(AccessDeniedException.class)
                 .verify();
     }
 
@@ -102,9 +125,10 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
+    @WithMockWaiter
     public void findById() {
         testEntityHelper.createCompany()
-                .flatMap(testEntityHelper::createCompanyOwner)
+                .flatMap(testEntityHelper::createUserForLoggedUser)
                 .zipWhen(user -> userService.findById(user.getId()))
                 .as(TxStepVerifier::withRollback)
                 .assertNext(data -> {
@@ -125,10 +149,22 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
+    @WithMockAdmin
     public void findByNotExistingId() {
         userService.findById(UUID.randomUUID())
                 .as(StepVerifier::create)
                 .expectError(EntityNotFoundException.class)
+                .verify();
+    }
+
+    @Test
+    @WithMockWaiter
+    public void findByIdOtherCompany() {
+        testEntityHelper.createCompany()
+                .flatMap(company -> testEntityHelper.createUser(company, UserRole.WAITER))
+                .flatMap(user -> userService.findById(user.getId()))
+                .as(TxStepVerifier::withRollback)
+                .expectError(AccessDeniedException.class)
                 .verify();
     }
 
@@ -142,13 +178,14 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = "COMPANY_OWNER")
+    @WithMockCompanyOwner
     public void updateWithPassword() {
         String password = RandomStringUtils.randomAlphanumeric(8);
         UpdateUserDto dto = buildUpdateDto();
         dto.setPassword(password);
         dto.setConfirmPassword(password);
         testEntityHelper.createCompany()
+                .flatMap(testEntityHelper::linkWithCurrentUser)
                 .flatMap(testEntityHelper::createCompanyOwner)
                 .zipWhen(user -> userService.update(user.getId(), dto)
                         .then(userRepository.findById(user.getId()))
@@ -173,7 +210,7 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = "COMPANY_OWNER")
+    @WithMockAdmin
     public void updateWithoutPassword() {
         UpdateUserDto dto = buildUpdateDto();
         testEntityHelper.createCompany()
@@ -201,7 +238,53 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = "COMPANY_OWNER")
+    @WithMockWaiter
+    public void updateWithoutPasswordByWaiter() {
+        UpdateUserDto dto = buildUpdateDto();
+        dto.setRole(UserRole.ADMIN);
+        testEntityHelper.createCompany()
+                .flatMap(testEntityHelper::createUserForLoggedUser)
+                .zipWhen(user -> userService.update(user.getId(), dto)
+                        .then(userRepository.findById(user.getId()))
+                )
+                .as(TxStepVerifier::withRollback)
+                .assertNext(data -> {
+                    User user = data.getT1();
+                    User updatedUser = data.getT2();
+                    assertThat(updatedUser, allOf(
+                            hasProperty("id", is(user.getId())),
+                            hasProperty("firstName", is(dto.getFirstName())),
+                            hasProperty("lastName", is(dto.getLastName())),
+                            hasProperty("email", is(user.getEmail())),
+                            hasProperty("phone", is(dto.getPhone())),
+                            hasProperty("companyId", is(user.getCompanyId())),
+                            hasProperty("role", is(user.getRole())),
+                            hasProperty("status", is(user.getStatus())),
+                            hasProperty("password", is(user.getPassword()))
+                    ));
+                })
+                .verifyComplete();
+    }
+
+    @Test
+    @WithMockWaiter
+    public void updateByByWaiterForOtherUser() {
+        UpdateUserDto dto = buildUpdateDto();
+        dto.setRole(UserRole.ADMIN);
+        testEntityHelper.createCompany()
+                .flatMap(company -> testEntityHelper.createUserForLoggedUser(company)
+                        .then(testEntityHelper.createUser(company, UserRole.WAITER))
+                )
+                .zipWhen(user -> userService.update(user.getId(), dto)
+                        .then(userRepository.findById(user.getId()))
+                )
+                .as(TxStepVerifier::withRollback)
+                .expectError(AccessDeniedException.class)
+                .verify();
+    }
+
+    @Test
+    @WithMockCompanyOwner
     public void updateValidation() {
         UpdateUserDto dto = buildUpdateDto();
         dto.setPassword("qwe");
@@ -210,11 +293,11 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = "PP_MANAGER")
+    @WithMockPpManager
     public void findWithPagination() {
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Order.asc("last_name")));
         testEntityHelper.createCompany()
-                .flatMap(testEntityHelper::createCompanyOwner)
+                .flatMap(testEntityHelper::createUserForLoggedUser)
                 .zipWhen(user -> {
                             UserFilter filter = UserFilter.builder()
                                     .email(user.getEmail().substring(0, 9))
@@ -233,5 +316,22 @@ public class UserServiceIntegrationTest {
                     assertTrue(mapToList(page.getContent(), UserDto::getId).contains(user.getId()));
                 })
                 .verifyComplete();
+    }
+
+    @Test
+    @WithMockPpManager
+    public void findWithPaginationOtherCompany() {
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Order.asc("last_name")));
+        testEntityHelper.createCompany()
+                .flatMap(testEntityHelper::createCompanyOwner)
+                .zipWhen(user -> {
+                            UserFilter filter = UserFilter.builder()
+                                    .build();
+                            return userService.find(filter, pageable);
+                        }
+                )
+                .as(TxStepVerifier::withRollback)
+                .expectError(AccessDeniedException.class)
+                .verify();
     }
 }

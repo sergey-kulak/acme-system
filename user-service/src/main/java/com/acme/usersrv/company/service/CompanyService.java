@@ -6,6 +6,7 @@ import com.acme.usersrv.company.dto.CompanyFilter;
 import com.acme.usersrv.company.dto.FullDetailsCompanyDto;
 import com.acme.usersrv.company.dto.RegisterCompanyDto;
 import com.acme.usersrv.company.dto.UpdateCompanyDto;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,19 +21,21 @@ import java.util.UUID;
 public interface CompanyService {
     Mono<UUID> register(@Valid RegisterCompanyDto registrationDto);
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     Mono<Page<CompanyDto>> find(CompanyFilter filter, Pageable pageable);
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     Mono<Page<CompanyDto>> findByJooq(CompanyFilter filter, Pageable pageable);
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     Mono<Void> changeStatus(UUID id, @NotNull CompanyStatus status);
 
+    @PreAuthorize("isAuthenticated()")
     Mono<CompanyDto> findById(UUID id);
 
+    @PreAuthorize("isAuthenticated()")
     Mono<FullDetailsCompanyDto> findFullDetailsById(UUID id);
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'COMPANY_OWNER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'COMPANY_OWNER')")
     Mono<Void> update(UUID id, @Valid UpdateCompanyDto dto);
 }

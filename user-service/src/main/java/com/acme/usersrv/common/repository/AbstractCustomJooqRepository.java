@@ -65,7 +65,7 @@ public class AbstractCustomJooqRepository extends AbstractCustomR2dbcRepository 
 
         return table.fieldsRow()
                 .field(fieldName)
-                .sort(sortDirection == Sort.Direction.ASC ? SortOrder.ASC : SortOrder.ASC);
+                .sort(sortDirection == Sort.Direction.ASC ? SortOrder.ASC : SortOrder.DESC);
     }
 
     public DSLContext getDslContext() {

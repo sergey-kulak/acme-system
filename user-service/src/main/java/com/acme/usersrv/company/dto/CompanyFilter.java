@@ -14,7 +14,7 @@ import java.util.Collection;
 public class CompanyFilter {
     @Parameter(description = "Search pattern for company full name with \"start with ignore case\" logic")
     private String namePattern;
-    private Collection<CompanyStatus> statuses;
+    private Collection<CompanyStatus> status;
     private String country;
     private String vatin;
 

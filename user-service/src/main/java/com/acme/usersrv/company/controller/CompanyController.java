@@ -59,9 +59,9 @@ public class CompanyController {
     @SecureOperation(description = "Find companies with pagination")
     @ApiResponse(responseCode = "200",
             content = @Content(schema = @Schema(implementation = CompanyApiPage.class)))
-    public Mono<Page<CompanyDto>> find(@ParameterObject CompanyFilter companyFilter,
+    public Mono<Page<FullDetailsCompanyDto>> find(@ParameterObject CompanyFilter companyFilter,
                                        @ParameterObject Pageable pageable) {
-        return companyService.find(companyFilter, pageable);
+        return companyService.findByJooq(companyFilter, pageable);
     }
 
     @PutMapping("/{id}/status")

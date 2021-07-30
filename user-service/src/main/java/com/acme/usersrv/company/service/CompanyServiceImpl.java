@@ -72,16 +72,16 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     @Transactional(readOnly = true)
-    public Mono<Page<CompanyDto>> find(CompanyFilter filter, Pageable pageable) {
+    public Mono<Page<FullDetailsCompanyDto>> find(CompanyFilter filter, Pageable pageable) {
         return companyRepository.find(filter, pageable)
-                .map(page -> page.map(companyMapper::toDto));
+                .map(page -> page.map(companyMapper::toFullDetailsDto));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Mono<Page<CompanyDto>> findByJooq(CompanyFilter filter, Pageable pageable) {
+    public Mono<Page<FullDetailsCompanyDto>> findByJooq(CompanyFilter filter, Pageable pageable) {
         return companyRepository.findByJooq(filter, pageable)
-                .map(page -> page.map(companyMapper::toDto));
+                .map(page -> page.map(companyMapper::toFullDetailsDto));
     }
 
     @Override

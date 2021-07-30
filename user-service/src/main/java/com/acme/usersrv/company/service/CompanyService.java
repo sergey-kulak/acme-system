@@ -22,10 +22,10 @@ public interface CompanyService {
     Mono<UUID> register(@Valid RegisterCompanyDto registrationDto);
 
     @PreAuthorize("hasAuthority('ADMIN')")
-    Mono<Page<CompanyDto>> find(CompanyFilter filter, Pageable pageable);
+    Mono<Page<FullDetailsCompanyDto>> find(CompanyFilter filter, Pageable pageable);
 
     @PreAuthorize("hasAuthority('ADMIN')")
-    Mono<Page<CompanyDto>> findByJooq(CompanyFilter filter, Pageable pageable);
+    Mono<Page<FullDetailsCompanyDto>> findByJooq(CompanyFilter filter, Pageable pageable);
 
     @PreAuthorize("hasAuthority('ADMIN')")
     Mono<Void> changeStatus(UUID id, @NotNull CompanyStatus status);

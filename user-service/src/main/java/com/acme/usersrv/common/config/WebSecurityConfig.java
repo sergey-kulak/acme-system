@@ -107,7 +107,7 @@ public class WebSecurityConfig {
     public TokenService tokenService() {
         return new TokenServiceImpl(
                 env.getProperty("user-srv.security.jwt.private-key"),
-                env.getProperty("user-srv.security.jwt.ttlInSec", Long.class, 60L)
+                env.getProperty("user-srv.security.jwt.ttlInSec", Long.class, 1200L)
         );
     }
 

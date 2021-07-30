@@ -3,10 +3,8 @@ package com.acme.usersrv.company.repository;
 
 import com.acme.usersrv.common.repository.AbstractCustomJooqRepository;
 import com.acme.usersrv.common.utils.CollectionUtils;
-import com.acme.usersrv.common.utils.StreamUtils;
 import com.acme.usersrv.company.Company;
 import com.acme.usersrv.company.dto.CompanyFilter;
-import com.acme.usersrv.jooq.enums.CompanyStatus;
 import org.apache.commons.lang3.StringUtils;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
@@ -30,8 +28,8 @@ public class CompanyRepositoryImpl extends AbstractCustomJooqRepository implemen
 
     private Query buildQuery(CompanyFilter filter) {
         Criteria criteria = Criteria.empty();
-        if (CollectionUtils.isNotEmpty(filter.getStatuses())) {
-            criteria = criteria.and("status").in(filter.getStatuses());
+        if (CollectionUtils.isNotEmpty(filter.getStatus())) {
+            criteria = criteria.and("status").in(filter.getStatus());
         }
         if (StringUtils.isNotBlank(filter.getNamePattern())) {
             criteria = criteria.and("full_name")
@@ -74,8 +72,8 @@ public class CompanyRepositoryImpl extends AbstractCustomJooqRepository implemen
 
     private Condition buildWhere(CompanyFilter filter) {
         Condition where = DSL.noCondition();
-        if (CollectionUtils.isNotEmpty(filter.getStatuses())) {
-            where = where.and(COMPANY.STATUS.in(filter.getStatuses()));
+        if (CollectionUtils.isNotEmpty(filter.getStatus())) {
+            where = where.and(COMPANY.STATUS.in(filter.getStatus()));
         }
         if (StringUtils.isNotBlank(filter.getNamePattern())) {
             where = where.and(COMPANY.FULL_NAME

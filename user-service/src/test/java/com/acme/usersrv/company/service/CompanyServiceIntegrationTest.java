@@ -164,13 +164,13 @@ public class CompanyServiceIntegrationTest {
         findWithPagination((filter, pageable) -> companyService.find(filter, pageable));
     }
 
-    private void findWithPagination(BiFunction<CompanyFilter, Pageable, Mono<Page<CompanyDto>>> finder) {
+    private void findWithPagination(BiFunction<CompanyFilter, Pageable, Mono<Page<FullDetailsCompanyDto>>> finder) {
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Order.asc("full_name")));
         testEntityHelper.createCompany()
                 .zipWhen(company -> {
                             CompanyFilter filter = CompanyFilter.builder()
                                     .namePattern(company.getFullName().substring(0, 9))
-                                    .statuses(Collections.singleton(company.getStatus()))
+                                    .status(Collections.singleton(company.getStatus()))
                                     .country(company.getCountry())
                                     .vatin(company.getVatin())
                                     .build();
@@ -180,9 +180,9 @@ public class CompanyServiceIntegrationTest {
                 .as(TxStepVerifier::withRollback)
                 .assertNext(data -> {
                     Company company = data.getT1();
-                    Page<CompanyDto> page = data.getT2();
+                    Page<FullDetailsCompanyDto> page = data.getT2();
                     assertThat(page.getTotalElements(), is(1L));
-                    assertTrue(mapToList(page.getContent(), CompanyDto::getId).contains(company.getId()));
+                    assertTrue(mapToList(page.getContent(), FullDetailsCompanyDto::getId).contains(company.getId()));
                 })
                 .verifyComplete();
     }
@@ -193,7 +193,7 @@ public class CompanyServiceIntegrationTest {
         findWithEmptyPagination((filter, pageable) -> companyService.find(filter, pageable));
     }
 
-    private void findWithEmptyPagination(BiFunction<CompanyFilter, Pageable, Mono<Page<CompanyDto>>> finder) {
+    private void findWithEmptyPagination(BiFunction<CompanyFilter, Pageable, Mono<Page<FullDetailsCompanyDto>>> finder) {
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Order.asc("full_name")));
         CompanyFilter filter = CompanyFilter.builder()
                 .vatin(RandomTestUtils.randomString("EU"))

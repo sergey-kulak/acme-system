@@ -1,14 +1,26 @@
-import {DebounceInput} from 'react-debounce-input';
+import { DebounceInput } from 'react-debounce-input';
+import Select from 'react-select';
+
+const options = [
+    { value: 'INACTIVE', label: 'INACTIVE' },
+    { value: 'ACTIVE', label: 'ACTIVE' },
+    { value: 'SUSPENDED', label: 'SUSPENDED' },
+    { value: 'STOPPED', label: 'STOPPED' }
+];
 
 function CompanyFilter({ filter, onChange }) {
 
     function handleChange(e) {
-        onChange({
-            ...filter,
-            [e.target.name]: e.target.value
-        });
+        onChange(filter.withNewValue(e.target.name, e.target.value));
     }
-    
+
+    function handleStatusChange(selectedOptions) {
+        let selectedValues = selectedOptions.map(option => option.value);
+        onChange(filter.withNewValue('status', selectedValues));
+    }
+
+    const selectedOptions = options.filter(option => filter.status.includes(option.value));
+
     return (
         <div className="form-row">
             <div className="form-group col-lg-3 col-md-6">
@@ -19,24 +31,22 @@ function CompanyFilter({ filter, onChange }) {
             </div>
             <div className="form-group col-lg-3 col-md-6">
                 <label htmlFor="vatin">VATIN</label>
-                <input name="vatin" onChange={handleChange}
-                    value={filter.vatin}
+                <DebounceInput name="vatin" onChange={handleChange}
+                    value={filter.vatin} debounceTimeout="300"
                     type="text" className="form-control" />
             </div>
-            <div className="form-group col-lg-3 col-md-6">
+            <div className="form-group col-lg-2 col-md-6">
                 <label htmlFor="country">Country</label>
-                <input name="country" onChange={handleChange}
-                    value={filter.country}
+                <DebounceInput name="country" onChange={handleChange}
+                    value={filter.country} debounceTimeout="300"
                     type="text" className="form-control" />
             </div>
-            <div className="form-group col-lg-3 col-md-6">
+            <div className="form-group col-lg-4 col-md-6">
                 <label htmlFor="status">Status</label>
-                <select name="status" className="form-control"
-                    value={filter.status} onChange={handleChange}>
-                    <option value="">All</option>
-                    <option value="ACTIVE">ACTIVE</option>
-                    <option value="INACTIVE">INACTIVE</option>
-                </select>
+                <Select name="status" isMulti
+                    options={options} onChange={handleStatusChange}
+                    defaultValue={selectedOptions}>
+                </Select>
             </div>
         </div>
     );

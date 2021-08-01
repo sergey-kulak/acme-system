@@ -1,5 +1,6 @@
 import BsPagination from 'react-bootstrap/Pagination';
 import './Pagination.css';
+import { Pageable } from './PaginationUtils';
 
 const VISIBLE_PAGES = 5;
 
@@ -24,17 +25,11 @@ const calculatePages = (currentPage, totalPages) => {
 function Pagination({ page, onPageableChange, className }) {
 
     function onPageClick(pageIndex) {
-        onPageableChange({
-            page: pageIndex,
-            size: page.size
-        });
+        onPageableChange(new Pageable(pageIndex, page.size));
     }
 
     function onSizeClick(event) {
-        onPageableChange({
-            page: page.number,
-            size: event.target.value
-        });
+        onPageableChange(new Pageable(page.number, event.target.value));
     }
 
 
@@ -69,7 +64,7 @@ function Pagination({ page, onPageableChange, className }) {
                     <BsPagination.Last
                         onClick={e => onPageClick(totalPages)} disabled={currentPage === totalPages} />
                 </BsPagination>
-            </div>            
+            </div>
             <div className="col-md-6 d-flex align-items-center">
                 <span className="pagination-descr mb-3">
                     Found {totalElements} {'item' + (totalElements > 1 ? 's' : '')}, per page:

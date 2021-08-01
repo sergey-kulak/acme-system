@@ -8,7 +8,7 @@ import './SignIn.css';
 import { ACTIONS } from '../../reducers/Auth';
 
 function SignIn({ onLogin }) {
-    let history = useHistory();
+    const history = useHistory();
 
     const intialValues = {
         username: 'admin@acme.com',

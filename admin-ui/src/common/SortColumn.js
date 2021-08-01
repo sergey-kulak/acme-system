@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import * as Icon from 'react-feather';
+import { Sort } from './PaginationUtils';
 import './SortColumn.css';
 
 function SortColumn({ field, name, sort, onClick }) {
@@ -12,10 +13,7 @@ function SortColumn({ field, name, sort, onClick }) {
             sortResult = !sortResult
             setAsk(sortResult);
         }
-        onClick({
-            field: field,
-            direction: sortResult ? 'asc' : 'desc'
-        })
+        onClick(new Sort(field, sortResult ? 'asc' : 'desc'));
     }
 
     const icon = isAsc ? <Icon.ChevronsUp className="sort-icon" /> : <Icon.ChevronsDown className="sort-icon" />;

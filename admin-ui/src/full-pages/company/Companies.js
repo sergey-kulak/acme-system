@@ -2,28 +2,31 @@ import { connect } from "react-redux";
 import CompanyService from '../../common/CompanyService';
 import Pagination from '../../common/Pagination';
 import SortColumn from '../../common/SortColumn';
+import { Pageable, Sort, combineAsUrlParams } from '../../common/PaginationUtils';
 import ShowFilterButton from '../../common/ShowFilterButton';
 import { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
 import CompanyFilter from "./CompanyFilter";
 import './Companies.css';
+import { useHistory, useLocation } from "react-router-dom";
 
 function Companies(props) {
+    const history = useHistory();
+    const query = new URLSearchParams(useLocation().search);
+
     const [page, setPage] = useState({ content: [] });
-    const [pageable, setPageable] = useState({ page: 1, size: 5 });
-    const [sort, setSort] = useState({ field: 'full_name', direction: 'asc' });
-    const [filter, setFilter] = useState({
-        namePattern: '',
-        vatin: '',
-        country: '',
-        status: 'INACTIVE'
-    });
+    const [pageable, setPageable] = useState(Pageable.fromUrlParams(query));
+    const [sort, setSort] = useState(Sort.fromUrlParams(query, 'full_name'));
+    const [filter, setFilter] = useState(Filter.fromUrlParams(query));
     const [showFilter, setShowFilter] = useState(false);
 
     useEffect(() => {
         CompanyService.find(filter, pageable, sort)
-            .then(response => setPage(response.data));
-    }, [pageable, sort, filter]);
+            .then(response => {
+                setPage(response.data);
+                history.replace(combineAsUrlParams(filter, pageable, sort));
+            });
+    }, [pageable, sort, filter, history]);
 
     function onPageableChange(page) {
         setPageable(page);
@@ -81,6 +84,49 @@ function Companies(props) {
             </div>
         </div>
     )
+}
+
+class Filter {
+    static URL_PARAM_NAME_PATTERN = 'pn';
+    static URL_PARAM_VATIN = 'vi';
+    static URL_PARAM_COUNTRY = 'cn';
+    static URL_PARAM_STATUS = 'st';
+
+    constructor(namePattern, vatin, country, status) {
+        this.namePattern = namePattern;
+        this.vatin = vatin;
+        this.country = country;
+        this.status = status;
+    }
+
+    withNewValue(field, value) {
+        let newFilter = new Filter(this.namePattern, this.vatin,
+            this.country, this.status);
+        if (field === 'status') {
+            newFilter[field] = value;
+        } else {
+            newFilter[field] = value;
+        }
+        return newFilter;
+    }
+
+    toUrlParams() {
+        return {
+            [Filter.URL_PARAM_NAME_PATTERN]: this.namePattern,
+            [Filter.URL_PARAM_VATIN]: this.vatin,
+            [Filter.URL_PARAM_COUNTRY]: this.country,
+            [Filter.URL_PARAM_STATUS]: this.status,
+        }
+    }
+
+    static fromUrlParams(urlSearchParams) {
+        return new Filter(
+            urlSearchParams.get(Filter.URL_PARAM_NAME_PATTERN) || '',
+            urlSearchParams.get(Filter.URL_PARAM_VATIN) || '',
+            urlSearchParams.get(Filter.URL_PARAM_COUNTRY) || '',
+            urlSearchParams.getAll(Filter.URL_PARAM_STATUS) || ['INACTIVE'],
+        );
+    }
 }
 
 const mapStateToProps = ({ auth }) => {

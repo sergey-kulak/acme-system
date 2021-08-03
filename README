@@ -1,0 +1,11 @@
+Port ranges
+
+Config service - 7000 (00, 01)
+Discovery service - 7002 (02, 03)
+
+Api gateway - 7004(04, 05)
+Info service - 7006
+
+User service - 701x - 702x
+	HTTP 7010
+	DB 7011 -> 5432

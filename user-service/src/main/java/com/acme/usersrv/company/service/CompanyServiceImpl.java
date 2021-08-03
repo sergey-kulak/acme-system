@@ -34,7 +34,7 @@ public class CompanyServiceImpl implements CompanyService {
     private static final Map<CompanyStatus, List<CompanyStatus>> ALLOWED_NEXT_STATUSES = Map.of(
             CompanyStatus.INACTIVE, List.of(CompanyStatus.ACTIVE, CompanyStatus.STOPPED),
             CompanyStatus.ACTIVE, List.of(CompanyStatus.SUSPENDED, CompanyStatus.STOPPED),
-            CompanyStatus.SUSPENDED, List.of(CompanyStatus.ACTIVE)
+            CompanyStatus.SUSPENDED, List.of(CompanyStatus.ACTIVE, CompanyStatus.STOPPED)
     );
 
     private final CompanyRepository companyRepository;

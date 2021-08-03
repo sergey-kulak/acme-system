@@ -31,7 +31,7 @@ function Sidebar({ onLogout }) {
                 onMouseEnter={() => setHovered(true)}
                 onMouseLeave={() => setHovered(false)}>
                 <div className="sidebar-logo">
-                    <img className="logo-img" src="acme-icon.png" alt="logo" />
+                    <img className="logo-img" src="/acme-icon.png" alt="logo" />
                     <span className="logo-text mx-2 w-100 text-break">Acme admin</span>
                     <Form.Check type="switch" id="sidebar-switch"
                         checked={isFixed} onChange={() => setFixed(!isFixed)} />

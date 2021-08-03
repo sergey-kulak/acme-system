@@ -1,13 +1,14 @@
 import './MainLayout.css';
 
-import { connect } from "react-redux";
 import Sidebar from "./Sidebar";
 import Home from "../home/Home";
-import Companies from "../company/Companies";
+import CompanyDashboard from "../company/CompanyDashboard";
 import Footer from "./Footer";
 import { Switch, Route } from "react-router-dom";
+import ToastContainer from './ToastContainer';
+import CompanyEditor from '../company/CompanyEditor';
 
-function MainLayout(props) {
+function MainLayout() {
     return (
         <div className="d-flex flex-column flex-md-row min-vh-100">
             <Sidebar />
@@ -17,22 +18,20 @@ function MainLayout(props) {
                         <Route exact path="/">
                             <Home />
                         </Route>
-                        <Route path="/companies">
-                            <Companies />
+                        <Route exact path="/companies">
+                            <CompanyDashboard />
+                        </Route>
+                        <Route path="/companies/:id">
+                            <CompanyEditor />
                         </Route>
                     </Switch>
+                    <ToastContainer/>
                 </div>
-                <Footer/>
+                <Footer />
             </div>
-            
+
         </div>
     )
 }
 
-const mapStateToProps = ({ auth }) => {
-    return { auth };
-};
-
-export default connect(mapStateToProps,
-    dispatch => ({})
-)(MainLayout);
+export default MainLayout;

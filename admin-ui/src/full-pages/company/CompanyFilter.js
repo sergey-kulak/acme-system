@@ -1,25 +1,17 @@
 import { DebounceInput } from 'react-debounce-input';
-import Select from 'react-select';
-
-const options = [
-    { value: 'INACTIVE', label: 'INACTIVE' },
-    { value: 'ACTIVE', label: 'ACTIVE' },
-    { value: 'SUSPENDED', label: 'SUSPENDED' },
-    { value: 'STOPPED', label: 'STOPPED' }
-];
+import CompanyStatusSelect from '../../common/CompanyStatusSelect';
+import { useState } from 'react';
 
 function CompanyFilter({ filter, onChange }) {
+    const [statuses, setStatuses] = useState(filter.status);
 
     function handleChange(e) {
         onChange(filter.withNewValue(e.target.name, e.target.value));
     }
 
-    function handleStatusChange(selectedOptions) {
-        let selectedValues = selectedOptions.map(option => option.value);
-        onChange(filter.withNewValue('status', selectedValues));
+    function onBlur() {
+        onChange(filter.withNewValue('status', statuses));
     }
-
-    const selectedOptions = options.filter(option => filter.status.includes(option.value));
 
     return (
         <div className="form-row">
@@ -43,10 +35,11 @@ function CompanyFilter({ filter, onChange }) {
             </div>
             <div className="form-group col-lg-4 col-md-6">
                 <label htmlFor="status">Status</label>
-                <Select name="status" isMulti
-                    options={options} onChange={handleStatusChange}
-                    defaultValue={selectedOptions}>
-                </Select>
+                <CompanyStatusSelect name="status" isMulti
+                    onChange={setStatuses} closeMenuOnSelect={false}
+                    onBlur={onBlur}
+                    selectedStatuses={statuses}>
+                </CompanyStatusSelect>
             </div>
         </div>
     );

@@ -9,6 +9,15 @@ const CompanyService = {
         return RestApi.get('/user-service/companies', {
             params: buildGetFilterParams(filter, pageable, sort)
         });
+    },
+    changeStatus: function (id, request) {
+        return RestApi.put(`/user-service/companies/${id}/status`, request);
+    },
+    findById: function (id) {
+        return RestApi.get(`/user-service/companies/${id}/full-details`);
+    },
+    update: function (id, request) {
+        return RestApi.put(`/user-service/companies/${id}`, request);
     }
 }
 

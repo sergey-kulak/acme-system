@@ -35,3 +35,7 @@ body {
     padding-left: 0;
   }
 }
+
+.toast-message {
+  font-size: 1.2rem;
+}

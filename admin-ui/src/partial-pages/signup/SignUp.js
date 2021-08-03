@@ -71,7 +71,6 @@ function SignUp() {
     });
 
     function onSubmit(formData, actions) {
-        console.log(formData);
         const request = {
             fullName: formData.fullName,
             email: formData.companyEmail,
@@ -93,7 +92,6 @@ function SignUp() {
         }
         CompanyService.register(request)
             .then(response => {
-                console.log(response)
                 if (actions.resetForm) {
                     actions.resetForm();
                 }
@@ -105,7 +103,6 @@ function SignUp() {
         setToastType(isError ? 'bg-danger' : 'bg-success');
         setToastMessage(message);
         setShowToast(true);
-        window.scrollTo(0, 0);
     }
 
     return (
@@ -218,9 +215,9 @@ function SignUp() {
                     <Toast onClose={() => setShowToast(false)} show={showToast} className="rounded"
                         delay={5000}
                         style={{
-                            position: 'absolute',
-                            top: '2rem',
-                            right: '2rem',
+                            position: 'fixed',
+                            bottom: '1.5rem',
+                            right: '1.5rem',
                         }}>
                         <Toast.Body className={'rounded ' + toastType}>
                             <h5>{toastMessage}</h5>

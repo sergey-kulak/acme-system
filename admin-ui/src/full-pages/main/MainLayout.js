@@ -7,6 +7,8 @@ import Footer from "./Footer";
 import { Switch, Route } from "react-router-dom";
 import ToastContainer from './ToastContainer';
 import CompanyEditor from '../company/CompanyEditor';
+import UserDashboard from '../user/UserDashboard';
+import UserEditor from '../user/UserEditor';
 
 function MainLayout() {
     return (
@@ -23,6 +25,12 @@ function MainLayout() {
                         </Route>
                         <Route path="/companies/:id">
                             <CompanyEditor />
+                        </Route>
+                        <Route exact path="/users">
+                            <UserDashboard />
+                        </Route>
+                        <Route path="/users/:id">
+                            <UserEditor />
                         </Route>
                     </Switch>
                     <ToastContainer/>

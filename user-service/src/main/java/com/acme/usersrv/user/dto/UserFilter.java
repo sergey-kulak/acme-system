@@ -15,8 +15,8 @@ import java.util.UUID;
 @Schema(description = "User filter")
 public class UserFilter {
     private String email;
-    private Collection<UserStatus> statuses;
-    private Collection<UserRole> roles;
+    private Collection<UserStatus> status;
+    private Collection<UserRole> role;
     private UUID companyId;
 
     @Tolerate

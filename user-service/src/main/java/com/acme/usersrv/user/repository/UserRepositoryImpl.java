@@ -46,11 +46,11 @@ public class UserRepositoryImpl extends AbstractCustomJooqRepository implements 
         if (filter.getCompanyId() != null) {
             where = where.and(USER.COMPANY_ID.eq(filter.getCompanyId()));
         }
-        if (CollectionUtils.isNotEmpty(filter.getStatuses())) {
-            where = where.and(USER.STATUS.in(filter.getStatuses()));
+        if (CollectionUtils.isNotEmpty(filter.getStatus())) {
+            where = where.and(USER.STATUS.in(filter.getStatus()));
         }
-        if (CollectionUtils.isNotEmpty(filter.getRoles())) {
-            where = where.and(USER.ROLE.in(filter.getRoles()));
+        if (CollectionUtils.isNotEmpty(filter.getRole())) {
+            where = where.and(USER.ROLE.in(filter.getRole()));
         }
         if (StringUtils.isNotBlank(filter.getEmail())) {
             where = where.and(USER.EMAIL.likeIgnoreCase(filter.getEmail() + "%"));

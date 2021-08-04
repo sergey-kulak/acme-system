@@ -74,25 +74,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Mono<Boolean> existsByEmail(String email) {
         return userRepository.existsActiveByEmail(email.toLowerCase());
     }
 
     @Override
     public Mono<Page<UserDto>> find(UserFilter filter, Pageable pageable) {
-        return hasAccess(filter)
-                .flatMap(updFilter -> userRepository.find(updFilter, pageable))
+        return SecurityUtils.isCompanyAccessible(filter.getCompanyId())
+                .then(userRepository.find(filter, pageable))
                 .map(page -> page.map(userMapper::toDto));
     }
 
-    private Mono<UserFilter> hasAccess(UserFilter filter){
-        return SecurityUtils.hasCompanyAccess(filter.getCompanyId())
-                .map(result -> filter);
-    }
-
     @Override
-    @Transactional(readOnly = true)
     public Mono<UserDto> findById(UUID id) {
         return userRepository.findById(id)
                 .flatMap(this::hasUserCompanyAccess)
@@ -102,6 +95,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public Mono<Void> update(UUID id, UpdateUserDto dto) {
         return userRepository.findById(id)
                 .filter(user -> user.getStatus() == UserStatus.ACTIVE)

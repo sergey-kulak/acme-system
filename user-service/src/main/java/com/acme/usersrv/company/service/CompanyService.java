@@ -11,10 +11,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.util.Collection;
 import java.util.UUID;
 
 @Validated
@@ -38,4 +40,7 @@ public interface CompanyService {
 
     @PreAuthorize("hasAnyAuthority('ADMIN', 'COMPANY_OWNER')")
     Mono<Void> update(UUID id, @Valid UpdateCompanyDto dto);
+
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    Flux<CompanyDto> findNames(Collection<CompanyStatus> status);
 }

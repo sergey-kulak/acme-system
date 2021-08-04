@@ -4,6 +4,8 @@ package com.acme.usersrv.company.repository;
 import com.acme.usersrv.common.repository.AbstractCustomJooqRepository;
 import com.acme.usersrv.common.utils.CollectionUtils;
 import com.acme.usersrv.company.Company;
+import com.acme.usersrv.company.CompanyStatus;
+import com.acme.usersrv.company.dto.CompanyDto;
 import com.acme.usersrv.company.dto.CompanyFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.jooq.Condition;
@@ -14,7 +16,11 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.relational.core.query.Criteria;
 import org.springframework.data.relational.core.query.Query;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.Collection;
+import java.util.List;
 
 import static com.acme.usersrv.jooq.Tables.COMPANY;
 
@@ -89,5 +95,19 @@ public class CompanyRepositoryImpl extends AbstractCustomJooqRepository implemen
         }
 
         return where;
+    }
+
+    @Override
+    public Flux<CompanyDto> findNames(Collection<CompanyStatus> statuses) {
+        return doSelect(getDslContext()
+                .select(COMPANY.ID, COMPANY.FULL_NAME, COMPANY.STATUS)
+                .from(COMPANY)
+                .where(buildWhere(statuses))
+                .orderBy(COMPANY.FULL_NAME.asc()), CompanyDto.class);
+    }
+
+    private Condition buildWhere(Collection<CompanyStatus> statuses) {
+        return CollectionUtils.isEmpty(statuses) ? DSL.noCondition() :
+                COMPANY.STATUS.in(statuses);
     }
 }

@@ -19,6 +19,12 @@ const CompanyService = {
     update: function (id, request) {
         return RestApi.put(`/user-service/companies/${id}`, request);
     }
+    ,
+    findNames: function (statuses) {
+        return RestApi.get(`/user-service/companies/names`, {
+            params: { status: statuses }
+        });
+    }
 }
 
 export default CompanyService;

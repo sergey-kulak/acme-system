@@ -15,10 +15,20 @@ public class SecurityUtils {
     private SecurityUtils() {
     }
 
+    public static Mono<Void> isCompanyAccessible(UUID companyId) {
+        return getCurrentUser()
+                .filter(cmpUser -> hasAccess(cmpUser, companyId))
+                .switchIfEmpty(Mono.error(new AccessDeniedException("Access denied")))
+                .then();
+    }
+
+    private static boolean hasAccess(CompanyUserDetails cmpUser, UUID companyId) {
+        return cmpUser.hasAnyRole(UserRole.ADMIN) || Objects.equals(companyId, cmpUser.getCompanyId());
+    }
+
     public static Mono<UUID> hasCompanyAccess(UUID companyId) {
         return getCurrentUser()
-                .map(cmpUser ->
-                        cmpUser.hasAnyRole(UserRole.ADMIN) || Objects.equals(companyId, cmpUser.getCompanyId()))
+                .map(cmpUser -> hasAccess(cmpUser, companyId))
                 .filter(result -> result)
                 .map(result -> companyId)
                 .switchIfEmpty(Mono.error(new AccessDeniedException("Access denied")));

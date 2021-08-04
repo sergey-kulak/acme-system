@@ -122,7 +122,7 @@ function CompanyDashboard({ onSuccess, onError }) {
                 }
             </div>
         </div>
-    )
+    );
 }
 
 class Filter {
@@ -141,11 +141,7 @@ class Filter {
     withNewValue(field, value) {
         let newFilter = new Filter(this.namePattern, this.vatin,
             this.country, this.status);
-        if (field === 'status') {
-            newFilter[field] = value;
-        } else {
-            newFilter[field] = value;
-        }
+        newFilter[field] = value;
         return newFilter;
     }
 

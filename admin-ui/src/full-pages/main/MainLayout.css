@@ -39,3 +39,15 @@ body {
 .toast-message {
   font-size: 1.2rem;
 }
+
+.page-item.active .page-link {
+  z-index: inherit;
+}
+
+.invalid {
+  border-color: red !important;
+}
+
+.cmt-select .invalid>div {
+  border-color: red !important;
+}

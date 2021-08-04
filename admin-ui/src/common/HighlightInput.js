@@ -6,20 +6,17 @@ function HighlightInput({
     ...props
 }) {
 
-    function getStyles(errors, fieldName) {
-        if (touched[field.name] && getIn(errors, fieldName)) {
-            return {
-                'borderColor': 'red'
-            }
-        }
+    function getValidClass() {
+        return touched[field.name] && getIn(errors, field.name) ? 'invalid' : ''
     }
 
     function createElement() {
+        let className = `${props.className} ${getValidClass()}`
         switch (props.tag || 'input') {
             case 'textarea':
-                return <textarea {...field} {...props} style={getStyles(errors, field.name)} />;
+                return <textarea {...field} {...props} className={className} />;
             default:
-                return <input {...field} {...props} style={getStyles(errors, field.name)} />
+                return <input {...field} {...props} className={className} />
 
         }
     }

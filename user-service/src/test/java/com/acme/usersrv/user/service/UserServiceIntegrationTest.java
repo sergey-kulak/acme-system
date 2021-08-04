@@ -27,7 +27,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.test.context.support.WithMockUser;
 import reactor.test.StepVerifier;
 
 import javax.validation.ConstraintViolationException;
@@ -301,9 +300,9 @@ public class UserServiceIntegrationTest {
                 .zipWhen(user -> {
                             UserFilter filter = UserFilter.builder()
                                     .email(user.getEmail().substring(0, 9))
-                                    .statuses(Collections.singleton(user.getStatus()))
+                                    .status(Collections.singleton(user.getStatus()))
                                     .companyId(user.getCompanyId())
-                                    .roles(Collections.singleton(user.getRole()))
+                                    .role(Collections.singleton(user.getRole()))
                                     .build();
                             return userService.find(filter, pageable);
                         }

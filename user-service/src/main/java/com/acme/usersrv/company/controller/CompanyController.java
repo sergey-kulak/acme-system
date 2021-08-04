@@ -8,6 +8,7 @@ import com.acme.usersrv.common.openapi.OpenApiPage;
 import com.acme.usersrv.common.openapi.SecureOperation;
 import com.acme.usersrv.common.openapi.ValidationErrorResponse;
 import com.acme.usersrv.common.utils.ResponseUtils;
+import com.acme.usersrv.company.CompanyStatus;
 import com.acme.usersrv.company.dto.CompanyDto;
 import com.acme.usersrv.company.dto.CompanyFilter;
 import com.acme.usersrv.company.dto.CompanyStatusDto;
@@ -32,9 +33,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -94,6 +98,14 @@ public class CompanyController {
     @EntityNotFoundResponse
     public Mono<Void> update(@PathVariable UUID id, @RequestBody UpdateCompanyDto dto) {
         return companyService.update(id, dto);
+    }
+
+    @GetMapping("/names")
+    @SecureOperation(description = "Get company names")
+    @ApiResponse(responseCode = "200")
+    @EntityNotFoundResponse
+    public Flux<CompanyDto> findNames(@RequestParam(required = false) List<CompanyStatus> status) {
+        return companyService.findNames(status);
     }
 
     @Schema(name = "Company page")

@@ -38,7 +38,19 @@ export const buildGetFilterParams = (filter, pageable, sort) => {
   if (sort) {
     params.sort = `${sort.field},${sort.direction}`;
   }
-  return params
+
+  let urlSearchParams = new URLSearchParams();
+  for (var paramName in params) {
+    let paramValue = params[paramName];
+    if (!Array.isArray(paramValue)) {
+      paramValue = [paramValue];
+    }
+    for (let singleValue of paramValue) {
+      urlSearchParams.append(paramName, singleValue);
+    }
+  }
+
+  return urlSearchParams;
 }
 
 function clean(obj) {

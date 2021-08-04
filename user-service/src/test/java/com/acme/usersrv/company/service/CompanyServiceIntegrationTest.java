@@ -38,6 +38,8 @@ import reactor.test.StepVerifier;
 import javax.validation.ConstraintViolationException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -414,5 +416,31 @@ public class CompanyServiceIntegrationTest {
                 .as(TxStepVerifier::withRollback)
                 .expectError(AccessDeniedException.class)
                 .verify();
+    }
+
+    @Test
+    @WithMockAdmin
+    public void findActiveNames() {
+        testEntityHelper.createCompany()
+                .zipWhen(company -> companyService
+                        .findNames(Collections.singleton(CompanyStatus.ACTIVE))
+                        .collectList()
+                )
+                .as(TxStepVerifier::withRollback)
+                .assertNext(data -> {
+                    Company company = data.getT1();
+                    Optional<CompanyDto> companyDtoOp = data.getT2()
+                            .stream()
+                            .filter(dto -> Objects.equals(dto.getId(), company.getId()))
+                            .findFirst();
+                    assertTrue(companyDtoOp.isPresent());
+                    assertThat(companyDtoOp.get(), allOf(
+                            hasProperty("id", is(company.getId())),
+                            hasProperty("fullName", is(company.getFullName())),
+                            hasProperty("status", is(company.getStatus()))
+                    ));
+
+                })
+                .verifyComplete();
     }
 }

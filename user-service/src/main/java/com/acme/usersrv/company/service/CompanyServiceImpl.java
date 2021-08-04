@@ -20,8 +20,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -71,14 +73,12 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Mono<Page<FullDetailsCompanyDto>> find(CompanyFilter filter, Pageable pageable) {
         return companyRepository.find(filter, pageable)
                 .map(page -> page.map(companyMapper::toFullDetailsDto));
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Mono<Page<FullDetailsCompanyDto>> findByJooq(CompanyFilter filter, Pageable pageable) {
         return companyRepository.findByJooq(filter, pageable)
                 .map(page -> page.map(companyMapper::toFullDetailsDto));
@@ -117,12 +117,12 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Mono<FullDetailsCompanyDto> findFullDetailsById(UUID id) {
         return findById(id, companyMapper::toFullDetailsDto);
     }
 
     @Override
+    @Transactional
     public Mono<Void> update(UUID id, UpdateCompanyDto dto) {
         return SecurityUtils.hasCompanyAccess(id)
                 .flatMap(companyRepository::findById)
@@ -132,5 +132,10 @@ public class CompanyServiceImpl implements CompanyService {
                 })
                 .switchIfEmpty(EntityNotFoundException.of(id))
                 .then();
+    }
+
+    @Override
+    public Flux<CompanyDto> findNames(Collection<CompanyStatus> statuses) {
+        return companyRepository.findNames(statuses);
     }
 }

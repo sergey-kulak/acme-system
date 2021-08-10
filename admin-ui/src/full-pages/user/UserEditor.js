@@ -10,6 +10,7 @@ import useHistoryBack from '../../common/useHistoryBack';
 import { onError, onSuccess } from '../../reducers/ToastNotification';
 import UserRoleSelect from '../../common/UserRoleSelect';
 import CompanySelect from '../../common/CompanySelect';
+import { hasRole, ROLE, getAllAccessibleRoles } from "../../common/security";
 
 function UserEditor({ auth, onSuccess, onError }) {
     const { id } = useParams();
@@ -23,7 +24,7 @@ function UserEditor({ auth, onSuccess, onError }) {
         password: '',
         confirmPassword: '',
         role: '',
-        companyId: auth.user.role === 'ADMIN' ? '' : auth.user.cmpid
+        companyId: hasRole(auth, ROLE.ADMIN) ? '' : auth.user.cmpid
     });
     const historyBack = useHistoryBack("/users");
 
@@ -102,6 +103,14 @@ function UserEditor({ auth, onSuccess, onError }) {
         }
     }
 
+    function roleFilter(options) {
+        let roles = getAllAccessibleRoles(auth);
+        return options.filter(option => roles.includes(option.value))
+    }
+
+    const canChangeRole = hasRole(auth, ROLE.ADMIN, ROLE.COMPANY_OWNER);
+    const canSetCompany = hasRole(auth, ROLE.ADMIN);
+
     return (
         <div className="main-content">
             <div>
@@ -154,12 +163,13 @@ function UserEditor({ auth, onSuccess, onError }) {
                             <div className="form-row">
                                 <div className="form-group col-md-6">
                                     <label htmlFor="confirmPassword">Role</label>
-                                    <Field component={UserRoleSelect} name="role" />
+                                    <Field component={UserRoleSelect} name="role"
+                                        isDisabled={!canChangeRole} optionFilter={roleFilter} />
                                 </div>
                                 <div className="form-group col-md-6">
                                     <label htmlFor="companyId">Company</label>
-                                    <Field component={CompanySelect} name="companyId" 
-                                        isDisabled={!isCreate}
+                                    <Field component={CompanySelect} name="companyId"
+                                        isDisabled={!(isCreate && canSetCompany)}
                                     />
                                 </div>
                             </div>

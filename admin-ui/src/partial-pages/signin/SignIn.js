@@ -5,13 +5,14 @@ import { Link, useHistory } from "react-router-dom";
 import AuthService from '../../common/AuthService';
 import HighlightInput from '../../common/HighlightInput';
 import './SignIn.css';
-import { ACTIONS } from '../../reducers/Auth';
+import { onLogin } from '../../reducers/Auth';
 
 function SignIn({ onLogin }) {
     const history = useHistory();
 
     const intialValues = {
-        username: 'admin@acme.com',
+        //username: 'admin@acme.com',
+        username: 'petrov@company111.com',
         password: 'qwe123'
     };
 
@@ -62,10 +63,6 @@ function SignIn({ onLogin }) {
 export default connect(
     state => {
         return {}
-    },
-    dispatch => ({
-        onLogin: (data) => {
-            dispatch({ type: ACTIONS.LOGIN_SUCCESS, payload: data })
-        }
-    })
-)(SignIn);
+    }, {
+    onLogin
+})(SignIn);

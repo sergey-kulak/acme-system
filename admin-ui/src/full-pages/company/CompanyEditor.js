@@ -29,7 +29,7 @@ function CompanyEditor({ onSuccess, onError }) {
     });
 
     useEffect(() => {
-        CompanyService.findById(id)
+        CompanyService.findByIdFullDetails(id)
             .then(response => {
                 setCompany(response.data);
                 toFormData(response.data);

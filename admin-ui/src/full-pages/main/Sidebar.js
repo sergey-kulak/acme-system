@@ -4,10 +4,11 @@ import Form from 'react-bootstrap/Form';
 import * as Icon from 'react-feather';
 import { connect } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
+import { onLogout } from '../../reducers/Auth';
 import './Sidebar.css';
-import { ACTIONS } from '../../reducers/Auth';
+import { ROLE, hasRole } from '../../common/security';
 
-function Sidebar({ onLogout }) {
+function Sidebar({ auth, onLogout }) {
     const [isFixed, setFixed] = useState(true);
     const [isHovered, setHovered] = useState(false);
     let history = useHistory();
@@ -45,17 +46,27 @@ function Sidebar({ onLogout }) {
                             </Link>
                         </li>
                         <li className="nav-item">
-                            <Link to="/companies" className="nav-link">
-                                <Icon.Box className="feather" />
-                                <span className="nav-item-text">Companies</span>
+                            <Link to={`/users/${auth.user.id}`} className="nav-link">
+                                <Icon.User className="feather" />
+                                <span className="nav-item-text">Profile</span>
                             </Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link to="/users" className="nav-link">
-                                <Icon.Users className="feather" />
-                                <span className="nav-item-text">Users</span>
-                            </Link>
-                        </li>
+                        </li>                         
+                        {
+                            hasRole(auth, ROLE.ADMIN) && <li className="nav-item">
+                                <Link to="/companies" className="nav-link">
+                                    <Icon.Box className="feather" />
+                                    <span className="nav-item-text">Companies</span>
+                                </Link>
+                            </li>
+                        }
+                        {
+                            hasRole(auth, ROLE.COMPANY_OWNER) && <li className="nav-item">
+                                <Link to="/users" className="nav-link">
+                                    <Icon.Users className="feather" />
+                                    <span className="nav-item-text">Users</span>
+                                </Link>
+                            </li>
+                        }                       
                         <li className="nav-item">
                             <Link to="/logout" className="nav-link" onClick={logout}>
                                 <Icon.LogOut className="feather" />
@@ -75,7 +86,7 @@ function Sidebar({ onLogout }) {
                     <Icon.AlignJustify className="feather" />
                 </Button>
             </div>
-        </div>
+        </div >
     )
 }
 
@@ -83,10 +94,6 @@ const mapStateToProps = ({ auth }) => {
     return { auth };
 };
 
-export default connect(mapStateToProps,
-    dispatch => ({
-        onLogout: () => {
-            dispatch({ type: ACTIONS.LOGOUT, payload: {} })
-        }
-    })
-)(Sidebar);
+export default connect(mapStateToProps, {
+    onLogout
+})(Sidebar);

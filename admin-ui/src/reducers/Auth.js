@@ -26,11 +26,20 @@ const buildState = () => {
 
 const INIT_STATE = buildState();
 
+
+export const onLogin = (data) => {
+    return dispatch => dispatch({ type: ACTIONS.LOGIN_SUCCESS, payload: data })
+}
+
+export const onLogout = () => {
+    return dispatch => dispatch({ type: ACTIONS.LOGOUT, payload: {} });
+}
+
 const reducer = (state = INIT_STATE, action) => {
     switch (action.type) {
         case ACTIONS.LOGIN_SUCCESS: {
             const accessToken = action.payload.accessToken;
-            localStorage.setItem("accessToken", accessToken);            
+            localStorage.setItem("accessToken", accessToken);
 
             return buildState();
         }

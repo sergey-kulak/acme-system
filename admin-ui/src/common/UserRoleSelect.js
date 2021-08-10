@@ -24,7 +24,7 @@ function UserRoleSelect({ value, optionFilter, onChange, field, form, ...props }
             };
             field.onChange(event);
         } else {
-            onChange.onChange(selectedValues);
+            onChange(selectedValues);
         }
     }
 

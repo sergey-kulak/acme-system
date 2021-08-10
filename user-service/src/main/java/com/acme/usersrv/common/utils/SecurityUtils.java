@@ -34,9 +34,13 @@ public class SecurityUtils {
                 .switchIfEmpty(Mono.error(new AccessDeniedException("Access denied")));
     }
 
-    public static Mono<CompanyUserDetails> getCurrentUser() {
+    public static Mono<Authentication> getAuthentication() {
         return ReactiveSecurityContextHolder.getContext()
-                .map(SecurityContext::getAuthentication)
+                .map(SecurityContext::getAuthentication);
+    }
+
+    public static Mono<CompanyUserDetails> getCurrentUser() {
+        return getAuthentication()
                 .map(Authentication::getPrincipal)
                 .cast(CompanyUserDetails.class);
     }

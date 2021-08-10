@@ -4,7 +4,7 @@ import UserStatusSelect from '../../common/UserStatusSelect';
 import { useState } from 'react';
 import UserRoleSelect from '../../common/UserRoleSelect';
 
-function UserFitler({ filter, onChange }) {
+function UserFilter({ isAdmin, filter, onChange }) {
     const [statuses, setStatuses] = useState(filter.status);
     const [roles, setRoles] = useState(filter.role);
 
@@ -26,13 +26,13 @@ function UserFitler({ filter, onChange }) {
 
     return (
         <div className="form-row">
-            <div className="form-group col-lg-3 col-md-6">
+            {isAdmin && <div className="form-group col-lg-3 col-md-6">
                 <label htmlFor="namePattern">Company</label>
                 <CompanySelect name="namePattern" onChange={handleCompanyChange}
                     value={filter.companyId} isClearable={true}
                     showTypeCheckBox={true}
                     type="text" />
-            </div>
+            </div>}
             <div className="form-group col-lg-3 col-md-6">
                 <label htmlFor="vatin">Email</label>
                 <DebounceInput name="email" onChange={handleChange}
@@ -59,4 +59,4 @@ function UserFitler({ filter, onChange }) {
     );
 }
 
-export default UserFitler;
+export default UserFilter;

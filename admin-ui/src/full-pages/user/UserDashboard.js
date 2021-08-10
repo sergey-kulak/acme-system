@@ -1,23 +1,26 @@
 import { useCallback, useEffect, useState } from 'react';
+import * as Icon from 'react-feather';
 import { connect } from "react-redux";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import Pagination from '../../common/Pagination';
 import { combineAsUrlParams, Pageable, Sort } from '../../common/PaginationUtils';
+import { hasRole, ROLE } from "../../common/security";
 import ShowFilterButton from '../../common/ShowFilterButton';
 import SortColumn from '../../common/SortColumn';
 import UserService from '../../common/UserService';
 import { onError, onSuccess } from '../../reducers/ToastNotification';
-import UserFitler from './UserFilter';
-import * as Icon from 'react-feather';
+import UserFilter from './UserFilter';
 
-function UserDashboard() {
+
+function UserDashboard({ auth }) {
     const history = useHistory();
     const query = new URLSearchParams(useLocation().search);
+    const isAdmin = hasRole(auth, ROLE.ADMIN);
 
     const [page, setPage] = useState({ content: [] });
     const [pageable, setPageable] = useState(Pageable.fromUrlParams(query));
     const [sort, setSort] = useState(Sort.fromUrlParams(query, 'last_name'));
-    const [filter, setFilter] = useState(Filter.fromUrlParams(query));
+    const [filter, setFilter] = useState(Filter.fromUrlParams(query, auth));
     const [showFilter, setShowFilter] = useState(true);
 
     const loadData = useCallback(() => {
@@ -28,9 +31,10 @@ function UserDashboard() {
     useEffect(() => {
         loadData()
             .then(() => {
-                history.replace(combineAsUrlParams(filter, pageable, sort));
+                let filterUrlParams = filter.toUrlParams(auth);
+                history.replace(combineAsUrlParams(filterUrlParams, pageable, sort));
             });
-    }, [pageable, sort, filter, history, loadData]);
+    }, [pageable, sort, filter, history, auth, loadData]);
 
     function onPageableChange(page) {
         setPageable(page);
@@ -58,7 +62,7 @@ function UserDashboard() {
                 </Link>
             </div>
 
-            {showFilter && <UserFitler filter={filter} onChange={onFilterChange} />}
+            {showFilter && <UserFilter auth={auth} filter={filter} onChange={onFilterChange} />}
             <div className="main-content-body">
                 <table className="table table-striped table-hover table-responsive-md">
                     <thead>
@@ -68,7 +72,7 @@ function UserDashboard() {
                             <th>Email</th>
                             <th>Status</th>
                             <th>Role</th>
-                            <th>Company</th>
+                            {isAdmin && <th>Company</th>}
                         </tr>
                     </thead>
                     <tbody>
@@ -83,11 +87,11 @@ function UserDashboard() {
                                 <td>{user.email}</td>
                                 <td>{user.status}</td>
                                 <td>{user.role}</td>
-                                <td>
+                                {isAdmin && <td>
                                     <Link to={`/companies/${user.companyId}`}>
                                         {user.companyId}
                                     </Link>
-                                </td>
+                                </td>}
                             </tr>)}
                     </tbody>
                 </table>
@@ -111,23 +115,32 @@ class Filter {
     }
 
     withNewValue(field, value) {
-        let newFilter = new Filter(this.companyId, this.email);
+        let newFilter = new Filter(this.companyId, this.email, this.role, this.status);
         newFilter[field] = value;
         return newFilter;
     }
 
-    toUrlParams() {
-        return {
+    toUrlParams(auth) {
+        let urlData = {
             [Filter.URL_PARAM_COMPANY_ID]: this.companyId,
             [Filter.URL_PARAM_EMAIL]: this.email,
             [Filter.URL_PARAM_ROLE]: this.role,
             [Filter.URL_PARAM_STATUS]: this.status,
+        };
+
+        if (!hasRole(auth, ROLE.ADMIN)) {
+            delete urlData[Filter.URL_PARAM_COMPANY_ID];
         }
+        return urlData;
     }
 
-    static fromUrlParams(urlSearchParams) {
+    static fromUrlParams(urlSearchParams, auth) {
+        let companyId = hasRole(auth, ROLE.ADMIN) ?
+            urlSearchParams.get(Filter.URL_PARAM_COMPANY_ID) || '' :
+            auth.user.cmpid;
+
         return new Filter(
-            urlSearchParams.get(Filter.URL_PARAM_COMPANY_ID) || '',
+            companyId,
             urlSearchParams.get(Filter.URL_PARAM_EMAIL) || '',
             urlSearchParams.getAll(Filter.URL_PARAM_ROLE),
             urlSearchParams.getAll(Filter.URL_PARAM_STATUS)

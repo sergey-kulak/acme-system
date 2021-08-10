@@ -89,14 +89,3 @@
   max-width: 4.2rem;
   height: 1rem;  
 }
-
-.pagination-descr {
-  flex-grow: 1;
-  text-align: right;
-}
-
-@media (max-width: 768px) {
-  .pagination-descr {
-    flex-grow: 0;
-  }
-}

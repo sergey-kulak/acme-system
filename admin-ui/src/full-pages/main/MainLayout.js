@@ -1,16 +1,54 @@
-import './MainLayout.css';
-
-import Sidebar from "./Sidebar";
-import Home from "../home/Home";
+import { useCallback, useEffect } from "react";
+import { connect } from "react-redux";
+import { Route, Switch, useHistory } from "react-router-dom";
+import AuthRoute from '../../common/AuthRoute';
+import AuthService from "../../common/AuthService";
+import { ROLE } from "../../common/security";
+import { onLogin, onLogout } from '../../reducers/Auth';
 import CompanyDashboard from "../company/CompanyDashboard";
-import Footer from "./Footer";
-import { Switch, Route } from "react-router-dom";
-import ToastContainer from './ToastContainer';
 import CompanyEditor from '../company/CompanyEditor';
+import Home from "../home/Home";
 import UserDashboard from '../user/UserDashboard';
 import UserEditor from '../user/UserEditor';
+import Footer from "./Footer";
+import './MainLayout.css';
+import Sidebar from "./Sidebar";
+import ToastContainer from './ToastContainer';
 
-function MainLayout() {
+
+const UPDATE_TIMEOUT = 120;
+
+function MainLayout({ auth, onLogin, onLogout }) {
+    const history = useHistory();
+
+    const refreshAccessToken = useCallback(() => {
+        console.log("refreshing access token ...");
+        AuthService.refreshAccessToken()
+            .then(response => {
+                onLogin(response.data);
+            }, () => {
+                onLogout();
+                history.push("/signin");
+            });
+    }, [history, onLogin, onLogout]);
+
+    useEffect(() => {
+        function checkAndRefresh() {
+            let { user } = auth;
+            let now = new Date().getTime() / 1000;
+            let needRefresh = (now + UPDATE_TIMEOUT) > user.exp
+            if (needRefresh) {
+                refreshAccessToken();
+            }
+        }
+        let timerId = setInterval(() => checkAndRefresh(), 60000);
+        return () => {
+            clearTimeout(timerId);
+        }
+    }, [auth, refreshAccessToken]);
+
+
+
     return (
         <div className="d-flex flex-column flex-md-row min-vh-100">
             <Sidebar />
@@ -20,20 +58,20 @@ function MainLayout() {
                         <Route exact path="/">
                             <Home />
                         </Route>
-                        <Route exact path="/companies">
+                        <AuthRoute exact path="/companies" auth={auth} role={ROLE.ADMIN}>
                             <CompanyDashboard />
-                        </Route>
-                        <Route path="/companies/:id">
+                        </AuthRoute>
+                        <AuthRoute path="/companies/:id" auth={auth} role={ROLE.COMPANY_OWNER}>
                             <CompanyEditor />
-                        </Route>
-                        <Route exact path="/users">
+                        </AuthRoute>
+                        <AuthRoute exact path="/users" auth={auth} role={ROLE.COMPANY_OWNER}>
                             <UserDashboard />
-                        </Route>
+                        </AuthRoute>
                         <Route path="/users/:id">
                             <UserEditor />
                         </Route>
                     </Switch>
-                    <ToastContainer/>
+                    <ToastContainer />
                 </div>
                 <Footer />
             </div>
@@ -42,4 +80,9 @@ function MainLayout() {
     )
 }
 
-export default MainLayout;
+const mapStateToProps = ({ auth }) => {
+    return { auth };
+};
+export default connect(mapStateToProps, {
+    onLogin, onLogout
+})(MainLayout);

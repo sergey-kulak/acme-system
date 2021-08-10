@@ -14,6 +14,9 @@ const CompanyService = {
         return RestApi.put(`/user-service/companies/${id}/status`, request);
     },
     findById: function (id) {
+        return RestApi.get(`/user-service/companies/${id}`);
+    },
+    findByIdFullDetails: function (id) {
         return RestApi.get(`/user-service/companies/${id}/full-details`);
     },
     update: function (id, request) {
@@ -21,8 +24,14 @@ const CompanyService = {
     }
     ,
     findNames: function (statuses) {
+        let urlSearchParams = new URLSearchParams();
+        if (statuses && statuses.length) {
+            statuses.forEach(status => {
+                urlSearchParams.append("status", status);
+            });
+        }
         return RestApi.get(`/user-service/companies/names`, {
-            params: { status: statuses }
+            params: urlSearchParams
         });
     }
 }

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import * as Icon from 'react-feather';
-import { Sort } from './PaginationUtils';
+import { Sort } from './paginationUtils';
 import './SortColumn.css';
 
 function SortColumn({ field, name, sort, onClick }) {

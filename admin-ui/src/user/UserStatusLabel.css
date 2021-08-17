@@ -1,0 +1,13 @@
+.usr-status{
+  height: 1rem;
+  width: 1rem;
+  border-radius: 50%;
+}
+
+.usr-active{
+    background-color: green;
+}
+
+.usr-inactive{
+    background-color: darkorange;
+}

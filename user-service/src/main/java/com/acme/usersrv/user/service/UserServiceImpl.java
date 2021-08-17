@@ -120,8 +120,8 @@ public class UserServiceImpl implements UserService {
     }
 
     private Mono<User> hasUserCompanyAccess(User user) {
-        return SecurityUtils.hasCompanyAccess(user.getCompanyId())
-                .map(id -> user);
+        return SecurityUtils.isCompanyAccessible(user.getCompanyId())
+                .then(Mono.just(user));
     }
 
     private Mono<Tuple2<User, CompanyUserDetails>> hasUserAccess(User user) {

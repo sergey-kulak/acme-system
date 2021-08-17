@@ -1,6 +1,6 @@
 import BsPagination from 'react-bootstrap/Pagination';
 import './Pagination.css';
-import { Pageable } from './PaginationUtils';
+import { Pageable } from './paginationUtils';
 
 const VISIBLE_PAGES = 5;
 

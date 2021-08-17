@@ -1,5 +1,5 @@
 import * as Icon from 'react-feather';
-import * as Utils from './Utils';
+import * as Utils from './utils';
 
 
 function ShowFilterButton({ filter, showFilter, className, onClick }) {

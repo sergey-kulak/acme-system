@@ -1,0 +1,14 @@
+{
+    "user.role.admin": "Admin",
+    "user.role.company_owner": "Company owner",
+    "user.role.pp_manager": "PP manager",
+    "user.role.waiter": "Waiter",
+    "user.role.cook": "Cook",
+    "user.role.accountant": "Accountant",
+    "user.status.active": "Active",
+    "user.status.inactive": "Inactive",
+    "company.status.active": "Active",
+    "company.status.inactive": "Inactive",
+    "company.status.suspended": "Suspended",
+    "company.status.stopped": "Stopped"
+}

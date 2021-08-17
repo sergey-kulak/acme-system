@@ -1,0 +1,21 @@
+.cmp-status{
+  height: 1rem;
+  width: 1rem;
+  border-radius: 50%;
+}
+
+.cmp-active{
+    background-color: green;
+}
+
+.cmp-inactive{
+    background-color: darkorange;
+}
+
+.cmp-suspended{
+    background-color: grey;
+}
+
+.cmp-stopped{
+    background-color: red;
+}

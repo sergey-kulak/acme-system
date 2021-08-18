@@ -2,7 +2,7 @@ package com.acme.usersrv.company.repository;
 
 
 import com.acme.usersrv.common.repository.AbstractCustomJooqRepository;
-import com.acme.usersrv.common.utils.CollectionUtils;
+import com.acme.commons.utils.CollectionUtils;
 import com.acme.usersrv.company.Company;
 import com.acme.usersrv.company.CompanyStatus;
 import com.acme.usersrv.company.dto.CompanyDto;
@@ -20,7 +20,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Collection;
-import java.util.List;
 
 import static com.acme.usersrv.jooq.Tables.COMPANY;
 

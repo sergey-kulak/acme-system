@@ -2,7 +2,7 @@ package com.acme.usersrv.user.dto;
 
 import com.acme.usersrv.common.validation.PasswordHandler;
 import com.acme.usersrv.common.validation.PasswordMatch;
-import com.acme.usersrv.user.UserRole;
+import com.acme.commons.security.UserRole;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;

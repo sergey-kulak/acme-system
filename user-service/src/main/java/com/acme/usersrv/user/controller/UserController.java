@@ -1,13 +1,13 @@
 package com.acme.usersrv.user.controller;
 
-import com.acme.usersrv.common.dto.IdDto;
-import com.acme.usersrv.common.openapi.ConflictErrorResponse;
-import com.acme.usersrv.common.openapi.EntityCreatedResponse;
-import com.acme.usersrv.common.openapi.EntityNotFoundResponse;
-import com.acme.usersrv.common.openapi.OpenApiPage;
-import com.acme.usersrv.common.openapi.SecureOperation;
-import com.acme.usersrv.common.openapi.ValidationErrorResponse;
-import com.acme.usersrv.common.utils.ResponseUtils;
+import com.acme.commons.dto.IdDto;
+import com.acme.commons.openapi.ConflictErrorResponse;
+import com.acme.commons.openapi.EntityCreatedResponse;
+import com.acme.commons.openapi.EntityNotFoundResponse;
+import com.acme.commons.openapi.OpenApiPage;
+import com.acme.commons.openapi.SecureOperation;
+import com.acme.commons.openapi.ValidationErrorResponse;
+import com.acme.commons.utils.ResponseUtils;
 import com.acme.usersrv.user.dto.CreateUserDto;
 import com.acme.usersrv.user.dto.UpdateUserDto;
 import com.acme.usersrv.user.dto.UserDto;

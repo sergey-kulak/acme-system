@@ -1,6 +1,6 @@
 package com.acme.usersrv.company.service;
 
-import com.acme.usersrv.common.exception.EntityNotFoundException;
+import com.acme.commons.exception.EntityNotFoundException;
 import com.acme.usersrv.common.utils.SecurityUtils;
 import com.acme.usersrv.company.Company;
 import com.acme.usersrv.company.CompanyStatus;

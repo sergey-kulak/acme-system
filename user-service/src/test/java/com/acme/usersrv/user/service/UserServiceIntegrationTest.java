@@ -1,6 +1,6 @@
 package com.acme.usersrv.user.service;
 
-import com.acme.usersrv.common.exception.EntityNotFoundException;
+import com.acme.commons.exception.EntityNotFoundException;
 import com.acme.usersrv.test.RandomTestUtils;
 import com.acme.usersrv.test.ServiceIntegrationTest;
 import com.acme.usersrv.test.TestEntityHelper;
@@ -10,7 +10,7 @@ import com.acme.usersrv.test.WithMockCompanyOwner;
 import com.acme.usersrv.test.WithMockPpManager;
 import com.acme.usersrv.test.WithMockWaiter;
 import com.acme.usersrv.user.User;
-import com.acme.usersrv.user.UserRole;
+import com.acme.commons.security.UserRole;
 import com.acme.usersrv.user.dto.CreateUserDto;
 import com.acme.usersrv.user.dto.UpdateUserDto;
 import com.acme.usersrv.user.dto.UserDto;
@@ -33,7 +33,7 @@ import javax.validation.ConstraintViolationException;
 import java.util.Collections;
 import java.util.UUID;
 
-import static com.acme.usersrv.common.utils.StreamUtils.mapToList;
+import static com.acme.commons.utils.StreamUtils.mapToList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasProperty;

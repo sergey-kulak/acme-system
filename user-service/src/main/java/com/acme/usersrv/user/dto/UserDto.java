@@ -1,6 +1,6 @@
 package com.acme.usersrv.user.dto;
 
-import com.acme.usersrv.user.UserRole;
+import com.acme.commons.security.UserRole;
 import com.acme.usersrv.user.UserStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;

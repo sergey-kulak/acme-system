@@ -1,5 +1,6 @@
 package com.acme.usersrv.common.security;
 
+import com.acme.commons.security.CompanyUser;
 import com.acme.usersrv.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;

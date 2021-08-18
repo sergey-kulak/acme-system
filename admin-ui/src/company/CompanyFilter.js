@@ -1,6 +1,7 @@
 import { DebounceInput } from 'react-debounce-input';
 import { useState } from 'react';
 import CompanyStatusSelect from './CompanyStatusSelect';
+import CountrySelect from '../common/rf-data/CountrySelect';
 
 function CompanyFilter({ filter, onChange }) {
     const [statuses, setStatuses] = useState(filter.status);
@@ -11,6 +12,10 @@ function CompanyFilter({ filter, onChange }) {
 
     function onBlur() {
         onChange(filter.withNewValue('status', statuses));
+    }
+
+    function onCountryChange(country) {
+        onChange(filter.withNewValue('country', country));
     }
 
     return (
@@ -27,13 +32,13 @@ function CompanyFilter({ filter, onChange }) {
                     value={filter.vatin} debounceTimeout="300"
                     type="text" className="form-control" />
             </div>
-            <div className="form-group col-lg-2 col-md-6">
+            <div className="form-group col-lg-3 col-md-6">
                 <label htmlFor="country">Country</label>
-                <DebounceInput name="country" onChange={handleChange}
-                    value={filter.country} debounceTimeout="300"
-                    type="text" className="form-control" />
+                <CountrySelect name="country" onChange={onCountryChange}
+                    value={filter.country}
+                    type="text"/>
             </div>
-            <div className="form-group col-lg-4 col-md-6">
+            <div className="form-group col-lg-3 col-md-6">
                 <label htmlFor="status">Status</label>
                 <CompanyStatusSelect name="status" isMulti
                     onChange={setStatuses} closeMenuOnSelect={false}

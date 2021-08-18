@@ -1,11 +1,11 @@
 package com.acme.usersrv.user.service;
 
-import com.acme.usersrv.common.exception.EntityNotFoundException;
-import com.acme.usersrv.common.security.CompanyUserDetails;
+import com.acme.commons.exception.EntityNotFoundException;
+import com.acme.commons.security.CompanyUserDetails;
 import com.acme.usersrv.common.utils.SecurityUtils;
 import com.acme.usersrv.company.dto.CreateOwnerDto;
 import com.acme.usersrv.user.User;
-import com.acme.usersrv.user.UserRole;
+import com.acme.commons.security.UserRole;
 import com.acme.usersrv.user.UserStatus;
 import com.acme.usersrv.user.dto.CreateUserDto;
 import com.acme.usersrv.user.dto.UpdateUserDto;
@@ -26,7 +26,6 @@ import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
-import java.util.Objects;
 import java.util.UUID;
 
 @Service

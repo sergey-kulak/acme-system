@@ -1,10 +1,10 @@
 package com.acme.usersrv.common.config;
 
-import com.acme.usersrv.common.security.BearerAuthenticationConverter;
+import com.acme.commons.security.BearerAuthenticationConverter;
 import com.acme.usersrv.common.security.GenerateTokenSuccessHandler;
 import com.acme.usersrv.common.security.JsonAuthenticationConverter;
-import com.acme.usersrv.common.security.ParseTokenService;
-import com.acme.usersrv.common.security.ParseTokenServiceImpl;
+import com.acme.commons.security.ParseTokenService;
+import com.acme.commons.security.ParseTokenServiceImpl;
 import com.acme.usersrv.common.security.TokenService;
 import com.acme.usersrv.common.security.TokenServiceImpl;
 import com.acme.usersrv.user.repository.UserRepository;

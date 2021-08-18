@@ -1,7 +1,7 @@
 package com.acme.usersrv.common.utils;
 
-import com.acme.usersrv.common.security.CompanyUserDetails;
-import com.acme.usersrv.user.UserRole;
+import com.acme.commons.security.CompanyUserDetails;
+import com.acme.commons.security.UserRole;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;

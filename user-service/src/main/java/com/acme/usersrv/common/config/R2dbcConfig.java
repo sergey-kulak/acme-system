@@ -1,7 +1,7 @@
 package com.acme.usersrv.common.config;
 
 import com.acme.usersrv.company.CompanyStatus;
-import com.acme.usersrv.user.UserRole;
+import com.acme.commons.security.UserRole;
 import com.acme.usersrv.user.UserStatus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

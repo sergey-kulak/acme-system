@@ -1,5 +1,6 @@
 package com.acme.usersrv.user;
 
+import com.acme.commons.security.UserRole;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;

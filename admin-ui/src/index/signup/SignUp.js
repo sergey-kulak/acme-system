@@ -6,13 +6,14 @@ import { Link } from "react-router-dom";
 
 import companyService from '../../company/companyService';
 import HighlightInput from '../../common/HighlightInput';
+import CountrySelect from '../../common/rf-data/CountrySelect';
 import './SignUp.css';
 
 const TEST_DATA = {
     fullName: 'Company 111',
     vatin: 'BY1111111',
     regNumber: 'REG1111111',
-    country: 'BY',
+    country: '',
     city: 'Minsk',
     address: 'Dzerginskogo str., ap. 10',
     site: 'company111.com',
@@ -31,7 +32,7 @@ function SignUp() {
     const [toastMessage, setToastMessage] = useState('');
     const [toastType, setToastType] = useState('');
 
-    const intialValues = true ? TEST_DATA : {
+    const intialValues = false ? TEST_DATA : {
         fullName: '',
         vatin: '',
         regNumber: '',
@@ -142,8 +143,8 @@ function SignUp() {
                         <div className="form-row">
                             <div className="form-group col-md-6">
                                 <label htmlFor="country">Country</label>
-                                <Field component={HighlightInput} name="country"
-                                    type="text" className="form-control" />
+                                <Field component={CountrySelect} name="country"
+                                    type="text"/>
                             </div>
                             <div className="form-group col-md-6">
                                 <label htmlFor="city">City</label>

@@ -1,12 +1,11 @@
 package com.acme.usersrv.test;
 
-import com.acme.usersrv.common.security.CompanyUser;
-import com.acme.usersrv.user.UserRole;
+import com.acme.commons.security.CompanyUser;
+import com.acme.commons.security.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.transaction.ReactiveTransactionManager;
 

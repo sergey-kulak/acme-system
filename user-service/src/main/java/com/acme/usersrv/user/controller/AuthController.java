@@ -1,6 +1,6 @@
 package com.acme.usersrv.user.controller;
 
-import com.acme.usersrv.common.openapi.SecureOperation;
+import com.acme.commons.openapi.SecureOperation;
 import com.acme.usersrv.common.security.LoginResponseDto;
 import com.acme.usersrv.common.security.TokenService;
 import com.acme.usersrv.common.utils.SecurityUtils;

@@ -1,7 +1,7 @@
 package com.acme.usersrv.company.service;
 
 
-import com.acme.usersrv.common.exception.EntityNotFoundException;
+import com.acme.commons.exception.EntityNotFoundException;
 import com.acme.usersrv.company.Company;
 import com.acme.usersrv.company.CompanyStatus;
 import com.acme.usersrv.company.dto.CompanyDto;
@@ -22,7 +22,7 @@ import com.acme.usersrv.test.WithMockCompanyOwner;
 import com.acme.usersrv.test.WithMockPpManager;
 import com.acme.usersrv.test.WithMockWaiter;
 import com.acme.usersrv.user.User;
-import com.acme.usersrv.user.UserRole;
+import com.acme.commons.security.UserRole;
 import com.acme.usersrv.user.UserStatus;
 import com.acme.usersrv.user.repository.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -44,7 +44,7 @@ import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
-import static com.acme.usersrv.common.utils.StreamUtils.mapToList;
+import static com.acme.commons.utils.StreamUtils.mapToList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasProperty;
@@ -76,18 +76,18 @@ public class CompanyServiceIntegrationTest {
 
     private RegisterCompanyDto createRegisterDto() {
         return RegisterCompanyDto.builder()
-                .fullName("Full company name")
+                .fullName(RandomTestUtils.randomString("Company"))
                 .country("by")
                 .city("city")
                 .address("address")
                 .email("email@company.com")
                 .phone("+37291234567")
                 .site("company.com")
-                .vatin("by1234567890")
+                .vatin(RandomTestUtils.randomString("BY"))
                 .owner(CreateOwnerDto.builder()
                         .firstName("firstName")
                         .lastName("lastName")
-                        .email("ls@company.com")
+                        .email(RandomTestUtils.randomEmail())
                         .password("qwe123")
                         .confirmPassword("qwe123")
                         .build())
@@ -328,7 +328,7 @@ public class CompanyServiceIntegrationTest {
     }
 
     @Test
-    @WithMockPpManager
+    @WithMockAdmin
     public void findByIdFullDetails() {
         testEntityHelper.createCompany()
                 .flatMap(testEntityHelper::linkWithCurrentUser)

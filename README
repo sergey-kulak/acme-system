@@ -6,6 +6,11 @@ Discovery service - 7002 (02, 03)
 Api gateway - 7004(04, 05)
 Info service - 7006
 
-User service - 701x - 702x
+User service - 701x - 7019
 	HTTP 7010
 	DB 7011 -> 5432
+
+Reference data service - 702x - 7029
+	HTTP 7020
+	DB 7021 -> 27017
+	DB 7022 -> 8081

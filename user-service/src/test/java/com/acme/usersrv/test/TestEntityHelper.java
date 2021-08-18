@@ -1,12 +1,11 @@
 package com.acme.usersrv.test;
 
-import com.acme.usersrv.common.security.CompanyUser;
-import com.acme.usersrv.common.utils.SecurityUtils;
+import com.acme.commons.security.CompanyUser;
 import com.acme.usersrv.company.Company;
 import com.acme.usersrv.company.CompanyStatus;
 import com.acme.usersrv.company.repository.CompanyRepository;
 import com.acme.usersrv.user.User;
-import com.acme.usersrv.user.UserRole;
+import com.acme.commons.security.UserRole;
 import com.acme.usersrv.user.UserStatus;
 import com.acme.usersrv.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

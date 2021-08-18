@@ -1,6 +1,6 @@
 package com.acme.usersrv.company.controller;
 
-import com.acme.usersrv.common.exception.EntityNotFoundException;
+import com.acme.commons.exception.EntityNotFoundException;
 import com.acme.usersrv.company.CompanyStatus;
 import com.acme.usersrv.company.dto.CompanyDto;
 import com.acme.usersrv.company.dto.CompanyFilter;
@@ -14,8 +14,6 @@ import com.acme.usersrv.test.ControllerTest;
 import com.acme.usersrv.test.RandomTestUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -67,7 +65,7 @@ public class CompanyControllerTest {
 
     @Test
     public void findWithEmptyPagination() {
-        when(companyService.find(any(CompanyFilter.class), any(Pageable.class)))
+        when(companyService.findByJooq(any(CompanyFilter.class), any(Pageable.class)))
                 .thenReturn(Mono.just(Page.empty()));
 
         webClient.get()

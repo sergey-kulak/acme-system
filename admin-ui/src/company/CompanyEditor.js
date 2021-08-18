@@ -9,6 +9,7 @@ import userService from '../user/userService';
 import HighlightInput from '../common/HighlightInput';
 import useHistoryBack from '../common/useHistoryBack';
 import { onError, onSuccess } from '../common/toastNotification';
+import CountrySelect from '../common/rf-data/CountrySelect';
 import './CompanyEditor.css';
 
 function CompanyEditor({ onSuccess, onError }) {
@@ -99,8 +100,7 @@ function CompanyEditor({ onSuccess, onError }) {
                             <div className="form-row">
                                 <div className="form-group col-md-6">
                                     <label htmlFor="country">Country</label>
-                                    <input readOnly value={company.country} name="country"
-                                        type="text" className="form-control" />
+                                    <CountrySelect isDisabled value={company.country} name="country"/>
                                 </div>
                                 <div className="form-group col-md-6">
                                     <label htmlFor="city">City</label>

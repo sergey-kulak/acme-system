@@ -51,3 +51,7 @@ body {
 .cmt-select .invalid>div {
   border-color: red !important;
 }
+
+.cmt-btn {
+  padding: .375rem .45rem;
+}

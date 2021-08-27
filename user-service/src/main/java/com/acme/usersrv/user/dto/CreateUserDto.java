@@ -1,7 +1,8 @@
 package com.acme.usersrv.user.dto;
 
-import com.acme.usersrv.common.validation.PasswordHandler;
-import com.acme.usersrv.common.validation.PasswordMatch;
+import com.acme.usersrv.user.dto.validation.CompanyIdRoleCheck;
+import com.acme.usersrv.user.dto.validation.PasswordHandler;
+import com.acme.usersrv.user.dto.validation.PasswordMatch;
 import com.acme.commons.security.UserRole;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -17,6 +18,7 @@ import java.util.UUID;
 @Data
 @Builder
 @PasswordMatch
+@CompanyIdRoleCheck
 @Schema(name = "Create user request")
 public class CreateUserDto implements PasswordHandler {
     @NotBlank
@@ -31,7 +33,6 @@ public class CreateUserDto implements PasswordHandler {
     @Size(min = 6)
     private String password;
     private String confirmPassword;
-    @NotNull
     private UUID companyId;
     @NotNull
     private UserRole role;

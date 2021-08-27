@@ -1,13 +1,13 @@
 package com.acme.usersrv.common.config;
 
-import com.acme.usersrv.common.json.PageImplSerializer;
-import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.web.ReactivePageableHandlerMethodArgumentResolver;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 import org.springframework.web.reactive.result.method.annotation.ArgumentResolverConfigurer;
 
 @Configuration
+@ComponentScan("com.acme.commons.json")
 public class WebConfig implements WebFluxConfigurer {
 
     @Override

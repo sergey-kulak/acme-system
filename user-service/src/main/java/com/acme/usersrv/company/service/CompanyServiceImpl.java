@@ -1,7 +1,8 @@
 package com.acme.usersrv.company.service;
 
 import com.acme.commons.exception.EntityNotFoundException;
-import com.acme.usersrv.common.utils.SecurityUtils;
+import com.acme.commons.exception.IllegalStatusChange;
+import com.acme.commons.security.SecurityUtils;
 import com.acme.usersrv.company.Company;
 import com.acme.usersrv.company.CompanyStatus;
 import com.acme.usersrv.company.dto.CompanyDto;
@@ -10,16 +11,19 @@ import com.acme.usersrv.company.dto.CreateOwnerDto;
 import com.acme.usersrv.company.dto.FullDetailsCompanyDto;
 import com.acme.usersrv.company.dto.RegisterCompanyDto;
 import com.acme.usersrv.company.dto.UpdateCompanyDto;
+import com.acme.usersrv.company.event.CompanyRegisteredEvent;
 import com.acme.usersrv.company.exception.DuplicateCompanyException;
-import com.acme.usersrv.company.exception.IllegalStatusChange;
 import com.acme.usersrv.company.mapper.CompanyMapper;
 import com.acme.usersrv.company.repository.CompanyRepository;
 import com.acme.usersrv.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.ReactiveTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.reactive.TransactionalOperator;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -42,17 +46,23 @@ public class CompanyServiceImpl implements CompanyService {
     private final CompanyRepository companyRepository;
     private final UserService userService;
     private final CompanyMapper companyMapper;
+    private final ApplicationEventPublisher eventPublisher;
+    private final ReactiveTransactionManager txManager;
 
     @Override
-    @Transactional
     public Mono<UUID> register(RegisterCompanyDto registrationDto) {
         return duplicatesCheck(registrationDto)
                 .map(this::mapFromDto)
                 .flatMap(companyRepository::save)
                 .flatMap(savedCompany ->
                         addOwner(savedCompany, registrationDto.getOwner())
-                                .thenReturn(savedCompany.getId())
-                );
+                                .thenReturn(savedCompany.getId()))
+                .as(TransactionalOperator.create(txManager)::transactional)
+                .doOnSuccess(id -> notifyAboutRegistration(id, registrationDto));
+    }
+
+    private void notifyAboutRegistration(UUID id, RegisterCompanyDto dto) {
+        eventPublisher.publishEvent(new CompanyRegisteredEvent(id, dto.getPlanId()));
     }
 
     private Company mapFromDto(RegisterCompanyDto registrationDto) {

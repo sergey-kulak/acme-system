@@ -6,8 +6,6 @@ import rfDataService from './rfDataService';
 function CountrySelect({ value, field, form, onChange, ...props }) {
     const [options, setOptions] = useState([]);
 
-    value = field && field.value ? field.value : value;
-
     useEffect(() => {
         function mapToOption(country) {
             return {
@@ -25,7 +23,11 @@ function CountrySelect({ value, field, form, onChange, ...props }) {
 
 
     function handleChange(selectedOption) {
-        let selectedValue = selectedOption && selectedOption.value;
+        let selectedValue
+        if (selectedOption) {
+            selectedValue = props.isMulti ?
+                selectedOption.map(item => item.value) : selectedOption.value;
+        }
         if (field && field.onChange) {
             let event = {
                 target: {
@@ -34,17 +36,20 @@ function CountrySelect({ value, field, form, onChange, ...props }) {
                 }
             };
             field.onChange(event);
-        } else {
+        }
+        if (onChange) {
             onChange(selectedValue);
         }
     }
 
-
-    let selected = value && options.find(option => option.value === value);
+    value = field && field.value ? field.value : value;
+    let selected = props.isMulti ?
+        options.filter(option => value.includes(option.value)) :
+        options.filter(option => value === option.value);
     const className = `flex-grow-1 ${getValidationClass(form, field)}`;
 
     return (
-        <div className="cmt-select">
+        <div className={`${props.className} cmt-select`}>
             <Select placeholder="" options={options} className={className}
                 onChange={handleChange} {...props} isClearable
                 value={selected} />

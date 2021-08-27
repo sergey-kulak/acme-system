@@ -1,21 +1,22 @@
 import restApi, { buildGetFilterParams } from '../common/restApi';
 import { ROLE } from '../common/security';
 
+const BASE_URL = '/user-service/users';
 
 const userService = {
     find: function (filter, pageable, sort) {
-        return restApi.get('/user-service/users', {
+        return restApi.get(BASE_URL, {
             params: buildGetFilterParams(filter, pageable, sort)
         });
     },
     findById: function (id) {
-        return restApi.get(`/user-service/users/${id}`);
+        return restApi.get(`${BASE_URL}/${id}`);
     },
     update: function (id, request) {
-        return restApi.put(`/user-service/users/${id}`, request);
+        return restApi.put(`${BASE_URL}/${id}`, request);
     },
     create: function (request) {
-        return restApi.post(`/user-service/users`, request);
+        return restApi.post(BASE_URL, request);
     },
     findOwners: function (companyId) {
         let params = new URLSearchParams();
@@ -24,7 +25,7 @@ const userService = {
         params.append('size', 30);
         params.append('sort', 'last_name,asc');
 
-        return restApi.get('/user-service/users', {
+        return restApi.get(BASE_URL, {
             params: params
         });
     }

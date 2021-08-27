@@ -1,7 +1,7 @@
 package com.acme.usersrv.company.repository;
 
 
-import com.acme.usersrv.common.repository.AbstractCustomJooqRepository;
+import com.acme.commons.repository.AbstractCustomJooqRepository;
 import com.acme.commons.utils.CollectionUtils;
 import com.acme.usersrv.company.Company;
 import com.acme.usersrv.company.CompanyStatus;

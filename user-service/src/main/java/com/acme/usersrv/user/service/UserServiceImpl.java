@@ -2,7 +2,7 @@ package com.acme.usersrv.user.service;
 
 import com.acme.commons.exception.EntityNotFoundException;
 import com.acme.commons.security.CompanyUserDetails;
-import com.acme.usersrv.common.utils.SecurityUtils;
+import com.acme.commons.security.SecurityUtils;
 import com.acme.usersrv.company.dto.CreateOwnerDto;
 import com.acme.usersrv.user.User;
 import com.acme.commons.security.UserRole;
@@ -47,8 +47,8 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public Mono<UUID> create(CreateUserDto saveDto) {
-        return SecurityUtils.hasCompanyAccess(saveDto.getCompanyId())
-                .flatMap(companyId -> createInternal(saveDto));
+        return SecurityUtils.isCompanyAccessible(saveDto.getCompanyId())
+                .then(createInternal(saveDto));
     }
 
     private Mono<UUID> createInternal(CreateUserDto saveDto) {

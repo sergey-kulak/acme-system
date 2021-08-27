@@ -24,6 +24,8 @@ function UserFilter({ isAdmin, filter, onChange }) {
         onChange(filter.withNewValue('role', roles));
     }
 
+    console.log('admin - '+ isAdmin);
+
     return (
         <div className="form-row">
             {isAdmin && <div className="form-group col-lg-3 col-md-6">

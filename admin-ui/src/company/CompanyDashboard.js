@@ -74,7 +74,7 @@ function CompanyDashboard({ onSuccess, onError }) {
                     Companies
                 </div>
                 <ShowFilterButton filter={filter} showFilter={showFilter}
-                    className="btn btn-light ml-3"
+                    className="btn btn-light cmt-btn ml-3"
                     onClick={e => setShowFilter(!showFilter)} />
             </div>
 
@@ -104,7 +104,7 @@ function CompanyDashboard({ onSuccess, onError }) {
                                     }
                                 </td>
                                 <td>
-                                    <Link to={`/companies/${company.id}`}>
+                                    <Link to={`/company-view/${company.id}`}>
                                         {company.fullName}
                                     </Link>
                                 </td>

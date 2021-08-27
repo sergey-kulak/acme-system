@@ -42,9 +42,7 @@ function CompanyEditor({ onSuccess, onError }) {
 
     useEffect(() => {
         userService.findOwners(id)
-            .then(response => {
-                setOwners(response.data.content);
-            })
+            .then(response => setOwners(response.data.content));
     }, [id]);
 
     function toFormData(company) {
@@ -100,7 +98,7 @@ function CompanyEditor({ onSuccess, onError }) {
                             <div className="form-row">
                                 <div className="form-group col-md-6">
                                     <label htmlFor="country">Country</label>
-                                    <CountrySelect isDisabled value={company.country} name="country"/>
+                                    <CountrySelect isDisabled value={company.country} name="country" />
                                 </div>
                                 <div className="form-group col-md-6">
                                     <label htmlFor="city">City</label>

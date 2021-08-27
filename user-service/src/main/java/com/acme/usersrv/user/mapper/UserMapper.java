@@ -1,6 +1,6 @@
 package com.acme.usersrv.user.mapper;
 
-import com.acme.usersrv.common.mapper.StringMapper;
+import com.acme.commons.mapper.StringMapper;
 import com.acme.usersrv.company.dto.CreateOwnerDto;
 import com.acme.usersrv.user.User;
 import com.acme.usersrv.user.dto.CreateUserDto;

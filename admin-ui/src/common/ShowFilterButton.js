@@ -10,7 +10,7 @@ function ShowFilterButton({ filter, showFilter, className, onClick }) {
         <button type="button" className={className}
             onClick={onClick}>
             <Icon.Filter className="filter-icon" />
-            {emptyFilter && <span className="badge badge-pill badge-warning">!</span>}
+            {!emptyFilter && <span className="badge badge-pill badge-warning">!</span>}
         </button>
     );
 }

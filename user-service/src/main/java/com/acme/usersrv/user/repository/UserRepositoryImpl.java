@@ -1,6 +1,6 @@
 package com.acme.usersrv.user.repository;
 
-import com.acme.usersrv.common.repository.AbstractCustomJooqRepository;
+import com.acme.commons.repository.AbstractCustomJooqRepository;
 import com.acme.commons.utils.CollectionUtils;
 import com.acme.usersrv.user.User;
 import com.acme.usersrv.user.dto.UserFilter;

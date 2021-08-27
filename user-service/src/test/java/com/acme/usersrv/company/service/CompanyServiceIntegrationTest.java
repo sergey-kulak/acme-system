@@ -2,6 +2,12 @@ package com.acme.usersrv.company.service;
 
 
 import com.acme.commons.exception.EntityNotFoundException;
+import com.acme.commons.security.UserRole;
+import com.acme.testcommons.RandomTestUtils;
+import com.acme.testcommons.TxStepVerifier;
+import com.acme.testcommons.security.WithMockAdmin;
+import com.acme.testcommons.security.WithMockCompanyOwner;
+import com.acme.testcommons.security.WithMockWaiter;
 import com.acme.usersrv.company.Company;
 import com.acme.usersrv.company.CompanyStatus;
 import com.acme.usersrv.company.dto.CompanyDto;
@@ -11,18 +17,11 @@ import com.acme.usersrv.company.dto.FullDetailsCompanyDto;
 import com.acme.usersrv.company.dto.RegisterCompanyDto;
 import com.acme.usersrv.company.dto.UpdateCompanyDto;
 import com.acme.usersrv.company.exception.DuplicateCompanyException;
-import com.acme.usersrv.company.exception.IllegalStatusChange;
+import com.acme.commons.exception.IllegalStatusChange;
 import com.acme.usersrv.company.repository.CompanyRepository;
-import com.acme.usersrv.test.RandomTestUtils;
 import com.acme.usersrv.test.ServiceIntegrationTest;
 import com.acme.usersrv.test.TestEntityHelper;
-import com.acme.usersrv.test.TxStepVerifier;
-import com.acme.usersrv.test.WithMockAdmin;
-import com.acme.usersrv.test.WithMockCompanyOwner;
-import com.acme.usersrv.test.WithMockPpManager;
-import com.acme.usersrv.test.WithMockWaiter;
 import com.acme.usersrv.user.User;
-import com.acme.commons.security.UserRole;
 import com.acme.usersrv.user.UserStatus;
 import com.acme.usersrv.user.repository.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -53,6 +52,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ServiceIntegrationTest
@@ -68,10 +68,10 @@ public class CompanyServiceIntegrationTest {
 
     @Test
     public void registrationValidation() {
-        companyService.register(new RegisterCompanyDto())
-                .as(StepVerifier::create)
-                .expectError(ConstraintViolationException.class)
-                .verify();
+        assertThrows(ConstraintViolationException.class,
+                () -> companyService.register(new RegisterCompanyDto())
+                        .as(StepVerifier::create)
+                        .verifyComplete());
     }
 
     private RegisterCompanyDto createRegisterDto() {
@@ -84,6 +84,7 @@ public class CompanyServiceIntegrationTest {
                 .phone("+37291234567")
                 .site("company.com")
                 .vatin(RandomTestUtils.randomString("BY"))
+                .planId(UUID.randomUUID())
                 .owner(CreateOwnerDto.builder()
                         .firstName("firstName")
                         .lastName("lastName")

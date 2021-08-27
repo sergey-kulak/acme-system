@@ -1,0 +1,18 @@
+version: '3.1'
+
+services:
+  db:
+    image: postgres:13.3-alpine
+    container_name: acme-accounting-db
+    ports:
+      - 7031:5432
+    environment:
+      POSTGRES_DB: accountingdb
+      POSTGRES_USER: acUser
+      POSTGRES_PASSWORD: acPass
+
+
+networks:
+  default:
+    external:
+      name: acme-network

@@ -15,6 +15,7 @@ import com.acme.usersrv.company.dto.CompanyStatusDto;
 import com.acme.usersrv.company.dto.FullDetailsCompanyDto;
 import com.acme.usersrv.company.dto.RegisterCompanyDto;
 import com.acme.usersrv.company.dto.UpdateCompanyDto;
+import com.acme.usersrv.company.event.CompanyEventListener;
 import com.acme.usersrv.company.service.CompanyService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -64,7 +65,7 @@ public class CompanyController {
     @ApiResponse(responseCode = "200",
             content = @Content(schema = @Schema(implementation = CompanyApiPage.class)))
     public Mono<Page<FullDetailsCompanyDto>> find(@ParameterObject CompanyFilter companyFilter,
-                                       @ParameterObject Pageable pageable) {
+                                                  @ParameterObject Pageable pageable) {
         return companyService.findByJooq(companyFilter, pageable);
     }
 

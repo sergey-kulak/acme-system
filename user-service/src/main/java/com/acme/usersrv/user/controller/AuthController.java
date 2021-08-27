@@ -3,7 +3,7 @@ package com.acme.usersrv.user.controller;
 import com.acme.commons.openapi.SecureOperation;
 import com.acme.usersrv.common.security.LoginResponseDto;
 import com.acme.usersrv.common.security.TokenService;
-import com.acme.usersrv.common.utils.SecurityUtils;
+import com.acme.commons.security.SecurityUtils;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

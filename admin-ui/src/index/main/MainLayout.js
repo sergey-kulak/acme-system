@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from "react";
 import { connect } from "react-redux";
 import { Route, Switch, useHistory } from "react-router-dom";
-import AuthRoute from '../../common/security/AuthRoute';
+import SecuredRoute from '../../common/security/SecuredRoute';
 import AuthService from "../../common/security/authService";
 import { ROLE } from "../../common/security";
 import { onLogin, onLogout } from '../../common/security/authReducer';
@@ -13,7 +13,10 @@ import UserEditor from '../../user/UserEditor';
 import Footer from "./Footer";
 import './MainLayout.css';
 import Sidebar from "./Sidebar";
-import ToastContainer from './ToastContainer';
+import ToastContainer from '../../common/ToastContainer';
+import PlanDashboard from "../../plan/PlanDashboad";
+import PlanEditor from "../../plan/PlanEditor";
+import CompanyViewer from "../../company/CompanyViewer";
 
 
 const UPDATE_TIMEOUT = 120;
@@ -58,15 +61,24 @@ function MainLayout({ auth, onLogin, onLogout }) {
                         <Route exact path="/">
                             <Home />
                         </Route>
-                        <AuthRoute exact path="/companies" auth={auth} role={ROLE.ADMIN}>
+                        <SecuredRoute exact path="/companies" auth={auth} role={ROLE.ADMIN}>
                             <CompanyDashboard />
-                        </AuthRoute>
-                        <AuthRoute path="/companies/:id" auth={auth} role={ROLE.COMPANY_OWNER}>
+                        </SecuredRoute>
+                        <SecuredRoute path="/companies/:id" auth={auth} role={ROLE.COMPANY_OWNER}>
                             <CompanyEditor />
-                        </AuthRoute>
-                        <AuthRoute exact path="/users" auth={auth} role={ROLE.COMPANY_OWNER}>
+                        </SecuredRoute>
+                        <SecuredRoute path="/company-view/:id" auth={auth} role={ROLE.PP_MANAGER}>
+                            <CompanyViewer />
+                        </SecuredRoute>
+                        <SecuredRoute exact path="/users" auth={auth} role={ROLE.COMPANY_OWNER}>
                             <UserDashboard />
-                        </AuthRoute>
+                        </SecuredRoute>
+                        <SecuredRoute exact path="/plans" auth={auth} role={ROLE.ACCOUNTANT}>
+                            <PlanDashboard />
+                        </SecuredRoute>
+                        <SecuredRoute path="/plans/:id" auth={auth} role={ROLE.ACCOUNTANT}>
+                            <PlanEditor />
+                        </SecuredRoute>
                         <Route path="/users/:id">
                             <UserEditor />
                         </Route>

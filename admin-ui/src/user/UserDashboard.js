@@ -41,15 +41,18 @@ function UserDashboard({ auth }) {
     }, [pageable, sort, filter, history, auth, loadData]);
 
     useEffect(() => {
-        companyService.findNames()
-            .then(response => {
-                let data = response.data.reduce((acc, item) => {
-                    acc[item.id] = item.fullName;
-                    return acc;
-                }, {})
-                setCompanyNames(data);
-            });
-    }, []);
+        if (isAdmin) {
+            companyService.findNames()
+                .then(response => {
+                    let data = response.data.reduce((acc, item) => {
+                        acc[item.id] = item.fullName;
+                        return acc;
+                    }, {})
+                    setCompanyNames(data);
+                });
+        }
+    }, [isAdmin]);
+
 
     function onPageableChange(page) {
         setPageable(page);
@@ -70,9 +73,9 @@ function UserDashboard({ auth }) {
                     Users
                 </div>
                 <ShowFilterButton filter={filter} showFilter={showFilter}
-                    className="btn btn-light ml-3"
+                    className="btn btn-light cmt-btn ml-3"
                     onClick={e => setShowFilter(!showFilter)} />
-                <Link to="/users/new" className="btn btn-light ml-2">
+                <Link to="/users/new" className="btn btn-light cmt-btn ml-2">
                     <Icon.PlusSquare className="filter-icon" />
                 </Link>
             </div>
@@ -104,7 +107,7 @@ function UserDashboard({ auth }) {
                                 <td>{user.firstName}</td>
                                 <td>{user.email}</td>
                                 <td>
-                                    <FormattedMessage id={`user.role.${user.role.toLowerCase()}`}/>
+                                    <FormattedMessage id={`user.role.${user.role.toLowerCase()}`} />
                                 </td>
                                 {isAdmin && <td>
                                     <Link to={`/companies/${user.companyId}`}>

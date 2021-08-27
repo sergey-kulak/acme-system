@@ -1,6 +1,6 @@
 package com.acme.usersrv.user.controller;
 
-import com.acme.usersrv.test.ControllerTest;
+import com.acme.testcommons.ControllerTest;
 import com.acme.usersrv.user.dto.CreateUserDto;
 import com.acme.usersrv.user.exception.DuplicateUserException;
 import com.acme.usersrv.user.service.UserService;

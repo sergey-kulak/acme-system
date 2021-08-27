@@ -2,6 +2,7 @@ package com.acme.commons.advice;
 
 import com.acme.commons.dto.ValidationErrorDto;
 import com.acme.commons.exception.EntityNotFoundException;
+import com.acme.commons.exception.IllegalStatusChange;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -29,6 +30,11 @@ public class BaseControllerAdvice {
     protected ResponseEntity<Object> createConflictResponse(Exception ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(ex.getMessage());
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Object> handle(IllegalStatusChange ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
     }
 
 }

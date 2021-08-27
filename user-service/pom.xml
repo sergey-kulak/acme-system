@@ -8,7 +8,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.5.2</version>
-        <relativePath />
+        <relativePath/>
     </parent>
 
     <groupId>com.acme</groupId>
@@ -33,6 +33,7 @@
         <jooq.version>3.15.0</jooq.version>
         <testcontainers.version>1.15.3</testcontainers.version>
         <acme-commons.version>1.0-SNAPSHOT</acme-commons.version>
+        <acme-test-commons.version>1.0-SNAPSHOT</acme-test-commons.version>
     </properties>
 
     <dependencyManagement>
@@ -52,6 +53,13 @@
             <groupId>com.acme</groupId>
             <artifactId>commons</artifactId>
             <version>${acme-commons.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.acme</groupId>
+            <artifactId>test-commons</artifactId>
+            <version>${acme-test-commons.version}</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -181,6 +189,11 @@
             <artifactId>nimbus-jose-jwt</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-stream-rabbit</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -214,7 +227,7 @@
                 <configuration>
                     <changeLogFile>src/main/resources/db/changelog/master.xml</changeLogFile>
                     <driver>org.testcontainers.jdbc.ContainerDatabaseDriver</driver>
-                    <url>jdbc:tc:postgresql:13.3-alpine:///gendb?TC_DAEMON=true&amp;TC_REUSABLE=true</url>
+                    <url>jdbc:tc:postgresql:13.3-alpine:///userdb?TC_DAEMON=true&amp;TC_REUSABLE=true</url>
                 </configuration>
                 <dependencies>
                     <dependency>
@@ -292,7 +305,7 @@
                 <configuration>
                     <jdbc>
                         <driver>org.testcontainers.jdbc.ContainerDatabaseDriver</driver>
-                        <url>jdbc:tc:postgresql:13.3-alpine:///gendb?TC_DAEMON=true&amp;TC_REUSABLE=true</url>
+                        <url>jdbc:tc:postgresql:13.3-alpine:///userdb?TC_DAEMON=true&amp;TC_REUSABLE=true</url>
                     </jdbc>
 
                     <generator>

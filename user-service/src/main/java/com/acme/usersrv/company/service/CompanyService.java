@@ -35,7 +35,7 @@ public interface CompanyService {
     @PreAuthorize("isAuthenticated()")
     Mono<CompanyDto> findById(UUID id);
 
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'COMPANY_OWNER')")
     Mono<FullDetailsCompanyDto> findFullDetailsById(UUID id);
 
     @PreAuthorize("hasAnyAuthority('ADMIN', 'COMPANY_OWNER')")

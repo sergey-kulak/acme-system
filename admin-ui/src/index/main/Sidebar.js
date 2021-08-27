@@ -4,9 +4,9 @@ import Form from 'react-bootstrap/Form';
 import * as Icon from 'react-feather';
 import { connect } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
+import { hasRole, ROLE } from '../../common/security';
 import { onLogout } from '../../common/security/authReducer';
 import './Sidebar.css';
-import { ROLE, hasRole } from '../../common/security';
 
 function Sidebar({ auth, onLogout }) {
     const [isFixed, setFixed] = useState(true);
@@ -50,11 +50,20 @@ function Sidebar({ auth, onLogout }) {
                                 <Icon.User className="feather" />
                                 <span className="nav-item-text">Profile</span>
                             </Link>
-                        </li>                         
+                        </li>
+                        {
+                            auth.user.cmpid && hasRole(auth, ROLE.PP_MANAGER) &&
+                            <li className="nav-item">
+                                <Link to={`/company-view/current`} className="nav-link">
+                                    <Icon.Box className="feather" />
+                                    <span className="nav-item-text">Company</span>
+                                </Link>
+                            </li>
+                        }
                         {
                             hasRole(auth, ROLE.ADMIN) && <li className="nav-item">
                                 <Link to="/companies" className="nav-link">
-                                    <Icon.Box className="feather" />
+                                    <Icon.Package className="feather" />
                                     <span className="nav-item-text">Companies</span>
                                 </Link>
                             </li>
@@ -66,7 +75,15 @@ function Sidebar({ auth, onLogout }) {
                                     <span className="nav-item-text">Users</span>
                                 </Link>
                             </li>
-                        }                       
+                        }
+                        {
+                            hasRole(auth, ROLE.ACCOUNTANT) && <li className="nav-item">
+                                <Link to="/plans" className="nav-link">
+                                    <Icon.Pocket className="feather" />
+                                    <span className="nav-item-text">Plans</span>
+                                </Link>
+                            </li>
+                        }
                         <li className="nav-item">
                             <Link to="/logout" className="nav-link" onClick={logout}>
                                 <Icon.LogOut className="feather" />

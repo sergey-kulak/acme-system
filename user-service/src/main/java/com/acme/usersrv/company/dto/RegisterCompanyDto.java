@@ -8,6 +8,8 @@ import lombok.experimental.Tolerate;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -31,9 +33,10 @@ public class RegisterCompanyDto {
     private String site;
     @NotBlank
     private String phone;
-
     @Valid
     private CreateOwnerDto owner;
+    @NotNull
+    private UUID planId;
 
     @Tolerate
     public RegisterCompanyDto() {

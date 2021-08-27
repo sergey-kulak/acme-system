@@ -41,7 +41,7 @@ function UserEditor({ auth, onSuccess, onError }) {
         role: Yup.string().required('Required'),
         companyId: Yup.string()
             .test('companyId-check', 'Required', function (value) {
-                return this.parent.role === ROLE.ADMIN || !isEmpty(value);
+                return this.parent.role === ROLE.ADMIN || this.parent.role === ROLE.ACCOUNTANT || !isEmpty(value);
             })
     });
 

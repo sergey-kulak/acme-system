@@ -1,16 +1,16 @@
 package com.acme.usersrv.user.service;
 
 import com.acme.commons.exception.EntityNotFoundException;
-import com.acme.usersrv.test.RandomTestUtils;
+import com.acme.commons.security.UserRole;
+import com.acme.testcommons.RandomTestUtils;
+import com.acme.testcommons.TxStepVerifier;
+import com.acme.testcommons.security.WithMockAdmin;
+import com.acme.testcommons.security.WithMockCompanyOwner;
+import com.acme.testcommons.security.WithMockPpManager;
+import com.acme.testcommons.security.WithMockWaiter;
 import com.acme.usersrv.test.ServiceIntegrationTest;
 import com.acme.usersrv.test.TestEntityHelper;
-import com.acme.usersrv.test.TxStepVerifier;
-import com.acme.usersrv.test.WithMockAdmin;
-import com.acme.usersrv.test.WithMockCompanyOwner;
-import com.acme.usersrv.test.WithMockPpManager;
-import com.acme.usersrv.test.WithMockWaiter;
 import com.acme.usersrv.user.User;
-import com.acme.commons.security.UserRole;
 import com.acme.usersrv.user.dto.CreateUserDto;
 import com.acme.usersrv.user.dto.UpdateUserDto;
 import com.acme.usersrv.user.dto.UserDto;

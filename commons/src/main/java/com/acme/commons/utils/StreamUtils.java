@@ -67,6 +67,13 @@ public class StreamUtils {
         return src.stream().collect(groupingBy(classifier));
     }
 
+    public static <K, V, NV> Map<K, List<NV>> groupToListsAndMap(Collection<V> src,
+                                                                 Function<? super V, ? extends K> classifier,
+                                                                 Function<? super V, ? extends NV> mapper) {
+        return src.stream().collect(groupingBy(classifier,
+                Collectors.mapping(mapper, Collectors.toList())));
+    }
+
     /**
      * Wrapper around {@link Collectors#groupingBy(Function)}
      *

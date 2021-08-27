@@ -1,7 +1,7 @@
 version: '3.1'
 
 services:
-  mongo:
+  db:
     image: mongo:5.0.2
     container_name: acme-rfd-db
     ports:
@@ -10,7 +10,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: rfUser
       MONGO_INITDB_ROOT_PASSWORD: rfPass
 
-  mongo-express:
+  db-ui:
     image: mongo-express:0.54.0
     container_name: acme-rfd-db-ui
     ports:

@@ -10,5 +10,12 @@
     "company.status.active": "Active",
     "company.status.inactive": "Inactive",
     "company.status.suspended": "Suspended",
-    "company.status.stopped": "Stopped"
+    "company.status.stopped": "Stopped",
+    "plan.status.active": "Active",
+    "plan.status.inactive": "Inactive",
+    "plan.status.stopped": "Stopped",
+    "country.RU": "Russian Federation",
+    "country.PL": "Poland",
+    "country.UA": "Ukraine",
+    "country.BY": "Belarus"
 }

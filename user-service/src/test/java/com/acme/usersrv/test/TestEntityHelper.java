@@ -1,21 +1,18 @@
 package com.acme.usersrv.test;
 
 import com.acme.commons.security.CompanyUser;
+import com.acme.commons.security.UserRole;
+import com.acme.testcommons.RandomTestUtils;
+import com.acme.testcommons.security.TestSecurityUtils;
 import com.acme.usersrv.company.Company;
 import com.acme.usersrv.company.CompanyStatus;
 import com.acme.usersrv.company.repository.CompanyRepository;
 import com.acme.usersrv.user.User;
-import com.acme.commons.security.UserRole;
 import com.acme.usersrv.user.UserStatus;
 import com.acme.usersrv.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.ReactiveSecurityContextHolder;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import reactor.core.publisher.Mono;
-
-import java.util.UUID;
 
 public class TestEntityHelper {
     @Autowired
@@ -59,7 +56,7 @@ public class TestEntityHelper {
     }
 
     public Mono<User> createUserForLoggedUser(Company company) {
-        return getCurrentUser()
+        return TestSecurityUtils.getCurrentUser()
                 .zipWhen(user -> createUser(company, user.getRole()))
                 .flatMap(data -> {
                     CompanyUser cmpUser = data.getT1();
@@ -72,21 +69,12 @@ public class TestEntityHelper {
     }
 
     public Mono<Company> linkWithCurrentUser(Company company) {
-        return getCurrentUser()
-                .doOnSuccess(cmpUser -> cmpUser.setCompanyId(company.getId()))
-                .map(user -> company);
-    }
-
-    public Mono<CompanyUser> getCurrentUser() {
-        return ReactiveSecurityContextHolder.getContext()
-                .map(SecurityContext::getAuthentication)
-                .map(Authentication::getPrincipal)
-                .cast(CompanyUser.class);
+        return TestSecurityUtils.linkWithCurrentUser(company.getId())
+                .then(Mono.just(company));
     }
 
     public Mono<Company> linkOtherCompanyWithCurrentUser(Company company) {
-        return getCurrentUser()
-                .doOnSuccess(cmpUser -> cmpUser.setCompanyId(UUID.randomUUID()))
-                .map(user -> company);
+        return TestSecurityUtils.linkOtherCompanyWithCurrentUser()
+                .then(Mono.just(company));
     }
 }

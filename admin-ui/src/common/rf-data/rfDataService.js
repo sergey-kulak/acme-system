@@ -6,18 +6,20 @@ const COUNTRY_REGION = 'countries';
 const CURRENCY_REGION = 'currencies';
 const LANG_REGION = 'languages';
 
+const BASE_URL = '/rf-data-service';
+
 const rfDataService = {
     findCountries: function () {
         return cache.retriveIfAbsent(COUNTRY_REGION, {},
-            () => restApi.get('/rf-data-service/countries'));
+            () => restApi.get(`${BASE_URL}/countries`));
     },
     findCurrencies: function () {
         return cache.retriveIfAbsent(CURRENCY_REGION, {},
-            () => restApi.get('/rf-data-service/currencies'));
+            () => restApi.get(`${BASE_URL}/currencies`));
     },
     findLanguages: function () {
         return cache.retriveIfAbsent(LANG_REGION, {},
-            () => restApi.get('/rf-data-service/languages'));
+            () => restApi.get(`${BASE_URL}/languages`));
     }
 }
 

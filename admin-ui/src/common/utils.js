@@ -3,10 +3,10 @@ import { getIn } from 'formik';
 export const isEmptyObject = (obj) => {
     for (let propName in obj) {
         if (!isEmpty(obj[propName])) {
-            return true;
+            return false;
         }
     }
-    return false;
+    return true;
 }
 
 export const isEmpty = (value) =>
@@ -37,4 +37,9 @@ export const toOptions = (intl, values, msgPrefix) => {
         label: intl.formatMessage({ id: `${msgPrefix}.${value.toLowerCase()}` })
     })
     );
+}
+
+export const getErrorMessage = (errorData) => {
+    return typeof errorData === 'string' ? errorData :
+        (errorData && errorData.error) || 'Error';
 }

@@ -1,0 +1,17 @@
+.plan-status{
+  height: 1rem;
+  width: 1rem;
+  border-radius: 50%;
+}
+
+.plan-active{
+    background-color: green;
+}
+
+.plan-inactive{
+    background-color: darkorange;
+}
+
+.plan-stopped{
+    background-color: red;
+}

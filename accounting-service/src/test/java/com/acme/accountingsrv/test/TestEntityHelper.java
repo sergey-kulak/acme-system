@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.UUID;
 
 public class TestEntityHelper {
@@ -52,6 +53,7 @@ public class TestEntityHelper {
         CompanyPlan cmpPlan = new CompanyPlan();
         cmpPlan.setCompanyId(companyId);
         cmpPlan.setPlanId(planId);
+        cmpPlan.setStartDate(Instant.now());
 
         return companyPlanRepository.save(cmpPlan);
     }

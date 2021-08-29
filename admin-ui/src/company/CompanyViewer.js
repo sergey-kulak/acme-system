@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useParams, Link, Redirect } from "react-router-dom";
 import * as Icon from 'react-feather';
-import { useIntl } from 'react-intl';
+import { FormattedDate, useIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import { onError, onSuccess } from '../common/toastNotification';
 import { getErrorMessage } from "../common/utils";
@@ -11,6 +11,8 @@ import userService from '../user/userService';
 import { hasRole, ROLE } from "../common/security";
 import companyService from './companyService';
 import BackButton from "../common/BackButton";
+import ChangeCompanyStatusDialog from "./ChangeCompanyStatusDialog";
+import CompanyStatusLabel from "./CompanyStatusLabel";
 
 function CompanyViewer({ auth, onSuccess, onError }) {
     const params = useParams();
@@ -24,13 +26,16 @@ function CompanyViewer({ auth, onSuccess, onError }) {
     const [expandGI, setExpandGI] = useState(false);
     const [expandPlan, setExpandPlan] = useState(false);
     const [showPlanDialog, setShowPlanDialog] = useState(false);
+    const [showStatusChangeDialog, setShowStatusChangeDialog] = useState(false);
+
+    const loadCompany = useCallback(() => {
+        companyService.findByIdFullDetails(id)
+            .then(response => setCompany(response.data))
+    }, [id]);
 
     useEffect(() => {
-        companyService.findByIdFullDetails(id)
-            .then(response => {
-                setCompany(response.data);
-            })
-    }, [id]);
+        loadCompany();
+    }, [id, loadCompany]);
 
     function loadOwners() {
         userService.findOwners(id)
@@ -48,7 +53,13 @@ function CompanyViewer({ auth, onSuccess, onError }) {
 
     function loadPlanHistory() {
         companyPlanService.getHistory(id)
-            .then(response => setPlanHistory(response.data));
+            .then(response => response.data)
+            .then(data => data.map(item => ({
+                ...item,
+                startDate: new Date(item.startDate),
+                endDate: item.endDate && new Date(item.endDate)
+            })))
+            .then(setPlanHistory);
     }
 
     function onPlanClick(e) {
@@ -72,8 +83,28 @@ function CompanyViewer({ auth, onSuccess, onError }) {
         }
     }
 
-    function statusLabel() {
-        return intl.formatMessage({ id: `company.status.${company.status.toLowerCase()}` })
+    function onCompanyStatusClick(e) {
+        e.preventDefault();
+        setShowStatusChangeDialog(true);
+    }
+
+    function onStatusChange(newStatus) {
+        setShowStatusChangeDialog(false);
+        if (newStatus) {
+            companyService.changeStatus(company.id, { status: newStatus })
+                .then(() => {
+                    onSuccess("Company status was changed successfully");
+                    loadCompany();
+                    if (newStatus === 'STOPPED') {
+                        loadActivePlan();
+                        if (expandPlan) {
+                            loadPlanHistory()
+                        }
+                    }
+                }, error => {
+                    onError(getErrorMessage(error.response.data));
+                });
+        }
     }
 
     function countryLabel() {
@@ -134,9 +165,13 @@ function CompanyViewer({ auth, onSuccess, onError }) {
                                 type="text" className="form-control-plaintext" />
                         </div>
                         <label htmlFor="status" className={labelClass}>Status:</label>
-                        <div className={controlClass}>
-                            <input readOnly value={statusLabel()} name="status"
-                                type="text" className="form-control-plaintext" />
+                        <div className="col-form-label col-sm-6 col-md-4">
+                            {company.status === 'STOPPED' ?
+                                <CompanyStatusLabel status={company.status} showText /> :
+                                <a href="#status" onClick={onCompanyStatusClick}>
+                                    <CompanyStatusLabel status={company.status} showText />
+                                </a>
+                            }
                         </div>
                     </div>
                     <div className="form-group row mb-0">
@@ -209,9 +244,10 @@ function CompanyViewer({ auth, onSuccess, onError }) {
                     <div className="form-group row mb-0">
                         <label htmlFor="phone" className={labelClass}>Current plan:</label>
                         <div className="col-form-label col-sm-6 col-md-4">
-                            <a href="/" onClick={onPlanClick}>
-                                {planLabel(plan)}
-                            </a>
+                            {company.status === 'STOPPED' ? planLabel(plan) :
+                                <a href="/" onClick={onPlanClick}>
+                                    {planLabel(plan)}
+                                </a>}
                         </div>
                     </div>
                     {expandPlan && planHistory.length > 0 && <>
@@ -229,8 +265,13 @@ function CompanyViewer({ auth, onSuccess, onError }) {
                                     <tbody>{
                                         planHistory.map(phItem => <tr key={phItem.id}>
                                             <td>{planLabel(phItem.plan)}</td>
-                                            <td>{phItem.startDate}</td>
-                                            <td>{phItem.endDate}</td>
+                                            <td>
+                                                <FormattedDate value={phItem.startDate} />
+                                            </td>
+                                            <td>
+                                                {phItem.endDate &&
+                                                    <FormattedDate value={phItem.endDate} />}
+                                            </td>
                                         </tr>)
                                     }</tbody>
                                 </table>
@@ -247,6 +288,13 @@ function CompanyViewer({ auth, onSuccess, onError }) {
                         {showPlanDialog
                             && <ChoosePlanDialog show={showPlanDialog}
                                 company={company} onClose={onPlanChange}
+                            />
+                        }
+                    </div>
+                    <div>
+                        {showStatusChangeDialog
+                            && <ChangeCompanyStatusDialog show={showStatusChangeDialog}
+                                status={company.status} onClose={onStatusChange}
                             />
                         }
                     </div>

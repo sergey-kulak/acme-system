@@ -1,6 +1,6 @@
 package com.acme.accountingsrv.common.config;
 
-import com.acme.commons.config.SecuredOpenApiConfig;
+import com.acme.commons.openapi.SecuredOpenApiConfig;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration

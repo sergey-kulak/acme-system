@@ -1,7 +1,5 @@
 package com.acme.accountingsrv.plan.repository;
 
-import com.acme.accountingsrv.jooq.tables.CompanyPlan;
-import com.acme.accountingsrv.plan.PlanCountry;
 import com.acme.commons.repository.AbstractCustomJooqRepository;
 import com.acme.commons.utils.StreamUtils;
 import lombok.Data;

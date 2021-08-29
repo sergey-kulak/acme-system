@@ -12,9 +12,12 @@ import com.acme.usersrv.company.dto.FullDetailsCompanyDto;
 import com.acme.usersrv.company.dto.RegisterCompanyDto;
 import com.acme.usersrv.company.dto.UpdateCompanyDto;
 import com.acme.usersrv.company.event.CompanyRegisteredEvent;
+import com.acme.usersrv.company.event.CompanyStatusChangedEvent;
 import com.acme.usersrv.company.exception.DuplicateCompanyException;
+import com.acme.usersrv.company.exception.PlanNotAssignedException;
 import com.acme.usersrv.company.mapper.CompanyMapper;
 import com.acme.usersrv.company.repository.CompanyRepository;
+import com.acme.usersrv.plan.api.CompanyPlanApi;
 import com.acme.usersrv.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -46,6 +49,7 @@ public class CompanyServiceImpl implements CompanyService {
     private final CompanyRepository companyRepository;
     private final UserService userService;
     private final CompanyMapper companyMapper;
+    private final CompanyPlanApi companyPlanApi;
     private final ApplicationEventPublisher eventPublisher;
     private final ReactiveTransactionManager txManager;
 
@@ -58,11 +62,7 @@ public class CompanyServiceImpl implements CompanyService {
                         addOwner(savedCompany, registrationDto.getOwner())
                                 .thenReturn(savedCompany.getId()))
                 .as(TransactionalOperator.create(txManager)::transactional)
-                .doOnSuccess(id -> notifyAboutRegistration(id, registrationDto));
-    }
-
-    private void notifyAboutRegistration(UUID id, RegisterCompanyDto dto) {
-        eventPublisher.publishEvent(new CompanyRegisteredEvent(id, dto.getPlanId()));
+                .doOnSuccess(id -> notify(new CompanyRegisteredEvent(id, registrationDto.getPlanId())));
     }
 
     private Company mapFromDto(RegisterCompanyDto registrationDto) {
@@ -95,22 +95,42 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    @Transactional
     public Mono<Void> changeStatus(UUID id, CompanyStatus newStatus) {
         return companyRepository.findById(id)
                 .flatMap(company -> isValidChange(company, newStatus))
+                .flatMap(company -> checkPlanForActive(company, newStatus))
                 .flatMap(company -> {
+                    CompanyStatus fromStatus = company.getStatus();
                     company.setStatus(newStatus);
-                    return companyRepository.save(company);
+                    return companyRepository.save(company)
+                            .thenReturn(CompanyStatusChangedEvent.builder()
+                                    .companyId(id)
+                                    .fromStatus(fromStatus)
+                                    .toStatus(newStatus)
+                                    .build());
                 })
                 .switchIfEmpty(EntityNotFoundException.of(id))
+                .as(TransactionalOperator.create(txManager)::transactional)
+                .doOnSuccess(this::notify)
                 .then();
+    }
+
+    private Mono<Company> checkPlanForActive(Company company, CompanyStatus newStatus) {
+        return Mono.just(company)
+                .filter(cmp -> cmp.getStatus() != CompanyStatus.STOPPED && newStatus == CompanyStatus.ACTIVE)
+                .flatMap(cmp -> companyPlanApi.findActivePlanId(cmp.getId())
+                        .switchIfEmpty(PlanNotAssignedException.of(cmp.getFullName())))
+                .thenReturn(company);
     }
 
     private Mono<Company> isValidChange(Company company, CompanyStatus newStatus) {
         List<CompanyStatus> nextStatuses =
                 ALLOWED_NEXT_STATUSES.getOrDefault(company.getStatus(), Collections.emptyList());
         return nextStatuses.contains(newStatus) ? Mono.just(company) : Mono.error(IllegalStatusChange::new);
+    }
+
+    private void notify(Object event) {
+        eventPublisher.publishEvent(event);
     }
 
     @Override

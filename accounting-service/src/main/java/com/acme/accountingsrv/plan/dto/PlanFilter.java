@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.experimental.Tolerate;
 
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -16,6 +17,7 @@ public class PlanFilter {
     private String country;
     private boolean onlyGlobal = false;
     private Integer tableCount;
+    private UUID companyId;
 
     @Tolerate
     public PlanFilter() {

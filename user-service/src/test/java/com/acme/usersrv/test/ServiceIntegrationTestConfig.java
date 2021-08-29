@@ -3,6 +3,8 @@ package com.acme.usersrv.test;
 import com.acme.testcommons.Transactions;
 import com.acme.testcommons.security.TestUserDetailsService;
 import com.acme.usersrv.company.event.CompanyEventListener;
+import com.acme.usersrv.plan.api.CompanyPlanApi;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -31,5 +33,10 @@ public class ServiceIntegrationTestConfig {
     @Bean
     public UserDetailsService userDetailsService() {
         return new TestUserDetailsService();
+    }
+
+    @Bean
+    public CompanyPlanApi companyPlanApi() {
+        return Mockito.mock(CompanyPlanApi.class);
     }
 }

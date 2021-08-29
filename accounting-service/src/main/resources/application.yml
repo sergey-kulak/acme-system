@@ -17,6 +17,8 @@ spring:
         enabled: true
         service-id: config-service
     stream:
+      function:
+        definition: companyRegisteredConsumer;companyStatusConsumer
       rabbit:
         default:
           consumer:
@@ -26,6 +28,9 @@ spring:
         companyRegisteredConsumer-in-0:
           destination: company-registration
           group: company-registration
+        companyStatusConsumer-in-0:
+          destination: company-status
+          group: company-status
   liquibase:
     enabled: true
     change-log: db/changelog/master.xml

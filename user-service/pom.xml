@@ -34,6 +34,7 @@
         <testcontainers.version>1.15.3</testcontainers.version>
         <acme-commons.version>1.0-SNAPSHOT</acme-commons.version>
         <acme-test-commons.version>1.0-SNAPSHOT</acme-test-commons.version>
+        <feign-reactor.version>3.1.1</feign-reactor.version>
     </properties>
 
     <dependencyManagement>
@@ -194,6 +195,23 @@
             <artifactId>spring-cloud-starter-stream-rabbit</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.playtika.reactivefeign</groupId>
+            <artifactId>feign-reactor-webclient</artifactId>
+            <version>${feign-reactor.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.playtika.reactivefeign</groupId>
+            <artifactId>feign-reactor-cloud</artifactId>
+            <version>${feign-reactor.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.playtika.reactivefeign</groupId>
+            <artifactId>feign-reactor-spring-configuration</artifactId>
+            <version>${feign-reactor.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

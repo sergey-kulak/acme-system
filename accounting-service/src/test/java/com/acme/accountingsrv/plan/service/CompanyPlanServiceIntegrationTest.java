@@ -2,7 +2,6 @@ package com.acme.accountingsrv.plan.service;
 
 import com.acme.accountingsrv.plan.CompanyPlan;
 import com.acme.accountingsrv.plan.Plan;
-import com.acme.accountingsrv.plan.PlanStatus;
 import com.acme.accountingsrv.plan.dto.AssignPlanDto;
 import com.acme.accountingsrv.plan.dto.CompanyPlanDto;
 import com.acme.accountingsrv.plan.dto.PlanDto;
@@ -22,9 +21,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import reactor.core.publisher.Mono;
 
-import java.time.LocalDate;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -32,8 +32,11 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.comparesEqualTo;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 @ServiceIntegrationTest
@@ -59,7 +62,7 @@ class CompanyPlanServiceIntegrationTest {
                     assertThat(cmpPlan, allOf(
                             hasProperty("companyId", is(companyId)),
                             hasProperty("planId", is(plan.getId())),
-                            hasProperty("startDate", is(nullValue())),
+                            hasProperty("startDate", is(notNullValue())),
                             hasProperty("endDate", is(nullValue()))
                     ));
                 })
@@ -68,6 +71,13 @@ class CompanyPlanServiceIntegrationTest {
 
     private Mono<UUID> assignPlan(UUID companyId, UUID planId) {
         return companyPlanService.assignPlan(new AssignPlanDto(companyId, planId));
+    }
+
+    private Mono<UUID> assignPlan(UUID companyId, UUID planId, int hoursAgo) {
+        return testEntityHelper.assignPlan(companyId, planId)
+                .doOnNext(cmpPlan -> cmpPlan.setStartDate(Instant.now().minusSeconds(hoursAgo * 3600L)))
+                .flatMap(companyPlanRepository::save)
+                .map(CompanyPlan::getId);
     }
 
     @Test
@@ -118,7 +128,7 @@ class CompanyPlanServiceIntegrationTest {
 
     @Test
     @WithMockCompanyOwner
-    void switchActivePlan() {
+    void switchActivePlanCurrentWithinBillablePeriod() {
         UUID companyId = UUID.randomUUID();
         TestSecurityUtils.linkWithCurrentUser(companyId)
                 .then(Mono.zip(
@@ -127,6 +137,38 @@ class CompanyPlanServiceIntegrationTest {
                 ))
                 .zipWhen(planData ->
                         assignPlan(companyId, planData.getT1().getId())
+                                .then(assignPlan(companyId, planData.getT2().getId()))
+                                .then(companyPlanRepository.findByCompanyIdOrderByEndDate(companyId).collectList())
+                )
+                .as(TxStepVerifier::withRollback)
+                .assertNext(data -> {
+                    Plan plan2 = data.getT1().getT2();
+                    List<CompanyPlan> companyPlans = data.getT2();
+
+                    assertEquals(1, companyPlans.size());
+                    CompanyPlan cmpPlan = companyPlans.get(0);
+                    assertThat(cmpPlan, allOf(
+                            hasProperty("companyId", is(companyId)),
+                            hasProperty("planId", is(plan2.getId())),
+                            hasProperty("startDate", is(notNullValue())),
+                            hasProperty("endDate", is(nullValue()))
+                    ));
+
+                })
+                .verifyComplete();
+    }
+
+    @Test
+    @WithMockCompanyOwner
+    void switchActivePlan() {
+        UUID companyId = UUID.randomUUID();
+        TestSecurityUtils.linkWithCurrentUser(companyId)
+                .then(Mono.zip(
+                        testEntityHelper.createPlan(),
+                        testEntityHelper.createPlan()
+                ))
+                .zipWhen(planData ->
+                        assignPlan(companyId, planData.getT1().getId(), 2)
                                 .then(assignPlan(companyId, planData.getT2().getId()))
                                 .then(companyPlanRepository.findByCompanyIdOrderByEndDate(companyId).collectList())
                 )
@@ -143,8 +185,8 @@ class CompanyPlanServiceIntegrationTest {
                     assertThat(cmpPlan1, allOf(
                             hasProperty("companyId", is(companyId)),
                             hasProperty("planId", is(plan1.getId())),
-                            hasProperty("startDate", is(nullValue())),
-                            hasProperty("endDate", is(LocalDate.now().minusDays(1)))
+                            hasProperty("startDate", is(notNullValue())),
+                            hasProperty("endDate", is(notNullValue()))
                     ));
 
                     CompanyPlan cmpPlan2 = StreamUtils.filter(companyPlans,
@@ -153,7 +195,7 @@ class CompanyPlanServiceIntegrationTest {
                     assertThat(cmpPlan2, allOf(
                             hasProperty("companyId", is(companyId)),
                             hasProperty("planId", is(plan2.getId())),
-                            hasProperty("startDate", is(nullValue())),
+                            hasProperty("startDate", is(notNullValue())),
                             hasProperty("endDate", is(nullValue()))
                     ));
 
@@ -171,7 +213,7 @@ class CompanyPlanServiceIntegrationTest {
                         testEntityHelper.createPlan()
                 ))
                 .zipWhen(planData ->
-                        assignPlan(companyId, planData.getT1().getId())
+                        assignPlan(companyId, planData.getT1().getId(), 1)
                                 .then(assignPlan(companyId, planData.getT2().getId()))
                                 .then(companyPlanService.getHistory(companyId))
                 )
@@ -186,15 +228,15 @@ class CompanyPlanServiceIntegrationTest {
                     assertThat(cmpPlan1, allOf(
                             hasProperty("companyId", is(companyId)),
                             hasProperty("plan", is(planMatcher(plan1))),
-                            hasProperty("startDate", is(nullValue())),
-                            hasProperty("endDate", is(LocalDate.now().minusDays(1)))
+                            hasProperty("startDate", is(notNullValue())),
+                            hasProperty("endDate", is(notNullValue()))
                     ));
 
                     CompanyPlanDto cmpPlan2 = companyPlans.get(1);
                     assertThat(cmpPlan2, allOf(
                             hasProperty("companyId", is(companyId)),
                             hasProperty("plan", is(planMatcher(plan2))),
-                            hasProperty("startDate", is(nullValue())),
+                            hasProperty("startDate", is(notNullValue())),
                             hasProperty("endDate", is(nullValue()))
                     ));
 
@@ -215,4 +257,57 @@ class CompanyPlanServiceIntegrationTest {
         );
     }
 
+    @Test
+    @WithMockAdmin
+    void getCompanyIdsWithPlan() {
+        UUID companyId = UUID.randomUUID();
+        testEntityHelper.createPlan()
+                .flatMap(plan -> assignPlan(companyId, plan.getId())
+                        .thenReturn(plan))
+                .flatMap(plan -> companyPlanService.findCompanyIdsWithPlan(plan.getId()).collectList())
+                .as(TxStepVerifier::withRollback)
+                .assertNext(companyIds -> {
+                    assertEquals(1, companyIds.size());
+                    assertTrue(companyIds.contains(companyId));
+                })
+                .verifyComplete();
+    }
+
+    @Test
+    @WithMockAdmin
+    void stopPlan() {
+        UUID companyId = UUID.randomUUID();
+        testEntityHelper.createPlan()
+                .flatMap(plan -> assignPlan(companyId, plan.getId()))
+                .flatMap(companyPlanId -> companyPlanService.stopActivePlan(companyId)
+                        .then(Mono.zip(
+                                companyPlanRepository.findById(companyPlanId),
+                                companyPlanService.findActivePlan(companyId)
+                                        .map(Optional::of)
+                                        .defaultIfEmpty(Optional.empty())
+                        ))
+                )
+                .as(TxStepVerifier::withRollback)
+                .assertNext(data -> {
+                    CompanyPlan companyPlan = data.getT1();
+                    Optional<UUID> activePlanIdOp = data.getT2();
+
+                    assertNotNull(companyPlan.getEndDate());
+                    assertTrue(activePlanIdOp.isEmpty());
+                })
+                .verifyComplete();
+    }
+
+    @Test
+    @WithMockCompanyOwner
+    void stopPlanDenied() {
+        UUID companyId = UUID.randomUUID();
+        TestSecurityUtils.linkWithCurrentUser(UUID.randomUUID())
+                .then(testEntityHelper.createPlan())
+                .flatMap(plan -> testEntityHelper.assignPlan(companyId, plan.getId()))
+                .flatMap(companyPlanId -> companyPlanService.stopActivePlan(companyId))
+                .as(TxStepVerifier::withRollback)
+                .expectError(AccessDeniedException.class)
+                .verify();
+    }
 }

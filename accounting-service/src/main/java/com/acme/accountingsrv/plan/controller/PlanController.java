@@ -1,11 +1,12 @@
 package com.acme.accountingsrv.plan.controller;
 
 import com.acme.accountingsrv.plan.dto.PlanDto;
-import com.acme.accountingsrv.plan.dto.PlanWithCountDto;
-import com.acme.accountingsrv.plan.dto.PlanWithCountriesDto;
 import com.acme.accountingsrv.plan.dto.PlanFilter;
 import com.acme.accountingsrv.plan.dto.PlanStatusDto;
+import com.acme.accountingsrv.plan.dto.PlanWithCountDto;
+import com.acme.accountingsrv.plan.dto.PlanWithCountriesDto;
 import com.acme.accountingsrv.plan.dto.SavePlanDto;
+import com.acme.accountingsrv.plan.service.CompanyPlanService;
 import com.acme.accountingsrv.plan.service.PlanService;
 import com.acme.commons.dto.IdDto;
 import com.acme.commons.openapi.EntityCreatedResponse;
@@ -33,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -44,6 +46,7 @@ import java.util.UUID;
 @Tag(name = "Plan Api", description = "Plan management Api")
 public class PlanController {
     private final PlanService planService;
+    private final CompanyPlanService companyPlanService;
 
     @PostMapping
     @SecureOperation(description = "Create a plan")
@@ -93,6 +96,12 @@ public class PlanController {
     @ApiResponse(responseCode = "200")
     public Mono<List<PlanDto>> findActive(@RequestParam String country) {
         return planService.findActive(country);
+    }
+
+    @GetMapping("/{id}/companies")
+    @SecureOperation(description = "Get company ids for specified plan")
+    public Flux<UUID> getCompanies(@PathVariable UUID id) {
+        return companyPlanService.findCompanyIdsWithPlan(id);
     }
 
     @Schema(name = "Plan page")

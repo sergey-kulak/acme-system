@@ -18,4 +18,10 @@ public class CompanyEventListener {
         log.info("publish company registration event: {}", event);
         streamBridge.send("company-registration", event);
     }
+
+    @EventListener
+    public void onEvent(CompanyStatusChangedEvent event) {
+        log.info("publish company change status event: {}", event);
+        streamBridge.send("company-status", event);
+    }
 }

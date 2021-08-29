@@ -29,11 +29,10 @@ function UserFilter({ isAdmin, filter, onChange }) {
     return (
         <div className="form-row">
             {isAdmin && <div className="form-group col-lg-3 col-md-6">
-                <label htmlFor="namePattern">Company</label>
-                <CompanySelect name="namePattern" onChange={handleCompanyChange}
+                <label htmlFor="company">Company</label>
+                <CompanySelect name="company" onChange={handleCompanyChange}
                     value={filter.companyId} isClearable={true}
-                    showTypeCheckBox={true}
-                    type="text" />
+                    showTypeCheckBox={true} />
             </div>}
             <div className="form-group col-lg-3 col-md-6">
                 <label htmlFor="vatin">Email</label>

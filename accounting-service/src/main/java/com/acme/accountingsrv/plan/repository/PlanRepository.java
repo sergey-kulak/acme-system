@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface PlanRepository extends ReactiveSortingRepository<Plan, UUID>, PlanRepositoryCustom {
-    @Query("delete from plan_country where plan_id =$1")
+    @Query("delete from plan_country where plan_id = $1")
     @Modifying
     Mono<Void> clearCountries(UUID planId);
 

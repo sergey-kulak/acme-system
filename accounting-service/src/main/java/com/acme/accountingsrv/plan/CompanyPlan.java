@@ -6,6 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -20,7 +21,7 @@ public class CompanyPlan {
     @Column("plan_id")
     private UUID planId;
     @Column("start_date")
-    private LocalDate startDate;
+    private Instant startDate;
     @Column("end_date")
-    private LocalDate endDate;
+    private Instant endDate;
 }

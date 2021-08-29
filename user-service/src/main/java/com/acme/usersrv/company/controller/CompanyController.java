@@ -15,7 +15,6 @@ import com.acme.usersrv.company.dto.CompanyStatusDto;
 import com.acme.usersrv.company.dto.FullDetailsCompanyDto;
 import com.acme.usersrv.company.dto.RegisterCompanyDto;
 import com.acme.usersrv.company.dto.UpdateCompanyDto;
-import com.acme.usersrv.company.event.CompanyEventListener;
 import com.acme.usersrv.company.service.CompanyService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -108,6 +107,7 @@ public class CompanyController {
     public Flux<CompanyDto> findNames(@RequestParam(required = false) List<CompanyStatus> status) {
         return companyService.findNames(status);
     }
+
 
     @Schema(name = "Company page")
     private static class CompanyApiPage extends OpenApiPage<CompanyDto> {

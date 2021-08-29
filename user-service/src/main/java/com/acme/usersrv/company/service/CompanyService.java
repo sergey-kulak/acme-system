@@ -41,6 +41,6 @@ public interface CompanyService {
     @PreAuthorize("hasAnyAuthority('ADMIN', 'COMPANY_OWNER')")
     Mono<Void> update(UUID id, @Valid UpdateCompanyDto dto);
 
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN, ACCOUNTANT')")
     Flux<CompanyDto> findNames(Collection<CompanyStatus> status);
 }

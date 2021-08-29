@@ -1,17 +1,19 @@
-import { useEffect, useState, useCallback } from 'react';
-import { connect } from "react-redux";
-import { useIntl } from 'react-intl';
+import React, { useCallback, useEffect, useState } from 'react';
 import * as Icon from 'react-feather';
+import { useIntl } from 'react-intl';
+import { connect } from "react-redux";
 import { Link, useHistory, useLocation } from "react-router-dom";
-import planService from './planService';
 import Pagination from '../common/Pagination';
 import { combineAsUrlParams, Pageable, Sort } from '../common/paginationUtils';
 import ShowFilterButton from '../common/ShowFilterButton';
 import SortColumn from '../common/SortColumn';
-import { onSuccess, onError } from '../common/toastNotification'
-import PlanStatusLabel from './PlanStatusLabel';
-import PlanFilter from './PlanFilter';
+import { onError, onSuccess } from '../common/toastNotification';
+import companyService from '../company/companyService';
 import ChangePlanStatusDialog from './ChangePlanStatusDialog';
+import './PlanDashboard.css';
+import PlanFilter from './PlanFilter';
+import planService from './planService';
+import PlanStatusLabel from './PlanStatusLabel';
 
 function PlanDashboard({ onSuccess, onError }) {
     const history = useHistory();
@@ -25,6 +27,8 @@ function PlanDashboard({ onSuccess, onError }) {
     const [showFilter, setShowFilter] = useState(false);
     const [showStatusChangeDialog, setShowStatusChangeDialog] = useState(false);
     const [modifiedPlan, setModifiedPlan] = useState();
+    const [openedPlans, setOpenedPlans] = useState({});
+    const [companyNames, setCompanyNames] = useState({});
 
     const loadData = useCallback(() => {
         return planService.find(filter, pageable, sort)
@@ -37,6 +41,17 @@ function PlanDashboard({ onSuccess, onError }) {
                 history.replace(combineAsUrlParams(filter, pageable, sort));
             });
     }, [pageable, sort, filter, history, loadData]);
+
+    useEffect(() => {
+        companyService.findNames()
+            .then(response => {
+                let data = response.data.reduce((acc, item) => {
+                    acc[item.id] = item.fullName;
+                    return acc;
+                }, {})
+                setCompanyNames(data);
+            });
+    }, []);
 
     function onPageableChange(page) {
         setPageable(page);
@@ -65,6 +80,29 @@ function PlanDashboard({ onSuccess, onError }) {
                     loadData();
                 }, error => {
                     onError(error.response.data);
+                });
+        }
+    }
+
+    function setPlanData(planId, isOpen, companies) {
+        setOpenedPlans(prev => ({
+            ...prev,
+            [planId]: { isOpen, companies }
+        }));
+    }
+
+    function onExpandClick(plan) {
+        let planId = plan.id;
+        let planData = openedPlans[planId];
+        if (planData && planData.companies) {
+            setPlanData(planId, !planData.isOpen, planData.companies);
+        } else {
+            planService.findCompanies(planId)
+                .then(response => response.data)
+                .then(data => {
+                    let companies = data.map(item => companyNames[item])
+                        .join(", ");
+                    setPlanData(planId, true, companies);
                 });
         }
     }
@@ -105,27 +143,49 @@ function PlanDashboard({ onSuccess, onError }) {
                     </thead>
                     <tbody>
                         {
-                            page.content.map(plan => <tr key={plan.id}>
-                                <td className="align-middle">
-                                    {plan.status === 'STOPPED' ?
-                                        <PlanStatusLabel status={plan.status} /> :
-                                        <a href="#status" onClick={e => onStatusClick(e, plan)}>
-                                            <PlanStatusLabel status={plan.status} />
-                                        </a>
-                                    }
-                                </td>
-                                <td>
-                                    <Link to={`/plans/${plan.id}`}>
-                                        {plan.name}
-                                    </Link>
-                                </td>
-                                <td>{plan.maxTableCount}</td>
-                                <td>{plan.monthPrice} {plan.currency}</td>
-                                <td>{plan.upfrontDiscount6m ? `${plan.upfrontDiscount6m}%` : ''}</td>
-                                <td>{plan.upfrontDiscount1y ? `${plan.upfrontDiscount1y}%` : ''}</td>
-                                <td>{formatCountries(plan)}</td>
-                                <td>{plan.companyCount}</td>
-                            </tr>)}
+                            page.content.map(plan => <React.Fragment key={plan.id}>
+                                <tr>
+                                    <td className="align-middle">
+                                        {plan.status === 'STOPPED' ?
+                                            <PlanStatusLabel status={plan.status} /> :
+                                            <a href="#status" onClick={e => onStatusClick(e, plan)}>
+                                                <PlanStatusLabel status={plan.status} />
+                                            </a>
+                                        }
+                                    </td>
+                                    <td>
+                                        <Link to={`/plans/${plan.id}`}>
+                                            {plan.name}
+                                        </Link>
+                                    </td>
+                                    <td>{plan.maxTableCount}</td>
+                                    <td>{plan.monthPrice} {plan.currency}</td>
+                                    <td>{plan.upfrontDiscount6m ? `${plan.upfrontDiscount6m}%` : ''}</td>
+                                    <td>{plan.upfrontDiscount1y ? `${plan.upfrontDiscount1y}%` : ''}</td>
+                                    <td>{formatCountries(plan)}</td>
+                                    <td>
+                                        <div className="d-flex">
+                                            <div className="flex-grow-1">
+                                                {plan.companyCount}
+                                            </div>
+                                            {plan.companyCount > 0 &&
+                                                <button type="button" className="btn btn-light btn-cmp-expand"
+                                                    onClick={e => onExpandClick(plan)}>
+                                                    {openedPlans[plan.id] && openedPlans[plan.id].isOpen ?
+                                                        <Icon.ChevronsUp className="filter-icon" />
+                                                        : <Icon.ChevronsDown className="filter-icon" />
+                                                    }
+
+                                                </button>}
+                                        </div>
+
+                                    </td>
+                                </tr>
+                                {openedPlans[plan.id] && openedPlans[plan.id].isOpen && <tr>
+                                    <td />
+                                    <td colSpan="7">{openedPlans[plan.id].companies}</td>
+                                </tr>}
+                            </React.Fragment>)}
                     </tbody>
                 </table>
                 <Pagination className="mt-4" page={page} onPageableChange={onPageableChange} />
@@ -147,18 +207,20 @@ class Filter {
     static URL_PARAM_COUNTRY = 'cn';
     static URL_PARAM_ONLY_GLOBAL = 'og';
     static URL_PARAM_STATUS = 'st';
+    static URL_PARAM_COMPANY_ID = 'cm';
 
-    constructor(namePattern, tableCount, country, onlyGlobal, status) {
+    constructor(namePattern, tableCount, country, onlyGlobal, status, companyId) {
         this.namePattern = namePattern;
         this.tableCount = tableCount;
         this.country = country;
         this.onlyGlobal = onlyGlobal;
         this.status = status;
+        this.companyId = companyId;
     }
 
     withNewValue(field, value) {
         let newFilter = new Filter(this.namePattern, this.tableCount,
-            this.country, this.onlyGlobal, this.status);
+            this.country, this.onlyGlobal, this.status, this.companyId);
         newFilter[field] = value;
         return newFilter;
     }
@@ -170,6 +232,7 @@ class Filter {
             [Filter.URL_PARAM_COUNTRY]: this.country,
             [Filter.URL_PARAM_ONLY_GLOBAL]: this.onlyGlobal,
             [Filter.URL_PARAM_STATUS]: this.status,
+            [Filter.URL_PARAM_COMPANY_ID]: this.companyId
         }
     }
 
@@ -181,6 +244,7 @@ class Filter {
             urlSearchParams.get(Filter.URL_PARAM_COUNTRY) || '',
             urlSearchParams.get(Filter.URL_PARAM_ONLY_GLOBAL) || '',
             urlStatuses && urlStatuses.length ? urlStatuses : ['ACTIVE', 'INACTIVE'],
+            urlSearchParams.get(Filter.URL_PARAM_COMPANY_ID) || ''
         );
     }
 }

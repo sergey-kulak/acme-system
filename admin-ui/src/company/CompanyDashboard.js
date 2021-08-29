@@ -11,6 +11,7 @@ import './CompanyDashboard.css';
 import CompanyFilter from "./CompanyFilter";
 import { onSuccess, onError } from '../common/toastNotification'
 import CompanyStatusLabel from './CompanyStatusLabel';
+import { getErrorMessage } from '../common/utils';
 
 function CompanyDashboard({ onSuccess, onError }) {
     const history = useHistory();
@@ -62,7 +63,7 @@ function CompanyDashboard({ onSuccess, onError }) {
                     onSuccess("Company status was changed successfully");
                     loadData();
                 }, error => {
-                    onError(error.response.data);
+                    onError(getErrorMessage(error.response.data));
                 });
         }
     }

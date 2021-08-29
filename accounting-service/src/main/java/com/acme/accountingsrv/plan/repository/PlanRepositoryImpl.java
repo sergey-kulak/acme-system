@@ -1,12 +1,12 @@
 package com.acme.accountingsrv.plan.repository;
 
+import com.acme.accountingsrv.jooq.tables.CompanyPlan;
 import com.acme.accountingsrv.plan.Plan;
 import com.acme.accountingsrv.plan.PlanCountry;
 import com.acme.accountingsrv.plan.dto.PlanFilter;
 import com.acme.commons.repository.AbstractCustomJooqRepository;
 import com.acme.commons.utils.CollectionUtils;
 import com.acme.commons.utils.StreamUtils;
-import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
@@ -29,6 +29,7 @@ public class PlanRepositoryImpl extends AbstractCustomJooqRepository implements 
             com.acme.accountingsrv.jooq.tables.Plan.PLAN.as("p");
     private static final com.acme.accountingsrv.jooq.tables.PlanCountry PLAN_COUNTRY =
             com.acme.accountingsrv.jooq.tables.PlanCountry.PLAN_COUNTRY.as("pc");
+    private static final CompanyPlan COMPANY_PLAN = CompanyPlan.COMPANY_PLAN.as("cp");
 
     @Override
     public Mono<Map<UUID, List<String>>> getCountries(Collection<UUID> planIds) {
@@ -94,6 +95,12 @@ public class PlanRepositoryImpl extends AbstractCustomJooqRepository implements 
                         .where(PLAN_COUNTRY.COUNTRY.eq(filter.getCountry().toUpperCase()))
                 ));
             }
+        }
+        if (filter.getCompanyId() != null) {
+            where = where.and(PLAN.ID.eq(dslContext.select(COMPANY_PLAN.PLAN_ID)
+                    .from(COMPANY_PLAN)
+                    .where(COMPANY_PLAN.COMPANY_ID.eq(filter.getCompanyId())
+                            .and(COMPANY_PLAN.END_DATE.isNull()))));
         }
 
         return where;

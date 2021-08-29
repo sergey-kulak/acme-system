@@ -24,6 +24,7 @@
         <jooq.version>3.15.0</jooq.version>
         <mapstruct.version>1.4.2.Final</mapstruct.version>
         <commons-lang3.version>3.12.0</commons-lang3.version>
+        <feign-reactor.version>3.1.1</feign-reactor.version>
     </properties>
 
     <dependencyManagement>
@@ -89,6 +90,13 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>${commons-lang3.version}</version>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>com.playtika.reactivefeign</groupId>
+            <artifactId>feign-reactor-core</artifactId>
+            <version>${feign-reactor.version}</version>
             <optional>true</optional>
         </dependency>
 

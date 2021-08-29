@@ -2,6 +2,7 @@ import { DebounceInput } from 'react-debounce-input';
 import { useState } from 'react';
 import PlanStatusSelect from './PlanStatusSelect';
 import CountrySelect from '../common/rf-data/CountrySelect';
+import CompanySelect from '../company/CompanySelect';
 
 function PlanFilter({ filter, onChange }) {
     const [statuses, setStatuses] = useState(filter.status);
@@ -20,6 +21,10 @@ function PlanFilter({ filter, onChange }) {
 
     function onOnlyGlobalChange(e) {
         onChange(filter.withNewValue('onlyGlobal', e.target.checked));
+    }
+
+    function onCompanyChange(companyId) {
+        onChange(filter.withNewValue('companyId', companyId));
     }
 
     return (
@@ -54,6 +59,12 @@ function PlanFilter({ filter, onChange }) {
                     value={statuses}>
                 </PlanStatusSelect>
             </div>
+            <div className="form-group col-lg-4 col-md-6">
+                <label htmlFor="status">Company</label>
+                <CompanySelect name="namePattern" onChange={onCompanyChange}
+                    value={filter.companyId} isClearable={true}
+                    showTypeCheckBox={true}/>
+            </div>            
         </div>
     );
 }

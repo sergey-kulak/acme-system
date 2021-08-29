@@ -63,8 +63,6 @@ public class SecurityUtils {
 
         Context context = ReactiveSecurityContextHolder
                 .withAuthentication(new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities()));
-        return (ctx) -> {
-            return context;
-        };
+        return (ctx) -> context;
     }
 }

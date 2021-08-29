@@ -298,6 +298,30 @@ class PlanServiceIntegrationTest {
                 })
                 .verifyComplete();
     }
+    @Test
+    @WithMockAccountant
+    void findByCompany() {
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("name"));
+        UUID companyId = UUID.randomUUID();
+        testEntityHelper.createPlan()
+                .flatMap(plan -> assignPlan(companyId, plan.getId())
+                        .thenReturn(plan)
+                )
+                .zipWhen(plan -> {
+                    PlanFilter filter = createFilter(plan);
+                    filter.setCompanyId(companyId);
+                    return planService.find(filter, pageable);
+                })
+                .as(TxStepVerifier::withRollback)
+                .assertNext(data -> {
+                    Plan plan = data.getT1();
+                    Page<PlanWithCountDto> page = data.getT2();
+                    assertEquals(1, page.getTotalElements());
+                    assertTrue(mapToList(page.getContent(), PlanWithCountDto::getId)
+                            .contains(plan.getId()));
+                })
+                .verifyComplete();
+    }
 
     @Test
     void findActive() {

@@ -17,9 +17,11 @@ spring:
         enabled: true
         service-id: config-service
     stream:
-      default:
-        producer:
-          requiredGroups: company-registration
+      function:
+        autodetect: false
+      #      default:
+#        producer:
+#          requiredGroups: company-registration,company-status
       rabbit:
         default:
           producer:
@@ -28,6 +30,13 @@ spring:
         company-registration:
           destination: company-registration-topic
           group: company-registration
+          producer:
+            requiredGroups: company-registration
+        company-status:
+          destination: company-status-topic
+          group: company-status
+          producer:
+            requiredGroups: company-status
   liquibase:
     enabled: true
     change-log: db/changelog/master.xml

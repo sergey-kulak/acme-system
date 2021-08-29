@@ -51,8 +51,10 @@
             <column name="company_id" type="UUID">
                 <constraints nullable="false"/>
             </column>
-            <column name="start_date" type="date"/>
-            <column name="end_date" type="date"/>
+            <column name="start_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="end_date" type="timestamp"/>
         </createTable>
 
         <addForeignKeyConstraint baseTableName="company_plan" baseColumnNames="plan_id"

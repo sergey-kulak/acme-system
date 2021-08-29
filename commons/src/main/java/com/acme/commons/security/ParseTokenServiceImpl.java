@@ -63,8 +63,10 @@ public class ParseTokenServiceImpl implements ParseTokenService {
             UUID id = UUID.fromString(claimsSet.getStringClaim(JwtClaims.ID));
 
             CompanyUser user = new CompanyUser(id, companyId, username, StringUtils.EMPTY, UserRole.valueOf(role));
-
-            return Mono.just(new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities()));
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+            authentication.setDetails(accessToken);
+            return Mono.just(authentication);
         } catch (Exception exception) {
             return Mono.error(new BadCredentialsException("Wrong token", exception));
         }

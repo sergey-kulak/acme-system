@@ -44,12 +44,20 @@ public class CompanyPlanController {
     }
 
     @GetMapping("/active")
+    @SecureOperation(description = "Get company active plan")
     public Mono<PlanWithCountriesDto> findActivePlan(@RequestParam UUID companyId) {
         return companyPlanService.findActivePlan(companyId)
                 .flatMap(planService::findById);
     }
 
+    @GetMapping("/active/id")
+    @SecureOperation(description = "Get company active plan id")
+    public Mono<UUID> findActivePlanId(@RequestParam UUID companyId) {
+        return companyPlanService.findActivePlan(companyId);
+    }
+
     @GetMapping("/history")
+    @SecureOperation(description = "Get plan change history for company")
     public Mono<List<CompanyPlanDto>> getHistory(@RequestParam UUID companyId) {
         return companyPlanService.getHistory(companyId);
     }

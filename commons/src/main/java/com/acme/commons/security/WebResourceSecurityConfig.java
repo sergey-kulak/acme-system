@@ -1,4 +1,4 @@
-package com.acme.commons.config;
+package com.acme.commons.security;
 
 
 import com.acme.commons.security.BearerAuthenticationConverter;

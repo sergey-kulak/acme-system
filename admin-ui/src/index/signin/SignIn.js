@@ -11,8 +11,8 @@ function SignIn({ onLogin }) {
     const history = useHistory();
 
     const intialValues = {
-        //username: 'admin@acme.com',
-        username: 'petrov@company111.com',
+        username: 'admin@acme.com',
+        //username: 'petrov@company111.com',
         password: 'qwe123'
     };
 

@@ -23,8 +23,8 @@ public interface PlanMapper {
     PlanWithCountriesDto toDto(Plan s, Collection<String> countries);
 
     @Mapping(source = "countries", target = "countries")
-    @Mapping(source = "companyCount", target = "companyCount")
-    PlanWithCountDto toDtoWithCount(Plan source, Collection<String> countries, long companyCount);
+    @Mapping(source = "publicPointCount", target = "publicPointCount")
+    PlanWithCountDto toDtoWithCount(Plan source, Collection<String> countries, long publicPointCount);
 
     @Mapping(target = "currency", source = "currency", qualifiedByName = {"String", "toUppercase"})
     void update(@MappingTarget Plan target, SavePlanDto source);

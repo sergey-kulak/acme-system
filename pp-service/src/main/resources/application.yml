@@ -1,0 +1,61 @@
+server:
+  port: 7040
+
+logging:
+  level:
+    org.springframework: info
+    io.r2dbc.postgresql.QUERY: debug
+    reactivefeign.client.log.DefaultReactiveLogger: DEBUG
+    org.jooq.Constants: warn
+
+spring:
+  application:
+    name: pp-service
+  config:
+    import: configserver:http://config-service
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        service-id: config-service
+  liquibase:
+    enabled: true
+    change-log: db/changelog/master.xml
+    url: jdbc:${pp-srv.db.url}
+    user: ${pp-srv.db.user}
+    password: ${pp-srv.db.password}
+  r2dbc:
+    url: r2dbc:${pp-srv.db.url}
+    username: ${pp-srv.db.user}
+    password: ${pp-srv.db.password}
+    pool:
+      initial-size: 5
+      max-size: 10
+
+eureka:
+  instance:
+    leaseRenewalIntervalInSeconds: 5
+    leaseExpirationDurationInSeconds: 16
+  client:
+    initialInstanceInfoReplicationIntervalSeconds: 5
+    instanceInfoReplicationIntervalSeconds: 5
+    serviceUrl:
+      defaultZone: http://localhost:7002/eureka/
+
+feign:
+  autoconfiguration:
+    jackson:
+      enabled: true
+  client:
+    config:
+      default:
+        loggerLevel: full
+
+pp-srv:
+  db:
+    url: postgresql://localhost:7041/ppdb
+    user: ppUser
+    password: ppPass
+  security:
+    jwt:
+      public-key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhUcCJmSMOfqkKJemWl2/Z25kWVMNfim9KoGjOR+lrKTsvlELNpslyZtwPOhE1P4b2PpU9lmX8Z5y+FsEl0xgUqqnYvQXulA8W6/1N41dBvHXozZUFXvY9/sO6bSlzoUND/tuU7+CGEmqX0ZVDScPboGgfX2O0qgOS9TrdGGwfZ6d4Ujc6HMxgCVIBsuGTKd57Zst1useJB95ca14NI3GXaNG8feXf4MTnaNT7yxLZyNNn9fXvt5qdkfT1qjNDxa39YiU8hlVZ9XPSTakwoFfhZbXN0umNKvoQ4D1kI2nFKOgpPLdrxx9TNIJ2s2lUhqw/PPPaze1nHi3yMqY2Bdu0wIDAQAB

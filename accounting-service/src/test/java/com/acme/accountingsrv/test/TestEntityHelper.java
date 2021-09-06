@@ -1,9 +1,10 @@
 package com.acme.accountingsrv.test;
 
-import com.acme.accountingsrv.plan.CompanyPlan;
+import com.acme.accountingsrv.plan.PublicPointPlan;
 import com.acme.accountingsrv.plan.Plan;
 import com.acme.accountingsrv.plan.PlanStatus;
-import com.acme.accountingsrv.plan.repository.CompanyPlanRepository;
+import com.acme.accountingsrv.plan.dto.AssignPlanDto;
+import com.acme.accountingsrv.plan.repository.PublicPointPlanRepository;
 import com.acme.accountingsrv.plan.repository.PlanRepository;
 import com.acme.testcommons.RandomTestUtils;
 import org.apache.commons.lang3.RandomUtils;
@@ -18,7 +19,7 @@ public class TestEntityHelper {
     @Autowired
     private PlanRepository planRepository;
     @Autowired
-    private CompanyPlanRepository companyPlanRepository;
+    private PublicPointPlanRepository publicPointPlanRepository;
 
     public Mono<Plan> createPlan() {
         return createPlan(PlanStatus.ACTIVE, "BY");
@@ -41,7 +42,7 @@ public class TestEntityHelper {
     public Mono<Plan> createPlan(PlanStatus status, String country) {
         return planRepository.save(buildPlan(status))
                 .flatMap(savedPlan -> planRepository.addCountry(savedPlan.getId(), country)
-                        .then(Mono.just(savedPlan))
+                        .thenReturn(savedPlan)
                 );
     }
 
@@ -49,12 +50,13 @@ public class TestEntityHelper {
         return planRepository.save(buildPlan(status));
     }
 
-    public Mono<CompanyPlan> assignPlan(UUID companyId, UUID planId) {
-        CompanyPlan cmpPlan = new CompanyPlan();
-        cmpPlan.setCompanyId(companyId);
-        cmpPlan.setPlanId(planId);
-        cmpPlan.setStartDate(Instant.now());
+    public Mono<PublicPointPlan> assignPlan(AssignPlanDto dto) {
+        PublicPointPlan ppPlan = new PublicPointPlan();
+        ppPlan.setCompanyId(dto.getCompanyId());
+        ppPlan.setPlanId(dto.getPlanId());
+        ppPlan.setPublicPointId(dto.getPublicPointId());
+        ppPlan.setStartDate(Instant.now());
 
-        return companyPlanRepository.save(cmpPlan);
+        return publicPointPlanRepository.save(ppPlan);
     }
 }

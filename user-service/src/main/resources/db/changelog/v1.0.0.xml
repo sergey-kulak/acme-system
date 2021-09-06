@@ -79,4 +79,10 @@
         </createIndex>
     </changeSet>
 
+    <changeSet id="5" author="sergey.kulak">
+        <addColumn tableName="user">
+            <column name="public_point_id" type="UUID"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

@@ -12,4 +12,6 @@ public interface CompanyUserDetails extends UserDetails {
     boolean hasAnyRole(UserRole... role);
 
     UserRole getRole();
+
+    UUID getPublicPointId();
 }

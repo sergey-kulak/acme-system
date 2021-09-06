@@ -49,9 +49,7 @@ spring:
     port: 7672
     username: acmRmqUser
     password: acmRmqPa2s
-function:
-  bindings:
-    uppercase-in-0=input:
+
 eureka:
   instance:
     leaseRenewalIntervalInSeconds: 5

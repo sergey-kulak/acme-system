@@ -25,6 +25,7 @@
         <mapstruct.version>1.4.2.Final</mapstruct.version>
         <commons-lang3.version>3.12.0</commons-lang3.version>
         <feign-reactor.version>3.1.1</feign-reactor.version>
+        <spring-cloud-openfeign.version>3.0.3</spring-cloud-openfeign.version>
     </properties>
 
     <dependencyManagement>
@@ -97,6 +98,13 @@
             <groupId>com.playtika.reactivefeign</groupId>
             <artifactId>feign-reactor-core</artifactId>
             <version>${feign-reactor.version}</version>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-openfeign-core</artifactId>
+            <version>${spring-cloud-openfeign.version}</version>
             <optional>true</optional>
         </dependency>
 

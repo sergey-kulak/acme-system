@@ -59,7 +59,8 @@ public class SecurityUtils {
     }
 
     public static Function<Context, Context> withBgAdmin() {
-        CompanyUser user = new CompanyUser(BG_ADMIN_ID, null, BG_ADMIN_EMAIL, StringUtils.EMPTY, UserRole.ADMIN);
+        CompanyUser user = new CompanyUser(BG_ADMIN_ID, null, BG_ADMIN_EMAIL,
+                StringUtils.EMPTY, UserRole.ADMIN, null);
 
         Context context = ReactiveSecurityContextHolder
                 .withAuthentication(new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities()));

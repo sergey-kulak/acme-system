@@ -2,8 +2,6 @@ package com.acme.usersrv.common.advice;
 
 import com.acme.commons.advice.BaseControllerAdvice;
 import com.acme.usersrv.company.exception.DuplicateCompanyException;
-import com.acme.commons.exception.IllegalStatusChange;
-import com.acme.usersrv.company.exception.PlanNotAssignedException;
 import com.acme.usersrv.user.exception.DuplicateUserException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -22,8 +20,4 @@ public class ControllerAdvice extends BaseControllerAdvice {
         return createConflictResponse(ex);
     }
 
-    @ExceptionHandler
-    public ResponseEntity<Object> handle(PlanNotAssignedException ex) {
-        return ResponseEntity.badRequest().body(ex.getMessage());
-    }
 }

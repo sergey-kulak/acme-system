@@ -1,5 +1,4 @@
 import restApi, { buildGetFilterParams } from '../common/restApi';
-import { ROLE } from '../common/security';
 
 const BASE_URL = '/user-service/users';
 
@@ -18,17 +17,12 @@ const userService = {
     create: function (request) {
         return restApi.post(BASE_URL, request);
     },
-    findOwners: function (companyId) {
-        let params = new URLSearchParams();
-        params.append('companyId', companyId);
-        params.append('role', ROLE.COMPANY_OWNER);
-        params.append('size', 30);
-        params.append('sort', 'last_name,asc');
-
-        return restApi.get(BASE_URL, {
-            params: params
+    findNames: function (request) {
+        return restApi.get(`${BASE_URL}/names`, {
+            params: request
         });
     }
+
 }
 
 export default userService;

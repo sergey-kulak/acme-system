@@ -1,19 +1,23 @@
 import { useCallback, useEffect, useState } from 'react';
 import * as Icon from 'react-feather';
+import { FormattedMessage } from 'react-intl';
 import { connect } from "react-redux";
 import { Link, useHistory, useLocation } from "react-router-dom";
-import { FormattedMessage } from 'react-intl';
+import { GLOBAL_CACHE } from '../common/cache';
 import Pagination from '../common/Pagination';
 import { combineAsUrlParams, Pageable, Sort } from '../common/paginationUtils';
 import { hasRole, ROLE } from "../common/security";
 import ShowFilterButton from '../common/ShowFilterButton';
 import SortColumn from '../common/SortColumn';
-import userService from './userService';
-import companyService from '../company/companyService';
 import { onError, onSuccess } from '../common/toastNotification';
+import companyService from '../company/companyService';
+import publicPointService from '../public-point/publicPointService';
 import UserFilter from './UserFilter';
+import userService from './userService';
 import UserStatusLabel from './UserStatusLabel';
 
+const cache = GLOBAL_CACHE;
+const PP_REGION = 'usr-dash-pp-region';
 
 function UserDashboard({ auth }) {
     const history = useHistory();
@@ -24,13 +28,26 @@ function UserDashboard({ auth }) {
     const [pageable, setPageable] = useState(Pageable.fromUrlParams(query));
     const [sort, setSort] = useState(Sort.fromUrlParams(query, 'last_name'));
     const [filter, setFilter] = useState(Filter.fromUrlParams(query, auth));
-    const [showFilter, setShowFilter] = useState(true);
+    const [showFilter, setShowFilter] = useState(false);
     const [companyNames, setCompanyNames] = useState({});
+
+    const loadPublicPoints = useCallback((newPage) => {
+        let promises = newPage.content
+            .filter(user => !!user.publicPointId)
+            .map(user => getPublicPointInCache(user.publicPointId)
+                .then(pp => user.publicPoint = pp)
+            );
+
+        return Promise.all(promises)
+            .then(() => newPage);
+    }, []);
 
     const loadData = useCallback(() => {
         return userService.find(filter, pageable, sort)
-            .then(response => setPage(response.data))
-    }, [filter, pageable, sort]);
+            .then(response => response.data)
+            .then(loadPublicPoints)
+            .then(setPage);
+    }, [filter, pageable, sort, loadPublicPoints]);
 
     useEffect(() => {
         loadData()
@@ -53,6 +70,11 @@ function UserDashboard({ auth }) {
         }
     }, [isAdmin]);
 
+    function getPublicPointInCache(ppId) {
+        return cache.retriveIfAbsent(PP_REGION, ppId,
+            () => publicPointService.findById(ppId), 300)
+            .then(response => response.data)
+    }
 
     function onPageableChange(page) {
         setPageable(page);
@@ -91,6 +113,7 @@ function UserDashboard({ auth }) {
                             <th>Email</th>
                             <th>Role</th>
                             {isAdmin && <th>Company</th>}
+                            <th>Public point</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -110,10 +133,11 @@ function UserDashboard({ auth }) {
                                     <FormattedMessage id={`user.role.${user.role.toLowerCase()}`} />
                                 </td>
                                 {isAdmin && <td>
-                                    <Link to={`/companies/${user.companyId}`}>
+                                    <Link to={`/company-view/${user.companyId}`}>
                                         {companyNames[user.companyId]}
                                     </Link>
                                 </td>}
+                                <td>{user.publicPoint && user.publicPoint.name}</td>
                             </tr>)}
                     </tbody>
                 </table>
@@ -153,7 +177,7 @@ class Filter {
         if (!hasRole(auth, ROLE.ADMIN)) {
             delete urlData[Filter.URL_PARAM_COMPANY_ID];
         }
-        return urlData;
+        return { toUrlParams: () => urlData };
     }
 
     static fromUrlParams(urlSearchParams, auth) {

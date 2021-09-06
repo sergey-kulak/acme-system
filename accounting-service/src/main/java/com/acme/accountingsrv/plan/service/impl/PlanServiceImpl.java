@@ -9,7 +9,7 @@ import com.acme.accountingsrv.plan.dto.PlanFilter;
 import com.acme.accountingsrv.plan.dto.SavePlanDto;
 import com.acme.accountingsrv.plan.exception.UpdateNotAllowedException;
 import com.acme.accountingsrv.plan.mapper.PlanMapper;
-import com.acme.accountingsrv.plan.repository.CompanyPlanRepository;
+import com.acme.accountingsrv.plan.repository.PublicPointPlanRepository;
 import com.acme.accountingsrv.plan.repository.PlanRepository;
 import com.acme.accountingsrv.plan.service.PlanService;
 import com.acme.commons.exception.EntityNotFoundException;
@@ -39,7 +39,7 @@ public class PlanServiceImpl implements PlanService {
     );
 
     private final PlanRepository planRepository;
-    private final CompanyPlanRepository companyPlanRepository;
+    private final PublicPointPlanRepository publicPointPlanRepository;
     private final PlanMapper mapper;
 
     @Override
@@ -122,7 +122,7 @@ public class PlanServiceImpl implements PlanService {
 
     private Mono<Map<UUID, Long>> getCompanyCount(List<Plan> plans) {
         List<UUID> ids = StreamUtils.mapToList(plans, Plan::getId);
-        return companyPlanRepository.getCompanyCount(ids);
+        return publicPointPlanRepository.getPublicPointCount(ids);
     }
 
     private Page<PlanWithCountDto> map(Page<Plan> page,

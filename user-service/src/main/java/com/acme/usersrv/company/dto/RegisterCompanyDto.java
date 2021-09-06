@@ -35,8 +35,6 @@ public class RegisterCompanyDto {
     private String phone;
     @Valid
     private CreateOwnerDto owner;
-    @NotNull
-    private UUID planId;
 
     @Tolerate
     public RegisterCompanyDto() {

@@ -12,9 +12,11 @@ import com.acme.usersrv.test.ServiceIntegrationTest;
 import com.acme.usersrv.test.TestEntityHelper;
 import com.acme.usersrv.user.User;
 import com.acme.usersrv.user.dto.CreateUserDto;
+import com.acme.usersrv.user.dto.FullDetailsUserDto;
 import com.acme.usersrv.user.dto.UpdateUserDto;
 import com.acme.usersrv.user.dto.UserDto;
 import com.acme.usersrv.user.dto.UserFilter;
+import com.acme.usersrv.user.dto.UserNameFilter;
 import com.acme.usersrv.user.exception.DuplicateUserException;
 import com.acme.usersrv.user.repository.UserRepository;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -31,6 +33,7 @@ import reactor.test.StepVerifier;
 
 import javax.validation.ConstraintViolationException;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 import static com.acme.commons.utils.StreamUtils.mapToList;
@@ -38,6 +41,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -54,7 +58,7 @@ public class UserServiceIntegrationTest {
 
     @Test
     @WithMockAdmin
-    public void creationValidation() {
+    void creationValidation() {
         userService.create(new CreateUserDto())
                 .as(StepVerifier::create)
                 .expectError(ConstraintViolationException.class)
@@ -62,7 +66,7 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
-    public void existsByEmail() {
+    void existsByEmail() {
         testEntityHelper.createCompany()
                 .zipWhen(testEntityHelper::createCompanyOwner)
                 .flatMap(data -> userService.existsByEmail(data.getT2().getEmail().toUpperCase()))
@@ -72,7 +76,7 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
-    public void notExistsByEmail() {
+    void notExistsByEmail() {
         userService.existsByEmail(RandomTestUtils.randomEmail())
                 .as(TxStepVerifier::withRollback)
                 .assertNext(Assertions::assertFalse)
@@ -81,7 +85,7 @@ public class UserServiceIntegrationTest {
 
     @Test
     @WithMockCompanyOwner
-    public void createDuplicate() {
+    void createDuplicate() {
         testEntityHelper.createCompany()
                 .flatMap(testEntityHelper::createUserForLoggedUser)
                 .map(user -> {
@@ -97,7 +101,7 @@ public class UserServiceIntegrationTest {
 
     @Test
     @WithMockCompanyOwner
-    public void createDuplicateForOtherCompany() {
+    void createDuplicateForOtherCompany() {
         testEntityHelper.createCompany()
                 .flatMap(testEntityHelper::createCompanyOwner)
                 .map(user -> {
@@ -120,19 +124,20 @@ public class UserServiceIntegrationTest {
                 .confirmPassword("qwe123")
                 .companyId(companyId)
                 .role(UserRole.WAITER)
+                .publicPointId(UUID.randomUUID())
                 .build();
     }
 
     @Test
     @WithMockWaiter
-    public void findById() {
+    void findById() {
         testEntityHelper.createCompany()
                 .flatMap(testEntityHelper::createUserForLoggedUser)
                 .zipWhen(user -> userService.findById(user.getId()))
                 .as(TxStepVerifier::withRollback)
                 .assertNext(data -> {
                     User user = data.getT1();
-                    UserDto dto = data.getT2();
+                    FullDetailsUserDto dto = data.getT2();
                     assertThat(dto, allOf(
                             hasProperty("id", is(user.getId())),
                             hasProperty("firstName", is(user.getFirstName())),
@@ -149,7 +154,7 @@ public class UserServiceIntegrationTest {
 
     @Test
     @WithMockAdmin
-    public void findByNotExistingId() {
+    void findByNotExistingId() {
         userService.findById(UUID.randomUUID())
                 .as(StepVerifier::create)
                 .expectError(EntityNotFoundException.class)
@@ -158,7 +163,7 @@ public class UserServiceIntegrationTest {
 
     @Test
     @WithMockWaiter
-    public void findByIdOtherCompany() {
+    void findByIdOtherCompany() {
         testEntityHelper.createCompany()
                 .flatMap(company -> testEntityHelper.createUser(company, UserRole.WAITER))
                 .flatMap(user -> userService.findById(user.getId()))
@@ -173,12 +178,13 @@ public class UserServiceIntegrationTest {
                 .lastName(RandomTestUtils.randomString("nLastName"))
                 .phone(RandomTestUtils.randomString("nPhone"))
                 .role(UserRole.WAITER)
+                .publicPointId(UUID.randomUUID())
                 .build();
     }
 
     @Test
     @WithMockCompanyOwner
-    public void updateWithPassword() {
+    void updateWithPassword() {
         String password = RandomStringUtils.randomAlphanumeric(8);
         UpdateUserDto dto = buildUpdateDto();
         dto.setPassword(password);
@@ -199,6 +205,7 @@ public class UserServiceIntegrationTest {
                             hasProperty("lastName", is(dto.getLastName())),
                             hasProperty("email", is(user.getEmail())),
                             hasProperty("phone", is(dto.getPhone())),
+                            hasProperty("publicPointId", is(dto.getPublicPointId())),
                             hasProperty("companyId", is(user.getCompanyId())),
                             hasProperty("role", is(dto.getRole())),
                             hasProperty("status", is(user.getStatus()))
@@ -210,7 +217,7 @@ public class UserServiceIntegrationTest {
 
     @Test
     @WithMockAdmin
-    public void updateWithoutPassword() {
+    void updateWithoutPassword() {
         UpdateUserDto dto = buildUpdateDto();
         testEntityHelper.createCompany()
                 .flatMap(testEntityHelper::createCompanyOwner)
@@ -227,6 +234,7 @@ public class UserServiceIntegrationTest {
                             hasProperty("lastName", is(dto.getLastName())),
                             hasProperty("email", is(user.getEmail())),
                             hasProperty("phone", is(dto.getPhone())),
+                            hasProperty("publicPointId", is(dto.getPublicPointId())),
                             hasProperty("companyId", is(user.getCompanyId())),
                             hasProperty("role", is(dto.getRole())),
                             hasProperty("status", is(user.getStatus())),
@@ -238,7 +246,7 @@ public class UserServiceIntegrationTest {
 
     @Test
     @WithMockWaiter
-    public void updateWithoutPasswordByWaiter() {
+    void updateWithoutPasswordByWaiter() {
         UpdateUserDto dto = buildUpdateDto();
         dto.setRole(UserRole.ADMIN);
         testEntityHelper.createCompany()
@@ -267,7 +275,7 @@ public class UserServiceIntegrationTest {
 
     @Test
     @WithMockWaiter
-    public void updateByByWaiterForOtherUser() {
+    void updateByByWaiterForOtherUser() {
         UpdateUserDto dto = buildUpdateDto();
         dto.setRole(UserRole.ADMIN);
         testEntityHelper.createCompany()
@@ -284,7 +292,7 @@ public class UserServiceIntegrationTest {
 
     @Test
     @WithMockCompanyOwner
-    public void updateValidation() {
+    void updateValidation() {
         UpdateUserDto dto = buildUpdateDto();
         dto.setPassword("qwe");
         assertThrows(ConstraintViolationException.class,
@@ -293,7 +301,7 @@ public class UserServiceIntegrationTest {
 
     @Test
     @WithMockPpManager
-    public void findWithPagination() {
+    void findWithPagination() {
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Order.asc("last_name")));
         testEntityHelper.createCompany()
                 .flatMap(testEntityHelper::createUserForLoggedUser)
@@ -302,7 +310,8 @@ public class UserServiceIntegrationTest {
                                     .email(user.getEmail().substring(0, 9))
                                     .status(Collections.singleton(user.getStatus()))
                                     .companyId(user.getCompanyId())
-                                    .role(Collections.singleton(user.getRole()))
+                                    .role(List.of(user.getRole()))
+                                    .id(List.of(user.getId()))
                                     .build();
                             return userService.find(filter, pageable);
                         }
@@ -310,16 +319,16 @@ public class UserServiceIntegrationTest {
                 .as(TxStepVerifier::withRollback)
                 .assertNext(data -> {
                     User user = data.getT1();
-                    Page<UserDto> page = data.getT2();
+                    Page<FullDetailsUserDto> page = data.getT2();
                     assertThat(page.getTotalElements(), is(1L));
-                    assertTrue(mapToList(page.getContent(), UserDto::getId).contains(user.getId()));
+                    assertTrue(mapToList(page.getContent(), FullDetailsUserDto::getId).contains(user.getId()));
                 })
                 .verifyComplete();
     }
 
     @Test
     @WithMockPpManager
-    public void findWithPaginationOtherCompany() {
+    void findWithPaginationOtherCompany() {
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Order.asc("last_name")));
         testEntityHelper.createCompany()
                 .flatMap(testEntityHelper::createCompanyOwner)
@@ -332,5 +341,32 @@ public class UserServiceIntegrationTest {
                 .as(TxStepVerifier::withRollback)
                 .expectError(AccessDeniedException.class)
                 .verify();
+    }
+
+    @Test
+    @WithMockCompanyOwner
+    void findNames() {
+        testEntityHelper.createCompany()
+                .flatMap(testEntityHelper::createUserForLoggedUser)
+                .zipWhen(user -> {
+                    UserNameFilter filter = UserNameFilter.builder()
+                            .companyId(user.getCompanyId())
+                            .role(user.getRole())
+                            .build();
+                    return userService.findNames(filter);
+                })
+                .as(TxStepVerifier::withRollback)
+                .assertNext(data -> {
+                    User user = data.getT1();
+                    List<UserDto> dtos = data.getT2();
+                    assertEquals(1, dtos.size());
+                    assertThat(dtos.get(0), allOf(
+                            hasProperty("id", is(user.getId())),
+                            hasProperty("firstName", is(user.getFirstName())),
+                            hasProperty("lastName", is(user.getLastName())),
+                            hasProperty("email", is(user.getEmail())))
+                    );
+                })
+                .verifyComplete();
     }
 }

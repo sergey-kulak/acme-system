@@ -70,6 +70,14 @@ function Sidebar({ auth, onLogout }) {
                         }
                         {
                             hasRole(auth, ROLE.COMPANY_OWNER) && <li className="nav-item">
+                                <Link to="/public-points" className="nav-link">
+                                    <Icon.MapPin className="feather" />
+                                    <span className="nav-item-text">Public points</span>
+                                </Link>
+                            </li>
+                        }                        
+                        {
+                            hasRole(auth, ROLE.COMPANY_OWNER) && <li className="nav-item">
                                 <Link to="/users" className="nav-link">
                                     <Icon.Users className="feather" />
                                     <span className="nav-item-text">Users</span>

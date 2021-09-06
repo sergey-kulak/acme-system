@@ -26,4 +26,6 @@ public class User {
     private UserStatus status;
     private UserRole role;
     private String phone;
+    @Column("public_point_id")
+    private UUID publicPointId;
 }

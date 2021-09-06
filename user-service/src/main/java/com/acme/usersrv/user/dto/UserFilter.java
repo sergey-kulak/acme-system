@@ -18,6 +18,7 @@ public class UserFilter {
     private Collection<UserStatus> status;
     private Collection<UserRole> role;
     private UUID companyId;
+    private Collection<UUID> id;
 
     @Tolerate
     public UserFilter() {

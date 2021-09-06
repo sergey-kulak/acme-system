@@ -6,7 +6,7 @@ import com.acme.accountingsrv.plan.dto.PlanStatusDto;
 import com.acme.accountingsrv.plan.dto.PlanWithCountDto;
 import com.acme.accountingsrv.plan.dto.PlanWithCountriesDto;
 import com.acme.accountingsrv.plan.dto.SavePlanDto;
-import com.acme.accountingsrv.plan.service.CompanyPlanService;
+import com.acme.accountingsrv.plan.service.PublicPointPlanService;
 import com.acme.accountingsrv.plan.service.PlanService;
 import com.acme.commons.dto.IdDto;
 import com.acme.commons.openapi.EntityCreatedResponse;
@@ -38,6 +38,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -46,7 +47,7 @@ import java.util.UUID;
 @Tag(name = "Plan Api", description = "Plan management Api")
 public class PlanController {
     private final PlanService planService;
-    private final CompanyPlanService companyPlanService;
+    private final PublicPointPlanService publicPointPlanService;
 
     @PostMapping
     @SecureOperation(description = "Create a plan")
@@ -98,10 +99,10 @@ public class PlanController {
         return planService.findActive(country);
     }
 
-    @GetMapping("/{id}/companies")
+    @GetMapping("/{id}/statistics")
     @SecureOperation(description = "Get company ids for specified plan")
-    public Flux<UUID> getCompanies(@PathVariable UUID id) {
-        return companyPlanService.findCompanyIdsWithPlan(id);
+    public Mono<Map<UUID, Long>> findPlanStatistics(@PathVariable UUID id) {
+        return publicPointPlanService.findPlanStatistics(id);
     }
 
     @Schema(name = "Plan page")

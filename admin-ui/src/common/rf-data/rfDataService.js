@@ -17,9 +17,9 @@ const rfDataService = {
         return cache.retriveIfAbsent(CURRENCY_REGION, {},
             () => restApi.get(`${BASE_URL}/currencies`));
     },
-    findLanguages: function () {
+    findLangs: function () {
         return cache.retriveIfAbsent(LANG_REGION, {},
-            () => restApi.get(`${BASE_URL}/languages`));
+            () => restApi.get(`${BASE_URL}/langs`));
     }
 }
 

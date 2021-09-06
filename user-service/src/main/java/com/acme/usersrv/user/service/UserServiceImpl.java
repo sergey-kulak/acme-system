@@ -9,8 +9,10 @@ import com.acme.commons.security.UserRole;
 import com.acme.usersrv.user.UserStatus;
 import com.acme.usersrv.user.dto.CreateUserDto;
 import com.acme.usersrv.user.dto.UpdateUserDto;
+import com.acme.usersrv.user.dto.FullDetailsUserDto;
 import com.acme.usersrv.user.dto.UserDto;
 import com.acme.usersrv.user.dto.UserFilter;
+import com.acme.usersrv.user.dto.UserNameFilter;
 import com.acme.usersrv.user.exception.DuplicateUserException;
 import com.acme.usersrv.user.mapper.UserMapper;
 import com.acme.usersrv.user.repository.UserRepository;
@@ -22,10 +24,12 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -78,14 +82,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Mono<Page<UserDto>> find(UserFilter filter, Pageable pageable) {
+    public Mono<Page<FullDetailsUserDto>> find(UserFilter filter, Pageable pageable) {
         return SecurityUtils.isCompanyAccessible(filter.getCompanyId())
                 .then(userRepository.find(filter, pageable))
                 .map(page -> page.map(userMapper::toDto));
     }
 
     @Override
-    public Mono<UserDto> findById(UUID id) {
+    public Mono<FullDetailsUserDto> findById(UUID id) {
         return userRepository.findById(id)
                 .flatMap(this::hasUserCompanyAccess)
                 .flatMap(this::hasUserAccess)
@@ -130,5 +134,11 @@ public class UserServiceImpl implements UserService {
                                 || user.getId().equals(currentUser.getId()))
                 .map(currentUser -> Tuples.of(user, currentUser))
                 .switchIfEmpty(Mono.error(new AccessDeniedException("Access denied")));
+    }
+
+    @Override
+    public Mono<List<UserDto>> findNames(UserNameFilter filter) {
+        return SecurityUtils.isCompanyAccessible(filter.getCompanyId())
+                .then(userRepository.findNames(filter).collectList());
     }
 }

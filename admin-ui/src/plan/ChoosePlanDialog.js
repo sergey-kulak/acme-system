@@ -5,15 +5,15 @@ import PlanCard from './PlanCard';
 import planService from './planService';
 
 
-function ChoosePlanDialog({ show, company, onClose }) {
+function ChoosePlanDialog({ show, country, onClose }) {
     const [plan, setPlan] = useState();
     const [plans, setPlans] = useState([]);
 
     useEffect(() => {
-        planService.findActive(company.country)
+        planService.findActive(country)
             .then(response => setPlans(response.data
                 .sort((p1, p2) => p1.maxTableCount - p2.maxTableCount)));
-    }, [company.country]);
+    }, [country]);
 
     function onChoose() {
         onClose(plan && plan.id);

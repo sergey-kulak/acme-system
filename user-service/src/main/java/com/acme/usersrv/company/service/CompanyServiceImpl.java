@@ -14,10 +14,8 @@ import com.acme.usersrv.company.dto.UpdateCompanyDto;
 import com.acme.usersrv.company.event.CompanyRegisteredEvent;
 import com.acme.usersrv.company.event.CompanyStatusChangedEvent;
 import com.acme.usersrv.company.exception.DuplicateCompanyException;
-import com.acme.usersrv.company.exception.PlanNotAssignedException;
 import com.acme.usersrv.company.mapper.CompanyMapper;
 import com.acme.usersrv.company.repository.CompanyRepository;
-import com.acme.usersrv.plan.api.CompanyPlanApi;
 import com.acme.usersrv.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -49,7 +47,6 @@ public class CompanyServiceImpl implements CompanyService {
     private final CompanyRepository companyRepository;
     private final UserService userService;
     private final CompanyMapper companyMapper;
-    private final CompanyPlanApi companyPlanApi;
     private final ApplicationEventPublisher eventPublisher;
     private final ReactiveTransactionManager txManager;
 
@@ -62,7 +59,7 @@ public class CompanyServiceImpl implements CompanyService {
                         addOwner(savedCompany, registrationDto.getOwner())
                                 .thenReturn(savedCompany.getId()))
                 .as(TransactionalOperator.create(txManager)::transactional)
-                .doOnSuccess(id -> notify(new CompanyRegisteredEvent(id, registrationDto.getPlanId())));
+                .doOnSuccess(id -> notify(new CompanyRegisteredEvent(id)));
     }
 
     private Company mapFromDto(RegisterCompanyDto registrationDto) {
@@ -98,7 +95,6 @@ public class CompanyServiceImpl implements CompanyService {
     public Mono<Void> changeStatus(UUID id, CompanyStatus newStatus) {
         return companyRepository.findById(id)
                 .flatMap(company -> isValidChange(company, newStatus))
-                .flatMap(company -> checkPlanForActive(company, newStatus))
                 .flatMap(company -> {
                     CompanyStatus fromStatus = company.getStatus();
                     company.setStatus(newStatus);
@@ -113,14 +109,6 @@ public class CompanyServiceImpl implements CompanyService {
                 .as(TransactionalOperator.create(txManager)::transactional)
                 .doOnSuccess(this::notify)
                 .then();
-    }
-
-    private Mono<Company> checkPlanForActive(Company company, CompanyStatus newStatus) {
-        return Mono.just(company)
-                .filter(cmp -> cmp.getStatus() != CompanyStatus.STOPPED && newStatus == CompanyStatus.ACTIVE)
-                .flatMap(cmp -> companyPlanApi.findActivePlanId(cmp.getId())
-                        .switchIfEmpty(PlanNotAssignedException.of(cmp.getFullName())))
-                .thenReturn(company);
     }
 
     private Mono<Company> isValidChange(Company company, CompanyStatus newStatus) {

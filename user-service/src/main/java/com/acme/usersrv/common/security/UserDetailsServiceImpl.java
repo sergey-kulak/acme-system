@@ -15,6 +15,7 @@ public class UserDetailsServiceImpl implements ReactiveUserDetailsService {
     public Mono<UserDetails> findByUsername(String username) {
         return userRepository.findActiveByEmail(username)
                 .map(appUser -> new CompanyUser(appUser.getId(), appUser.getCompanyId(),
-                        appUser.getEmail(), appUser.getPassword(), appUser.getRole()));
+                        appUser.getEmail(), appUser.getPassword(), appUser.getRole(),
+                        appUser.getPublicPointId()));
     }
 }

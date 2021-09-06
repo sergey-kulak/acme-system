@@ -1,6 +1,8 @@
 package com.acme.usersrv.user.repository;
 
 import com.acme.usersrv.user.User;
+import com.acme.usersrv.user.dto.UserDto;
+import com.acme.usersrv.user.dto.UserNameFilter;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.reactive.ReactiveSortingRepository;
 import org.springframework.security.core.userdetails.UserDetails;

@@ -19,6 +19,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import reactor.core.publisher.Mono;
 
+import java.text.ParseException;
 import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
@@ -58,11 +59,13 @@ public class ParseTokenServiceImpl implements ParseTokenService {
 
             String username = claimsSet.getSubject();
             String role = claimsSet.getStringClaim(JwtClaims.ROLE);
-            String companyIdText = claimsSet.getStringClaim(JwtClaims.COMPANY_ID);
-            UUID companyId = StringUtils.isBlank(companyIdText) ? null : UUID.fromString(companyIdText);
+            UUID companyId = getUuid(claimsSet, JwtClaims.COMPANY_ID);
+            UUID publicPointId = getUuid(claimsSet, JwtClaims.PUBLIC_POINT_ID);
             UUID id = UUID.fromString(claimsSet.getStringClaim(JwtClaims.ID));
 
-            CompanyUser user = new CompanyUser(id, companyId, username, StringUtils.EMPTY, UserRole.valueOf(role));
+
+            CompanyUser user = new CompanyUser(id, companyId, username,
+                    StringUtils.EMPTY, UserRole.valueOf(role), publicPointId);
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
             authentication.setDetails(accessToken);
@@ -70,5 +73,10 @@ public class ParseTokenServiceImpl implements ParseTokenService {
         } catch (Exception exception) {
             return Mono.error(new BadCredentialsException("Wrong token", exception));
         }
+    }
+
+    private UUID getUuid(JWTClaimsSet claimsSet, String claim) throws ParseException {
+        String text = claimsSet.getStringClaim(claim);
+        return StringUtils.isBlank(text) ? null : UUID.fromString(text);
     }
 }

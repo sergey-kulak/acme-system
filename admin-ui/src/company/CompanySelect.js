@@ -46,7 +46,8 @@ function CompanySelect({ value, showTypeCheckBox = false,
                 }
             };
             field.onChange(event);
-        } else {
+        }
+        if (onChange) {
             onChange(selectedValue);
         }
     }

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
+
+    <changeSet id="1" author="sergey.kulak">
+        <sql>
+            create extension if not exists "uuid-ossp";
+        </sql>
+    </changeSet>
+
+    <changeSet id="2" author="sergey.kulak">
+        <sql>
+            create type public_point_status as enum ('INACTIVE','ACTIVE','SUSPENDED','STOPPED');
+        </sql>
+
+        <createTable tableName="public_point">
+            <column name="id" type="UUID" defaultValueComputed="uuid_generate_v4()">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="company_id" type="UUID"/>
+            <column name="name" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(1000)"/>
+            <column name="city" type="varchar(50)"/>
+            <column name="address" type="varchar(300)"/>
+            <column name="primary_lang" type="varchar(3)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="public_point_status" defaultValue="INACTIVE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="public_point_lang">
+            <column name="public_point_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lang" type="varchar(2)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey tableName="public_point_lang"
+                       columnNames="public_point_id,lang"
+                       constraintName="public_point_lang_pk"/>
+
+        <addForeignKeyConstraint baseTableName="public_point_lang"
+                                 baseColumnNames="public_point_id"
+                                 constraintName="fk_public_point_lang_pp_id"
+                                 referencedTableName="public_point"
+                                 referencedColumnNames="id"/>
+
+        <createTable tableName="public_point_table">
+            <column name="id" type="UUID" defaultValueComputed="uuid_generate_v4()">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="public_point_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(1000)"/>
+            <column name="seat_count" type="integer"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="public_point_table"
+                                 baseColumnNames="public_point_id"
+                                 constraintName="fk_public_point_table_pp_id"
+                                 referencedTableName="public_point"
+                                 referencedColumnNames="id"/>
+
+        <createIndex tableName="public_point_table" indexName="pp_table_pp_id_idx">
+            <column name="public_point_id"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

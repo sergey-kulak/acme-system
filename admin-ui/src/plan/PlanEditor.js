@@ -153,7 +153,7 @@ function PlanEditor({ auth, onSuccess, onError }) {
                                         isMulti isDisabled={!isEditable} />
                                 </div>
                                 {!isEditable && <div className="form-group col-md-3">
-                                    <label htmlFor="countries">Status</label>
+                                    <label htmlFor="status">Status</label>
                                     <PlanStatusSelect name="status" 
                                         value={plan.status} isDisabled> 
                                     </PlanStatusSelect >

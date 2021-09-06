@@ -10,19 +10,20 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.UUID;
 
+@Getter
+@Setter
 public class CompanyUser extends User implements CompanyUserDetails {
-    @Getter
-    @Setter
     private UUID id;
-    @Getter
-    @Setter
     private UUID companyId;
+    private UUID publicPointId;
 
     public CompanyUser(UUID id, UUID companyId,
-                       String username, String password, UserRole role) {
+                       String username, String password, UserRole role,
+                       UUID publicPointId) {
         super(username, password, Collections.singletonList(new SimpleGrantedAuthority(role.toString())));
         this.id = id;
         this.companyId = companyId;
+        this.publicPointId = publicPointId;
     }
 
     @Override

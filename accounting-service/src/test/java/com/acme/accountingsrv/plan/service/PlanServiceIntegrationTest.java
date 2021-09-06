@@ -1,9 +1,10 @@
 package com.acme.accountingsrv.plan.service;
 
 
-import com.acme.accountingsrv.plan.CompanyPlan;
 import com.acme.accountingsrv.plan.Plan;
 import com.acme.accountingsrv.plan.PlanStatus;
+import com.acme.accountingsrv.plan.PublicPointPlan;
+import com.acme.accountingsrv.plan.dto.AssignPlanDto;
 import com.acme.accountingsrv.plan.dto.PlanDto;
 import com.acme.accountingsrv.plan.dto.PlanFilter;
 import com.acme.accountingsrv.plan.dto.PlanWithCountDto;
@@ -30,9 +31,8 @@ import reactor.test.StepVerifier;
 
 import javax.validation.ConstraintViolationException;
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import static com.acme.commons.utils.StreamUtils.mapToList;
@@ -53,7 +53,7 @@ class PlanServiceIntegrationTest {
     @Autowired
     PlanRepository planRepository;
     @Autowired
-    CompanyPlanService companyPlanService;
+    PublicPointPlanService publicPointPlanService;
     @Autowired
     TestEntityHelper testEntityHelper;
 
@@ -75,7 +75,7 @@ class PlanServiceIntegrationTest {
                 .monthPrice(new BigDecimal("99.99"))
                 .upfrontDiscount6m(new BigDecimal("5.5"))
                 .upfrontDiscount1y(new BigDecimal("12"))
-                .countries(new HashSet<>(Arrays.asList("ru", "by")))
+                .countries(Set.of("ru", "by"))
                 .build();
     }
 
@@ -233,8 +233,13 @@ class PlanServiceIntegrationTest {
     }
 
     private Mono<UUID> assignPlan(UUID companyId, UUID planId) {
-        return testEntityHelper.assignPlan(companyId, planId)
-                .map(CompanyPlan::getId);
+        AssignPlanDto dto = AssignPlanDto.builder()
+                .companyId(companyId)
+                .planId(planId)
+                .publicPointId(UUID.randomUUID())
+                .build();
+        return testEntityHelper.assignPlan(dto)
+                .map(PublicPointPlan::getId);
     }
 
     @Test
@@ -258,7 +263,7 @@ class PlanServiceIntegrationTest {
                     assertEquals(foundItem.getId(), plan.getId());
                     assertEquals(plan.getCountries(), foundItem.getCountries());
                     assertEquals(plan.getCountries(), foundItem.getCountries());
-                    assertEquals(1, foundItem.getCompanyCount());
+                    assertEquals(1, foundItem.getPublicPointCount());
                 })
                 .verifyComplete();
     }
@@ -298,6 +303,7 @@ class PlanServiceIntegrationTest {
                 })
                 .verifyComplete();
     }
+
     @Test
     @WithMockAccountant
     void findByCompany() {

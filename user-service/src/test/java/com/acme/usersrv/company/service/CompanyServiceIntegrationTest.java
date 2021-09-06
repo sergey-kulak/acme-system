@@ -18,9 +18,7 @@ import com.acme.usersrv.company.dto.FullDetailsCompanyDto;
 import com.acme.usersrv.company.dto.RegisterCompanyDto;
 import com.acme.usersrv.company.dto.UpdateCompanyDto;
 import com.acme.usersrv.company.exception.DuplicateCompanyException;
-import com.acme.usersrv.company.exception.PlanNotAssignedException;
 import com.acme.usersrv.company.repository.CompanyRepository;
-import com.acme.usersrv.plan.api.CompanyPlanApi;
 import com.acme.usersrv.test.ServiceIntegrationTest;
 import com.acme.usersrv.test.TestEntityHelper;
 import com.acme.usersrv.user.User;
@@ -56,8 +54,6 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 @ServiceIntegrationTest
 public class CompanyServiceIntegrationTest {
@@ -69,8 +65,6 @@ public class CompanyServiceIntegrationTest {
     UserRepository userRepository;
     @Autowired
     TestEntityHelper testEntityHelper;
-    @Autowired
-    CompanyPlanApi companyPlanApi;
 
     @Test
     public void registrationValidation() {
@@ -90,7 +84,6 @@ public class CompanyServiceIntegrationTest {
                 .phone("+37291234567")
                 .site("company.com")
                 .vatin(RandomTestUtils.randomString("BY"))
-                .planId(UUID.randomUUID())
                 .owner(CreateOwnerDto.builder()
                         .firstName("firstName")
                         .lastName("lastName")
@@ -228,23 +221,7 @@ public class CompanyServiceIntegrationTest {
     @Test
     @WithMockAdmin
     public void inactiveStatusToActive() {
-        when(companyPlanApi.findActivePlanId(any()))
-                .thenReturn(Mono.just(UUID.randomUUID()));
         allowedStatusChange(CompanyStatus.INACTIVE, CompanyStatus.ACTIVE);
-    }
-
-    @Test
-    @WithMockAdmin
-    public void inactiveStatusToActiveNoPlan() {
-        when(companyPlanApi.findActivePlanId(any()))
-                .thenReturn(Mono.empty());
-        testEntityHelper.createCompany(CompanyStatus.INACTIVE)
-                .flatMap(company ->
-                        companyService.changeStatus(company.getId(), CompanyStatus.ACTIVE)
-                )
-                .as(TxStepVerifier::withRollback)
-                .expectError(PlanNotAssignedException.class)
-                .verify();
     }
 
     @Test
@@ -274,8 +251,6 @@ public class CompanyServiceIntegrationTest {
     @Test
     @WithMockAdmin
     public void suspendedStatusToActive() {
-        when(companyPlanApi.findActivePlanId(any()))
-                .thenReturn(Mono.just(UUID.randomUUID()));
         allowedStatusChange(CompanyStatus.SUSPENDED, CompanyStatus.ACTIVE);
     }
 

@@ -13,18 +13,18 @@ public class CloudStreamConfig {
     @Autowired
     private CompanyEventService companyEventService;
 
-    @Bean
-    public Function<Flux<CompanyRegisteredEvent>, Mono<Void>> companyRegisteredConsumer() {
-        return consume(companyEventService::onEvent);
-    }
-
-    private <T> Function<Flux<T>, Mono<Void>> consume(Function<T, Mono<Void>> consumer) {
-        return eventMono -> eventMono.flatMap(consumer).then();
-    }
-
-    @Bean
-    public Function<Flux<CompanyStatusChangedEvent>, Mono<Void>> companyStatusConsumer() {
-        return consume(companyEventService::onEvent);
-    }
+//    @Bean
+//    public Function<Flux<CompanyRegisteredEvent>, Mono<Void>> companyRegisteredConsumer() {
+//        return consume(companyEventService::onEvent);
+//    }
+//
+//    private <T> Function<Flux<T>, Mono<Void>> consume(Function<T, Mono<Void>> consumer) {
+//        return eventMono -> eventMono.flatMap(consumer).then();
+//    }
+//
+//    @Bean
+//    public Function<Flux<CompanyStatusChangedEvent>, Mono<Void>> companyStatusConsumer() {
+//        return consume(companyEventService::onEvent);
+//    }
 
 }

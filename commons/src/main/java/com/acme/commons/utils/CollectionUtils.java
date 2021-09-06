@@ -7,9 +7,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class CollectionUtils {
     private CollectionUtils() {
@@ -73,6 +75,14 @@ public class CollectionUtils {
         List<E> items = new ArrayList<>();
         iterable.forEach(items::add);
         return items;
+    }
+
+    @SafeVarargs
+    public static <E> List<E> union(Collection<E>... collections) {
+        return Stream.of(collections)
+                .filter(Objects::nonNull)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
     }
 
 }

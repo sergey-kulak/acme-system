@@ -11,6 +11,7 @@ import useHistoryBack from '../common/useHistoryBack';
 import { onError, onSuccess } from '../common/toastNotification';
 import CountrySelect from '../common/rf-data/CountrySelect';
 import './CompanyEditor.css';
+import { getErrorMessage } from '../common/utils';
 
 function CompanyEditor({ onSuccess, onError }) {
     const { id } = useParams();
@@ -41,7 +42,7 @@ function CompanyEditor({ onSuccess, onError }) {
     }, [id]);
 
     useEffect(() => {
-        userService.findOwners(id)
+        userService.findNames(id)
             .then(response => setOwners(response.data.content));
     }, [id]);
 
@@ -60,10 +61,7 @@ function CompanyEditor({ onSuccess, onError }) {
             .then(() => {
                 onSuccess(`${company.fullName} was updated successfuly`);
                 historyBack();
-            }, error => {
-                let errorMessage = error.response.data.error;
-                onError(errorMessage || 'Error');
-            })
+            }, error => onError(getErrorMessage(error.response.data)))
     }
 
     return (

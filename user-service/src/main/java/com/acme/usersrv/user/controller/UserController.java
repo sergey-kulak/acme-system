@@ -9,9 +9,11 @@ import com.acme.commons.openapi.SecureOperation;
 import com.acme.commons.openapi.ValidationErrorResponse;
 import com.acme.commons.utils.ResponseUtils;
 import com.acme.usersrv.user.dto.CreateUserDto;
+import com.acme.usersrv.user.dto.FullDetailsUserDto;
 import com.acme.usersrv.user.dto.UpdateUserDto;
 import com.acme.usersrv.user.dto.UserDto;
 import com.acme.usersrv.user.dto.UserFilter;
+import com.acme.usersrv.user.dto.UserNameFilter;
 import com.acme.usersrv.user.service.UserService;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -30,8 +32,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -56,7 +60,7 @@ public class UserController {
     @SecureOperation(description = "Find user by id")
     @ApiResponse(responseCode = "200")
     @EntityNotFoundResponse
-    public Mono<UserDto> findById(@PathVariable UUID id) {
+    public Mono<FullDetailsUserDto> findById(@PathVariable UUID id) {
         return userService.findById(id);
     }
 
@@ -72,12 +76,19 @@ public class UserController {
     @SecureOperation(description = "Find users with pagination")
     @ApiResponse(responseCode = "200",
             content = @Content(schema = @Schema(implementation = UserApiPage.class)))
-    public Mono<Page<UserDto>> find(@ParameterObject UserFilter filter,
-                                    @ParameterObject Pageable pageable) {
+    public Mono<Page<FullDetailsUserDto>> find(@ParameterObject UserFilter filter,
+                                               @ParameterObject Pageable pageable) {
         return userService.find(filter, pageable);
     }
 
+    @GetMapping("/names")
+    @SecureOperation(description = "Find users names")
+    @ApiResponse(responseCode = "200")
+    public Mono<List<UserDto>> findNames(@ParameterObject UserNameFilter filter) {
+        return userService.findNames(filter);
+    }
+
     @Schema(name = "User page")
-    private static class UserApiPage extends OpenApiPage<UserDto> {
+    private static class UserApiPage extends OpenApiPage<FullDetailsUserDto> {
     }
 }

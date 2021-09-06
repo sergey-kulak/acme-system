@@ -17,6 +17,9 @@ import ToastContainer from '../../common/ToastContainer';
 import PlanDashboard from "../../plan/PlanDashboad";
 import PlanEditor from "../../plan/PlanEditor";
 import CompanyViewer from "../../company/CompanyViewer";
+import PublicPointDashboard from "../../public-point/PublicPointDashboard";
+import PublicPointEditor from "../../public-point/PublicPointEditor";
+import PublicPointViewer from "../../public-point/PublicPointViewer";
 
 
 const UPDATE_TIMEOUT = 120;
@@ -73,15 +76,24 @@ function MainLayout({ auth, onLogin, onLogout }) {
                         <SecuredRoute exact path="/users" auth={auth} role={ROLE.COMPANY_OWNER}>
                             <UserDashboard />
                         </SecuredRoute>
+                        <Route path="/users/:id">
+                            <UserEditor />
+                        </Route>                        
                         <SecuredRoute exact path="/plans" auth={auth} role={ROLE.ACCOUNTANT}>
                             <PlanDashboard />
                         </SecuredRoute>
                         <SecuredRoute path="/plans/:id" auth={auth} role={ROLE.ACCOUNTANT}>
                             <PlanEditor />
                         </SecuredRoute>
-                        <Route path="/users/:id">
-                            <UserEditor />
-                        </Route>
+                        <SecuredRoute exact path="/public-points" auth={auth} role={ROLE.COMPANY_OWNER}>
+                            <PublicPointDashboard />
+                        </SecuredRoute>
+                        <SecuredRoute path="/public-points/:id" auth={auth} role={ROLE.COMPANY_OWNER}>
+                            <PublicPointEditor />
+                        </SecuredRoute>
+                        <SecuredRoute path="/public-point-view/:id" auth={auth} role={ROLE.PP_MANAGER}>
+                            <PublicPointViewer />
+                        </SecuredRoute>
                     </Switch>
                     <ToastContainer />
                 </div>

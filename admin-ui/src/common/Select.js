@@ -3,9 +3,12 @@ import { hasValidationError, getValidationClass } from './utils';
 
 function Select({ options, value, optionFilter, onChange, field, form, ...props }) {
 
-    function handleStatusChange(selectedOptions) {
-        let selectedValues = props.isMulti ?
-            selectedOptions.map(option => option.value) : selectedOptions.value;
+    function handleChange(selectedOptions) {
+        let selectedValues
+        if (selectedOptions) {
+            selectedValues = props.isMulti ?
+                selectedOptions.map(option => option.value) : selectedOptions.value;
+        }
         if (field && field.onChange) {
             let event = {
                 target: {
@@ -14,7 +17,8 @@ function Select({ options, value, optionFilter, onChange, field, form, ...props 
                 }
             };
             field.onChange(event);
-        } else {
+        }
+        if (onChange) {
             onChange(selectedValues);
         }
     }
@@ -30,7 +34,7 @@ function Select({ options, value, optionFilter, onChange, field, form, ...props 
     return (
         <div className="cmt-select">
             <ReactSelect options={allowedOptions} placeholder=""
-                onChange={handleStatusChange}
+                onChange={handleChange}
                 {...props} className={className}
                 value={selectedOptions}>
             </ReactSelect>

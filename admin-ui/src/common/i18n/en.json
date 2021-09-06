@@ -17,5 +17,12 @@
     "country.RU": "Russian Federation",
     "country.PL": "Poland",
     "country.UA": "Ukraine",
-    "country.BY": "Belarus"
+    "country.BY": "Belarus",
+    "pp.status.active": "Active",
+    "pp.status.inactive": "Inactive",
+    "pp.status.suspended": "Suspended",
+    "pp.status.stopped": "Stopped",
+    "lang.ru": "Russian",
+    "lang.pl": "Polish",
+    "lang.en": "English"
 }

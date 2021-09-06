@@ -41,7 +41,7 @@
         <addPrimaryKey tableName="plan_country" columnNames="plan_id,country"
                        constraintName="plan_country_pl"/>
 
-        <createTable tableName="company_plan">
+        <createTable tableName="public_point_plan">
             <column name="id" type="UUID" defaultValueComputed="uuid_generate_v4()">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
@@ -51,17 +51,20 @@
             <column name="company_id" type="UUID">
                 <constraints nullable="false"/>
             </column>
+            <column name="public_point_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
             <column name="start_date" type="timestamp">
                 <constraints nullable="false"/>
             </column>
             <column name="end_date" type="timestamp"/>
         </createTable>
 
-        <addForeignKeyConstraint baseTableName="company_plan" baseColumnNames="plan_id"
-                                 constraintName="cmp_plan_id_fk" referencedTableName="plan"
+        <addForeignKeyConstraint baseTableName="public_point_plan" baseColumnNames="plan_id"
+                                 constraintName="pp_plan_id_fk" referencedTableName="plan"
                                  referencedColumnNames="id"/>
 
-        <createIndex tableName="company_plan" indexName="cmp_plan_id_idx">
+        <createIndex tableName="public_point_plan" indexName="pp_plan_plan_id_idx">
             <column name="plan_id"/>
         </createIndex>
     </changeSet>
@@ -81,13 +84,13 @@
     <changeSet id="4" author="sergey.kulak">
         <sql>
             create unique index cmp_plan_active_idx
-            on company_plan(company_id) where end_date is null
+            on public_point_plan(public_point_id, company_id) where end_date is null
         </sql>
     </changeSet>
 
     <changeSet id="5" author="sergey.kulak">
-        <createIndex tableName="company_plan" indexName="company_plan_cmp_id">
-            <column name="company_id"/>
+        <createIndex tableName="public_point_plan" indexName="pp_plan_pp_id">
+            <column name="public_point_id"/>
         </createIndex>
     </changeSet>
 

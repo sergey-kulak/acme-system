@@ -1,15 +1,12 @@
 import { Field, Form, Formik } from 'formik';
-import { useEffect, useState } from 'react';
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import * as Yup from 'yup';
 import HighlightInput from '../../common/HighlightInput';
 import CountrySelect from '../../common/rf-data/CountrySelect';
 import companyService from '../../company/companyService';
-import PlanCard from '../../plan/PlanCard';
-import planService from '../../plan/planService';
 import './SignUp.css';
-import { isEmptyObject } from '../../common/utils';
+import { getErrorMessage} from '../../common/utils';
 import { onSuccess, onError } from '../../common/toastNotification';
 import ToastContainer from '../../common/ToastContainer';
 
@@ -17,7 +14,7 @@ const TEST_DATA = {
     fullName: 'Company 111',
     vatin: 'BY1111111',
     regNumber: 'REG1111111',
-    country: '',
+    country: 'BY',
     city: 'Minsk',
     address: 'Dzerginskogo str., ap. 10',
     site: 'company111.com',
@@ -31,13 +28,8 @@ const TEST_DATA = {
     confirmPassword: 'qwe123',
 };
 
-const INIT_PLAN_DATA = { items: [] };
-
 function SignUp({ onSuccess, onError }) {
-    const [planData, setPlanData] = useState(INIT_PLAN_DATA);
-    const [validationErrors, setValidationErrors] = useState({});
-    const [country, setCountry] = useState();
-
+    
     const intialValues = true ? TEST_DATA : {
         fullName: '',
         vatin: '',
@@ -78,36 +70,7 @@ function SignUp({ onSuccess, onError }) {
             })
     });
 
-    useEffect(() => {
-        if (country) {
-            planService.findActive(country)
-                .then(response => {
-                    let newPlans = response.data
-                        .sort((p1, p2) => p1.maxTableCount - p2.maxTableCount);
-                    setPlanData(prev => ({
-                        selected: prev.selected
-                            && newPlans.some(np => np.id === prev.selected.id) ? prev.selected : undefined,
-                        items: newPlans
-                    }));
-                });
-        } else {
-            setPlanData(INIT_PLAN_DATA);
-        }
-    }, [country]);
-
-    function validate() {
-        let errors = {};
-        if (!planData.selected) {
-            errors.emptyPlan = true;
-        }
-        setValidationErrors(errors);
-        return isEmptyObject(errors);
-    }
-
     function onSubmit(formData, actions) {
-        if (!validate()) {
-            return;
-        }
         const request = {
             fullName: formData.fullName,
             email: formData.companyEmail,
@@ -118,7 +81,6 @@ function SignUp({ onSuccess, onError }) {
             regNumber: formData.regNumber,
             site: formData.site,
             phone: formData.companyPhone,
-            planId: planData.selected.id,
             owner: {
                 firstName: formData.firstName,
                 lastName: formData.lastName,
@@ -134,21 +96,7 @@ function SignUp({ onSuccess, onError }) {
                     actions.resetForm();
                 }
                 onSuccess('Company request was sent successfuly. Check your email for next steps');
-            }, error => onError(error.response.data))
-    }
-
-    function getCardClassName(cardPlan) {
-        let selectedPlan = planData.selected;
-        return selectedPlan && selectedPlan.id === cardPlan.id ? 'border-primary selected' : '';
-    }
-
-    function onCountryChange(country) {
-        setCountry(country);
-    }
-
-    function onCardClick(newPlan) {
-        setPlanData(prev => ({ ...prev, selected: newPlan }));
-        setValidationErrors(prev => ({ ...prev, emptyPlan: false }));
+            }, error => onError(getErrorMessage(error.response.data)))
     }
 
     return (
@@ -188,7 +136,7 @@ function SignUp({ onSuccess, onError }) {
                             <div className="form-group col-md-6">
                                 <label htmlFor="country">Country</label>
                                 <Field component={CountrySelect} name="country"
-                                    type="text" onChange={onCountryChange} />
+                                    type="text" />
                             </div>
                             <div className="form-group col-md-6">
                                 <label htmlFor="city">City</label>
@@ -254,20 +202,6 @@ function SignUp({ onSuccess, onError }) {
                                 <Field component={HighlightInput} name="confirmPassword"
                                     type="password" className="form-control" />
                             </div>
-                        </div>
-                        <h4 className="h4 mb-3">
-                            Plan:
-                            {validationErrors.emptyPlan && <span className="ml-2 text-danger">Choose a plan</span>}
-                        </h4>
-                        <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3">
-                            {
-                                planData.items.map(planItem =>
-                                    <div className="col mb-4" key={planItem.id}
-                                        onClick={e => onCardClick(planItem)}>
-                                        <PlanCard plan={planItem} className={getCardClassName(planItem)} />
-                                    </div>
-                                )
-                            }
                         </div>
                         <button type="submit" className="btn btn-primary">Submit</button>
                     </Form>

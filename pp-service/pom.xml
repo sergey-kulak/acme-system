@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.5.2</version>
+    </parent>
+
+    <groupId>com.acme</groupId>
+    <artifactId>pp-service</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <properties>
+        <java.version>11</java.version>
+
+        <start-class>com.acme.ppsrv.Application</start-class>
+        <docker.image.name>acme/pp-service</docker.image.name>
+        <docker.image.tag>${project.version}</docker.image.tag>
+        <spring.cloud.version>2020.0.3</spring.cloud.version>
+        <liquibase.version>4.4.0</liquibase.version>
+        <r2dbc-pg.version>0.8.8.RELEASE</r2dbc-pg.version>
+        <pg-jdbc.version>42.2.22</pg-jdbc.version>
+        <lombok.version>1.18.20</lombok.version>
+        <mapstruct.version>1.4.2.Final</mapstruct.version>
+        <commons-lang3.version>3.12.0</commons-lang3.version>
+        <openapi-ui.version>1.5.9</openapi-ui.version>
+        <jooq.version>3.15.0</jooq.version>
+        <testcontainers.version>1.15.3</testcontainers.version>
+        <acme-commons.version>1.0-SNAPSHOT</acme-commons.version>
+        <acme-test-commons.version>1.0-SNAPSHOT</acme-test-commons.version>
+        <feign-reactor.version>3.1.1</feign-reactor.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring.cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    
+   <dependencies>
+        <dependency>
+            <groupId>com.acme</groupId>
+            <artifactId>commons</artifactId>
+            <version>${acme-commons.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.acme</groupId>
+            <artifactId>test-commons</artifactId>
+            <version>${acme-test-commons.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>${mapstruct.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+            <version>${liquibase.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${pg-jdbc.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-test</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <version>${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>r2dbc</artifactId>
+            <version>${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-r2dbc</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.r2dbc</groupId>
+            <artifactId>r2dbc-postgresql</artifactId>
+            <version>${r2dbc-pg.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-config</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commons-lang3.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-webflux-ui</artifactId>
+            <version>${openapi-ui.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jooq</groupId>
+            <artifactId>jooq</artifactId>
+            <version>${jooq.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.nimbusds</groupId>
+            <artifactId>nimbus-jose-jwt</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-stream-rabbit</artifactId>
+        </dependency>
+
+       <dependency>
+           <groupId>com.playtika.reactivefeign</groupId>
+           <artifactId>feign-reactor-webclient</artifactId>
+           <version>${feign-reactor.version}</version>
+       </dependency>
+
+       <dependency>
+           <groupId>com.playtika.reactivefeign</groupId>
+           <artifactId>feign-reactor-cloud</artifactId>
+           <version>${feign-reactor.version}</version>
+       </dependency>
+
+       <dependency>
+           <groupId>com.playtika.reactivefeign</groupId>
+           <artifactId>feign-reactor-spring-configuration</artifactId>
+           <version>${feign-reactor.version}</version>
+       </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                        <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                            <version>${mapstruct.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
+                <version>${liquibase.version}</version>
+                <configuration>
+                    <changeLogFile>src/main/resources/db/changelog/master.xml</changeLogFile>
+                    <driver>org.testcontainers.jdbc.ContainerDatabaseDriver</driver>
+                    <url>jdbc:tc:postgresql:13.3-alpine:///ppdb?TC_DAEMON=true&amp;TC_REUSABLE=true</url>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.postgresql</groupId>
+                        <artifactId>postgresql</artifactId>
+                        <version>${postgresql.version}</version>
+                    </dependency>
+
+                    <dependency>
+                        <groupId>org.testcontainers</groupId>
+                        <artifactId>testcontainers</artifactId>
+                        <version>${testcontainers.version}</version>
+                    </dependency>
+
+                    <dependency>
+                        <groupId>org.testcontainers</groupId>
+                        <artifactId>postgresql</artifactId>
+                        <version>${testcontainers.version}</version>
+                    </dependency>
+
+                    <dependency>
+                        <groupId>junit</groupId>
+                        <artifactId>junit</artifactId>
+                        <version>${junit.version}</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>update</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.jooq</groupId>
+                <artifactId>jooq-codegen-maven</artifactId>
+
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+
+                <dependencies>
+                    <dependency>
+                        <groupId>org.postgresql</groupId>
+                        <artifactId>postgresql</artifactId>
+                        <version>${postgresql.version}</version>
+                    </dependency>
+
+                    <dependency>
+                        <groupId>org.testcontainers</groupId>
+                        <artifactId>testcontainers</artifactId>
+                        <version>${testcontainers.version}</version>
+                    </dependency>
+
+                    <dependency>
+                        <groupId>org.testcontainers</groupId>
+                        <artifactId>postgresql</artifactId>
+                        <version>${testcontainers.version}</version>
+                    </dependency>
+
+                    <dependency>
+                        <groupId>junit</groupId>
+                        <artifactId>junit</artifactId>
+                        <version>${junit.version}</version>
+                    </dependency>
+                </dependencies>
+
+                <configuration>
+                    <jdbc>
+                        <driver>org.testcontainers.jdbc.ContainerDatabaseDriver</driver>
+                        <url>jdbc:tc:postgresql:13.3-alpine:///ppdb?TC_DAEMON=true&amp;TC_REUSABLE=true</url>
+                    </jdbc>
+
+                    <generator>
+                        <database>
+                            <name>org.jooq.meta.postgres.PostgresDatabase</name>
+                            <includes>.*</includes>
+                            <includeRoutines>false</includeRoutines>
+                            <includePackages>false</includePackages>
+                            <includePackageRoutines>false</includePackageRoutines>
+                            <includePackageUDTs>false</includePackageUDTs>
+                            <includePackageConstants>false</includePackageConstants>
+                            <includeUDTs>false</includeUDTs>
+                            <includeDomains>false</includeDomains>
+                            <excludes>databasechangelog|databasechangeloglock</excludes>
+                            <schemata>
+                                <schema>
+                                    <inputSchema>public</inputSchema>
+                                </schema>
+                            </schemata>
+                        </database>
+
+                        <generate>
+                            <javaTimeTypes>true</javaTimeTypes>
+                            <daos>false</daos>
+                            <sequences>true</sequences>
+                        </generate>
+
+                        <target>
+                            <packageName>com.acme.ppsrv.jooq</packageName>
+                        </target>
+
+                    </generator>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

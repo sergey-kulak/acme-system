@@ -16,6 +16,10 @@ Reference data service - 7020 - 7029
 	DB 7021 -> 27017
 	DB UI 7022 -> 8081
 
-Accounting service - 7030 - 7029
+Accounting service - 7030 - 7039
 	HTTP 7030
 	DB 7031 -> 5432
+
+Public point service - 7040 - 7049
+	HTTP 7040
+	DB 7041 -> 5432	

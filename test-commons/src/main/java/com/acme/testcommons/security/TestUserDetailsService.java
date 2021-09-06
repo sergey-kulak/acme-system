@@ -6,14 +6,21 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 public class TestUserDetailsService implements UserDetailsService {
+    private static final List<UserRole> PP_ROLES = Arrays.asList(UserRole.PP_MANAGER,
+            UserRole.COOK, UserRole.WAITER);
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         String roleText = username.substring(0, username.indexOf("@"));
         UserRole role = UserRole.valueOf(roleText.toUpperCase());
         UUID companyId = role == UserRole.ADMIN ? null : UUID.randomUUID();
-        return new CompanyUser(UUID.randomUUID(), companyId, username.toLowerCase(), "qwe123", role);
+        UUID publicPointId = PP_ROLES.contains(role) ? null : UUID.randomUUID();
+        return new CompanyUser(UUID.randomUUID(), companyId, username.toLowerCase(),
+                "qwe123", role, publicPointId);
     }
 }

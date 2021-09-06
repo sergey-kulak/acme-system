@@ -279,7 +279,7 @@
                 [
                 {_id: 'en', name: 'English', nativeName: 'English', active: true},
                 {_id: 'ru', name: 'Russian', nativeName: 'Русский', active: true},
-                {_id: 'pl', name: 'Polish', nativeName: 'Polski', active: false},
+                {_id: 'pl', name: 'Polish', nativeName: 'Polski', active: true},
                 ]
             </ext:documents>
         </ext:insertMany>

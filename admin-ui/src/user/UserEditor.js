@@ -1,5 +1,5 @@
 import { Field, Form, Formik } from 'formik';
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { connect } from 'react-redux';
 import { useParams } from "react-router-dom";
 import * as Yup from 'yup';
@@ -12,6 +12,9 @@ import UserRoleSelect from './UserRoleSelect';
 import CompanySelect from '../company/CompanySelect';
 import { hasRole, ROLE, getAllAccessibleRoles } from "../common/security";
 import { isEmpty } from "../common/utils";
+import PublicPointSelect from '../public-point/PublicPointSelect';
+
+const PP_ROLES = [ROLE.PP_MANAGER, ROLE.WAITER, ROLE.COOK];
 
 function UserEditor({ auth, onSuccess, onError }) {
     const { id } = useParams();
@@ -25,8 +28,10 @@ function UserEditor({ auth, onSuccess, onError }) {
         password: '',
         confirmPassword: '',
         role: '',
-        companyId: hasRole(auth, ROLE.ADMIN) ? '' : auth.user.cmpid
+        companyId: hasRole(auth, ROLE.ADMIN) ? '' : auth.user.cmpid,
+        publicPointId: ''
     });
+    const formikRef = useRef(null);
     const historyBack = useHistoryBack("/users");
 
     const validationSchema = Yup.object({
@@ -42,6 +47,11 @@ function UserEditor({ auth, onSuccess, onError }) {
         companyId: Yup.string()
             .test('companyId-check', 'Required', function (value) {
                 return this.parent.role === ROLE.ADMIN || this.parent.role === ROLE.ACCOUNTANT || !isEmpty(value);
+            }),
+            publicPointId: Yup.string()
+            .test('publicPointId-check', 'Required', function (value) {
+                let role = this.parent.role;
+                return !PP_ROLES.includes(role) || !isEmpty(value);
             })
     });
 
@@ -73,6 +83,7 @@ function UserEditor({ auth, onSuccess, onError }) {
             companyId: user.companyId || '',
             password: '',
             confirmPassword: '',
+            publicPointId: user.publicPointId || '',
         });
     }
 
@@ -107,6 +118,35 @@ function UserEditor({ auth, onSuccess, onError }) {
         }
     }
 
+    function getFormikValues() {
+        return formikRef.current && formikRef.current.values;
+    }
+
+    function onCompanyChange(cmpId) {
+        setFormData({
+            ...getFormikValues(),
+            companyId: cmpId,
+            publicPointId: ''
+        })
+    }
+
+    function onRoleChange(newRole) {
+        let state = getFormikValues()
+        setFormData({
+            ...state,
+            role: newRole,
+            publicPointId: state.companyId && newRole
+                && PP_ROLES.includes(newRole) ? state.publicPointId : ''
+        })
+    }
+
+    function onPpChange(ppId) {
+        setFormData({
+            ...getFormikValues(),
+            publicPointId: ppId
+        });
+    }
+
     function roleFilter(options) {
         let roles = getAllAccessibleRoles(auth);
         return options.filter(opt => opt.value !== ROLE.ADMIN && roles.includes(opt.value))
@@ -115,6 +155,7 @@ function UserEditor({ auth, onSuccess, onError }) {
     const canChangeRole = hasRole(auth, ROLE.ADMIN, ROLE.COMPANY_OWNER) &&
         (isCreate || (user && user.role !== ROLE.ADMIN));
     const canSetCompany = hasRole(auth, ROLE.ADMIN);
+    const isPpDisabled = !formData.role || !formData.companyId || !PP_ROLES.includes(formData.role)
 
     return (
         <div className="main-content">
@@ -123,7 +164,8 @@ function UserEditor({ auth, onSuccess, onError }) {
                     {user ? getFullName() : 'User creation'}
                 </div>
                 <div className="main-content-body">
-                    <Formik enableReinitialize
+                    <Formik innerRef={formikRef}
+                        enableReinitialize
                         initialValues={formData}
                         validationSchema={validationSchema}
                         onSubmit={onSubmit}>
@@ -169,12 +211,23 @@ function UserEditor({ auth, onSuccess, onError }) {
                                 <div className="form-group col-md-6">
                                     <label htmlFor="confirmPassword">Role</label>
                                     <Field component={UserRoleSelect} name="role"
+                                        onChange={onRoleChange}
                                         isDisabled={!canChangeRole} optionFilter={roleFilter} />
                                 </div>
                                 <div className="form-group col-md-6">
                                     <label htmlFor="companyId">Company</label>
                                     <Field component={CompanySelect} name="companyId"
+                                        onChange={onCompanyChange} isClearable
                                         isDisabled={!(isCreate && canSetCompany)}
+                                    />
+                                </div>
+                            </div>
+                            <div className="form-row">
+                                <div className="form-group col-md-6">
+                                    <label htmlFor="publicPointId">Public point</label>
+                                    <Field component={PublicPointSelect} name="publicPointId"
+                                        isDisabled={isPpDisabled} isClearable
+                                        companyId={formData.companyId} onChange={onPpChange}
                                     />
                                 </div>
                             </div>

@@ -19,9 +19,6 @@ spring:
     stream:
       function:
         autodetect: false
-      #      default:
-#        producer:
-#          requiredGroups: company-registration,company-status
       rabbit:
         default:
           producer:

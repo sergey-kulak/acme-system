@@ -131,7 +131,7 @@ function CompanyDashboard({ onSuccess, onError }) {
 }
 
 class Filter {
-    static URL_PARAM_NAME_PATTERN = 'pn';
+    static URL_PARAM_NAME_PATTERN = 'np';
     static URL_PARAM_VATIN = 'vi';
     static URL_PARAM_COUNTRY = 'cn';
     static URL_PARAM_STATUS = 'st';

@@ -11,5 +11,4 @@ import java.util.UUID;
 @ToString
 public class CompanyRegisteredEvent {
     private UUID companyId;
-    private UUID planId;
 }

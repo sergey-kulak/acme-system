@@ -1,0 +1,21 @@
+.pp-status{
+  height: 1rem;
+  width: 1rem;
+  border-radius: 50%;
+}
+
+.pp-active{
+    background-color: green;
+}
+
+.pp-inactive{
+    background-color: darkorange;
+}
+
+.pp-suspended{
+  background-color: grey;
+}
+
+.pp-stopped{
+  background-color: red;
+}

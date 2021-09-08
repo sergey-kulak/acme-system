@@ -1,0 +1,27 @@
+.add-btn {
+    bottom: 0.5rem;
+    right: 0.75rem;
+    position: relative;
+}
+
+.add-btn > .filter-icon {
+    height: 2rem;
+}
+
+.del-btn-td {
+    padding-left: 0px !important;
+}
+
+.del-btn-td .filter-icon {
+    height: 2rem;
+}
+
+.add-btn-wrapper {
+    height: 0;
+}
+
+.edit-cell {
+    border: 1px lightgray solid;
+    border-radius: 2px;
+    width: 100%;
+}

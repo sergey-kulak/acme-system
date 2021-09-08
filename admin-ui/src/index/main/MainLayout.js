@@ -1,9 +1,9 @@
 import { useCallback, useEffect } from "react";
 import { connect } from "react-redux";
-import { Route, Switch, useHistory } from "react-router-dom";
+import { Route, Switch, useHistory, Redirect } from "react-router-dom";
 import SecuredRoute from '../../common/security/SecuredRoute';
 import AuthService from "../../common/security/authService";
-import { ROLE } from "../../common/security";
+import { hasRole, ROLE } from "../../common/security";
 import { onLogin, onLogout } from '../../common/security/authReducer';
 import CompanyDashboard from "../../company/CompanyDashboard";
 import CompanyEditor from '../../company/CompanyEditor';
@@ -20,6 +20,7 @@ import CompanyViewer from "../../company/CompanyViewer";
 import PublicPointDashboard from "../../public-point/PublicPointDashboard";
 import PublicPointEditor from "../../public-point/PublicPointEditor";
 import PublicPointViewer from "../../public-point/PublicPointViewer";
+import PublicPointTableEditor from "../../public-point/PublicPointTableEditor";
 
 
 const UPDATE_TIMEOUT = 120;
@@ -53,7 +54,7 @@ function MainLayout({ auth, onLogin, onLogout }) {
         }
     }, [auth, refreshAccessToken]);
 
-
+    const isTablesVisible = hasRole(auth, ROLE.ADMIN) || !!auth.user.cmpid;
 
     return (
         <div className="d-flex flex-column flex-md-row min-vh-100">
@@ -78,7 +79,7 @@ function MainLayout({ auth, onLogin, onLogout }) {
                         </SecuredRoute>
                         <Route path="/users/:id">
                             <UserEditor />
-                        </Route>                        
+                        </Route>
                         <SecuredRoute exact path="/plans" auth={auth} role={ROLE.ACCOUNTANT}>
                             <PlanDashboard />
                         </SecuredRoute>
@@ -94,6 +95,9 @@ function MainLayout({ auth, onLogin, onLogout }) {
                         <SecuredRoute path="/public-point-view/:id" auth={auth} role={ROLE.PP_MANAGER}>
                             <PublicPointViewer />
                         </SecuredRoute>
+                        <Route exact path="/tables" auth={auth} role={ROLE.PP_MANAGER}>
+                            {isTablesVisible ? <PublicPointTableEditor /> : <Redirect to="/" />}
+                        </Route>
                     </Switch>
                     <ToastContainer />
                 </div>

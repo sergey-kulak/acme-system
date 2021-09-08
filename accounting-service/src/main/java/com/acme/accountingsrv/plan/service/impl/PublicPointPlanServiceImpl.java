@@ -7,6 +7,7 @@ import com.acme.accountingsrv.plan.dto.AssignPlanDto;
 import com.acme.accountingsrv.plan.dto.PlanDto;
 import com.acme.accountingsrv.plan.dto.PublicPointPlanDto;
 import com.acme.accountingsrv.plan.exception.PlanAlreadyAssignedException;
+import com.acme.accountingsrv.plan.exception.TableCountExceedLimitException;
 import com.acme.accountingsrv.plan.mapper.CompanyPlanMapper;
 import com.acme.accountingsrv.plan.mapper.PlanMapper;
 import com.acme.accountingsrv.plan.repository.CompanyPpCount;
@@ -14,6 +15,7 @@ import com.acme.accountingsrv.plan.repository.PlanIdOnly;
 import com.acme.accountingsrv.plan.repository.PlanRepository;
 import com.acme.accountingsrv.plan.repository.PublicPointPlanRepository;
 import com.acme.accountingsrv.plan.service.PublicPointPlanService;
+import com.acme.accountingsrv.pubicpoint.api.PublicPointTableApi;
 import com.acme.commons.exception.EntityNotFoundException;
 import com.acme.commons.security.SecurityUtils;
 import com.acme.commons.utils.StreamUtils;
@@ -39,6 +41,7 @@ public class PublicPointPlanServiceImpl implements PublicPointPlanService {
     private final PlanRepository planRepository;
     private final CompanyPlanMapper companyPlanMapper;
     private final PlanMapper planMapper;
+    private final PublicPointTableApi ppTableApi;
 
     @Override
     @Transactional
@@ -51,8 +54,22 @@ public class PublicPointPlanServiceImpl implements PublicPointPlanService {
         return SecurityUtils.isCompanyAccessible(companyId)
                 .then(publicPointPlanRepository.findActivePlan(publicPointId))
                 .flatMap(curPlan -> processPlan(curPlan, dto))
-                .switchIfEmpty(publicPointPlanRepository.save(createCompanyPlan(dto)))
+                .switchIfEmpty(saveNewPlan(dto))
                 .map(PublicPointPlan::getId);
+    }
+
+    private Mono<PublicPointPlan> saveNewPlan(AssignPlanDto dto) {
+        return checkTableCount(dto.getPublicPointId(), dto.getPlanId())
+                .then(publicPointPlanRepository.save(createCompanyPlan(dto)));
+    }
+
+    private Mono<Void> checkTableCount(UUID publicPointId, UUID planId) {
+        return Mono.zip(
+                ppTableApi.countAll(publicPointId),
+                planRepository.findById(planId))
+                .filter(data -> data.getT1() <= data.getT2().getMaxTableCount())
+                .switchIfEmpty(TableCountExceedLimitException.of())
+                .then();
     }
 
     private Mono<PublicPointPlan> processPlan(PublicPointPlan curPlan, AssignPlanDto dto) {
@@ -67,7 +84,8 @@ public class PublicPointPlanServiceImpl implements PublicPointPlanService {
         } else {
             curPlan.setEndDate(Instant.now());
         }
-        return publicPointPlanRepository.save(curPlan)
+        return checkTableCount(dto.getPublicPointId(), dto.getPlanId())
+                .then(publicPointPlanRepository.save(curPlan))
                 .flatMap(savedCurCmpPlan -> useSamePlan ? Mono.just(curPlan) :
                         publicPointPlanRepository.save(createCompanyPlan(dto)));
     }

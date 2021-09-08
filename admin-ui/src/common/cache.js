@@ -52,3 +52,5 @@ export class Cache {
         }
     }
 }
+
+export const GLOBAL_CACHE = new Cache();

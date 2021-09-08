@@ -25,6 +25,8 @@ function Sidebar({ auth, onLogout }) {
     }
 
     const sbClass = isFixed ? '' : isHovered ? 'hovered' : 'collapsed';
+    const isTablesVisible = hasRole(auth, ROLE.ADMIN) || !!auth.user.cmpid;
+
     return (
         <div className="px-0">
             <nav id="sidebarMenu"
@@ -75,12 +77,20 @@ function Sidebar({ auth, onLogout }) {
                                     <span className="nav-item-text">Public points</span>
                                 </Link>
                             </li>
-                        }                        
+                        }
                         {
                             hasRole(auth, ROLE.COMPANY_OWNER) && <li className="nav-item">
                                 <Link to="/users" className="nav-link">
                                     <Icon.Users className="feather" />
                                     <span className="nav-item-text">Users</span>
+                                </Link>
+                            </li>
+                        }
+                        {
+                            isTablesVisible && <li className="nav-item">
+                                <Link to="/tables" className="nav-link">
+                                    <Icon.Grid className="feather" />
+                                    <span className="nav-item-text">Tables</span>
                                 </Link>
                             </li>
                         }

@@ -7,10 +7,11 @@ function HighlightInput({
 }) {
 
     function getValidClass() {
-        return touched[field.name] && getIn(errors, field.name) ? 'invalid' : ''
+        return getIn(touched, field.name) && getIn(errors, field.name) ? 'invalid' : ''
     }
 
     function createElement() {
+        field.value = field.value === undefined ? '' : field.value;
         let className = `${props.className} ${getValidClass()}`
         switch (props.tag || 'input') {
             case 'textarea':
@@ -20,16 +21,19 @@ function HighlightInput({
 
         }
     }
+    
     const element = createElement();
+    const error = getIn(errors, field.name);    
+
     return (
         <>
             {element}
             {
-                touched[field.name] &&
-                errors[field.name] &&
+                getIn(touched, field.name) &&
+                error &&
                 <small className="form-text text-danger">
                     <span >
-                        {errors[field.name]}
+                        {error}
                     </span >
                 </small >
             }

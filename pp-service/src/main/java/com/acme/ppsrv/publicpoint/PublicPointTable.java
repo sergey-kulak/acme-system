@@ -8,7 +8,7 @@ import org.springframework.data.relational.core.mapping.Table;
 
 import java.util.UUID;
 
-@Table("public_point")
+@Table("public_point_table")
 @Getter
 @Setter
 public class PublicPointTable {

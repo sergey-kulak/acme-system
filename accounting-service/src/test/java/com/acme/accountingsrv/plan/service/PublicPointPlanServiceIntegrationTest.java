@@ -1,12 +1,14 @@
 package com.acme.accountingsrv.plan.service;
 
-import com.acme.accountingsrv.plan.PublicPointPlan;
 import com.acme.accountingsrv.plan.Plan;
+import com.acme.accountingsrv.plan.PublicPointPlan;
 import com.acme.accountingsrv.plan.dto.AssignPlanDto;
-import com.acme.accountingsrv.plan.dto.PublicPointPlanDto;
 import com.acme.accountingsrv.plan.dto.PlanDto;
+import com.acme.accountingsrv.plan.dto.PublicPointPlanDto;
 import com.acme.accountingsrv.plan.exception.PlanAlreadyAssignedException;
+import com.acme.accountingsrv.plan.exception.TableCountExceedLimitException;
 import com.acme.accountingsrv.plan.repository.PublicPointPlanRepository;
+import com.acme.accountingsrv.pubicpoint.api.PublicPointTableApi;
 import com.acme.accountingsrv.test.ServiceIntegrationTest;
 import com.acme.accountingsrv.test.TestEntityHelper;
 import com.acme.commons.utils.StreamUtils;
@@ -37,6 +39,8 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 
 @ServiceIntegrationTest
@@ -46,6 +50,8 @@ class PublicPointPlanServiceIntegrationTest {
     @Autowired
     PublicPointPlanRepository publicPointPlanRepository;
     @Autowired
+    PublicPointTableApi ppTableApi;
+    @Autowired
     TestEntityHelper testEntityHelper;
 
     @Test
@@ -53,6 +59,7 @@ class PublicPointPlanServiceIntegrationTest {
     void assign() {
         UUID companyId = UUID.randomUUID();
         AssignPlanDto assignDto = createAssignDto(companyId);
+        mockTableCount(0);
         testEntityHelper.createPlan()
                 .zipWhen(plan -> assignPlan(assignDto, plan.getId())
                         .flatMap(publicPointPlanRepository::findById))
@@ -76,6 +83,11 @@ class PublicPointPlanServiceIntegrationTest {
                 .companyId(companyId)
                 .publicPointId(UUID.randomUUID())
                 .build();
+    }
+
+    private void mockTableCount(long count) {
+        when(ppTableApi.countAll(any()))
+                .thenReturn(Mono.just(count));
     }
 
     private Mono<UUID> assignPlan(AssignPlanDto dto, UUID planId) {
@@ -147,6 +159,7 @@ class PublicPointPlanServiceIntegrationTest {
     void switchActivePlanCurrentWithinBillablePeriod() {
         UUID companyId = UUID.randomUUID();
         AssignPlanDto assignDto = createAssignDto(companyId);
+        mockTableCount(0);
         TestSecurityUtils.linkWithCurrentUser(companyId)
                 .then(Mono.zip(
                         testEntityHelper.createPlan(),
@@ -183,6 +196,7 @@ class PublicPointPlanServiceIntegrationTest {
     void switchActivePlan() {
         UUID companyId = UUID.randomUUID();
         AssignPlanDto assignDto = createAssignDto(companyId);
+        mockTableCount(0);
         TestSecurityUtils.linkWithCurrentUser(companyId)
                 .then(Mono.zip(
                         testEntityHelper.createPlan(),
@@ -342,6 +356,22 @@ class PublicPointPlanServiceIntegrationTest {
                 .flatMap(companyPlanId -> publicPointPlanService.stopActivePlan(companyId))
                 .as(TxStepVerifier::withRollback)
                 .expectError(AccessDeniedException.class)
+                .verify();
+    }
+
+    @Test
+    @WithMockAdmin
+    void assignDeniedTableCountLimit() {
+        UUID companyId = UUID.randomUUID();
+        AssignPlanDto assignDto = createAssignDto(companyId);
+        testEntityHelper.createPlan()
+                .flatMap(plan -> {
+                    mockTableCount(plan.getMaxTableCount() + 1);
+                    return Mono.just(plan);
+                })
+                .zipWhen(plan -> assignPlan(assignDto, plan.getId()))
+                .as(TxStepVerifier::withRollback)
+                .expectError(TableCountExceedLimitException.class)
                 .verify();
     }
 }

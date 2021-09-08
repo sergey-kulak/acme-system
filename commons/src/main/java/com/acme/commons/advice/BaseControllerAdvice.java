@@ -32,9 +32,13 @@ public class BaseControllerAdvice {
                 .body(ex.getMessage());
     }
 
+    protected ResponseEntity<Object> createBadResponse(Exception ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
+    }
+
     @ExceptionHandler
     public ResponseEntity<Object> handle(IllegalStatusChange ex) {
-        return ResponseEntity.badRequest().body(ex.getMessage());
+        return createBadResponse(ex);
     }
 
 }

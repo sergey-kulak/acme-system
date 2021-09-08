@@ -1,5 +1,6 @@
 package com.acme.ppsrv.plan.api;
 
+import com.acme.ppsrv.plan.dto.PlanWithCountriesDto;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import reactivefeign.spring.config.ReactiveFeignClient;
@@ -12,4 +13,7 @@ public interface PublicPointPlanApi {
 
     @GetMapping("/active/id")
     Mono<UUID> findActivePlanId(@RequestParam UUID publicPointId);
+
+    @GetMapping("/active")
+    Mono<PlanWithCountriesDto> findActivePlan(@RequestParam UUID publicPointId);
 }

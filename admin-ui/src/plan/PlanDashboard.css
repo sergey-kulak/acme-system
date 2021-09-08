@@ -2,3 +2,7 @@
     font-size: 0.3rem;
     padding: .1rem .1rem;
 }
+
+.plan-filter-country-wrapper>.cmt-select {
+    flex-grow: 1;
+}

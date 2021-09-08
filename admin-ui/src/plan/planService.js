@@ -25,8 +25,8 @@ const planService = {
             params: { country: country }
         });
     },
-    findCompanies: function (id) {
-        return restApi.get(`${BASE_URL}/${id}/companies`);
+    findStatistics: function (id) {
+        return restApi.get(`${BASE_URL}/${id}/statistics`);
     },
 }
 

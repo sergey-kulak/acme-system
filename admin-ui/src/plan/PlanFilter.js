@@ -43,7 +43,7 @@ function PlanFilter({ filter, onChange }) {
             </div>
             <div className="form-group col-lg-3 col-md-6">
                 <label htmlFor="country">Country</label>
-                <div className="d-flex align-items-center">
+                <div className="d-flex align-items-center plan-filter-country-wrapper">
                     <input type="checkbox" checked={filter.onlyGlobal} className="mr-1"
                         onChange={onOnlyGlobalChange} />
                     <CountrySelect name="country" onChange={onCountryChange}

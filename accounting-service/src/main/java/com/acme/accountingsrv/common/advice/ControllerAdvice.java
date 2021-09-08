@@ -1,5 +1,6 @@
 package com.acme.accountingsrv.common.advice;
 
+import com.acme.accountingsrv.plan.exception.TableCountExceedLimitException;
 import com.acme.accountingsrv.plan.exception.UpdateNotAllowedException;
 import com.acme.commons.advice.BaseControllerAdvice;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +12,12 @@ public class ControllerAdvice extends BaseControllerAdvice {
 
     @ExceptionHandler
     public ResponseEntity<Object> handle(UpdateNotAllowedException ex) {
-        return ResponseEntity.badRequest().body(ex.getMessage());
+        return createBadResponse(ex);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Object> handle(TableCountExceedLimitException ex) {
+        return createBadResponse(ex);
     }
 
 }

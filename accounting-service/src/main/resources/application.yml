@@ -18,6 +18,7 @@ spring:
         service-id: config-service
     stream:
       function:
+        autodetect: false
         definition: companyRegisteredConsumer;companyStatusConsumer
       rabbit:
         default:

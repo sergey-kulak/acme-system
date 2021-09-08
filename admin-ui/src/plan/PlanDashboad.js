@@ -84,25 +84,27 @@ function PlanDashboard({ onSuccess, onError }) {
         }
     }
 
-    function setPlanData(planId, isOpen, companies) {
+    function setPlanData(planId, isOpen, stats) {
         setOpenedPlans(prev => ({
             ...prev,
-            [planId]: { isOpen, companies }
+            [planId]: { isOpen, stats: stats }
         }));
     }
 
     function onExpandClick(plan) {
         let planId = plan.id;
         let planData = openedPlans[planId];
-        if (planData && planData.companies) {
-            setPlanData(planId, !planData.isOpen, planData.companies);
+        if (planData && planData.stats) {
+            setPlanData(planId, !planData.isOpen, planData.stats);
         } else {
-            planService.findCompanies(planId)
+            planService.findStatistics(planId)
                 .then(response => response.data)
                 .then(data => {
-                    let companies = data.map(item => companyNames[item])
-                        .join(", ");
-                    setPlanData(planId, true, companies);
+                    let cmpItems = []
+                    for (let cmpId in data) {
+                        cmpItems.push(`${companyNames[cmpId]} (${data[cmpId]})`)
+                    }
+                    setPlanData(planId, true, cmpItems.join(", "));
                 });
         }
     }
@@ -138,7 +140,7 @@ function PlanDashboard({ onSuccess, onError }) {
                             <th>Discount (6m)</th>
                             <th>Discount (1y)</th>
                             <th>Countries</th>
-                            <th>Companies</th>
+                            <th>Public points</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -166,9 +168,9 @@ function PlanDashboard({ onSuccess, onError }) {
                                     <td>
                                         <div className="d-flex">
                                             <div className="flex-grow-1">
-                                                {plan.companyCount}
+                                                {plan.publicPointCount}
                                             </div>
-                                            {plan.companyCount > 0 &&
+                                            {plan.publicPointCount > 0 &&
                                                 <button type="button" className="btn btn-light btn-cmp-expand"
                                                     onClick={e => onExpandClick(plan)}>
                                                     {openedPlans[plan.id] && openedPlans[plan.id].isOpen ?
@@ -183,7 +185,7 @@ function PlanDashboard({ onSuccess, onError }) {
                                 </tr>
                                 {openedPlans[plan.id] && openedPlans[plan.id].isOpen && <tr>
                                     <td />
-                                    <td colSpan="7">{openedPlans[plan.id].companies}</td>
+                                    <td colSpan="7">{openedPlans[plan.id].stats}</td>
                                 </tr>}
                             </React.Fragment>)}
                     </tbody>
@@ -238,11 +240,12 @@ class Filter {
 
     static fromUrlParams(urlSearchParams) {
         let urlStatuses = urlSearchParams.getAll(Filter.URL_PARAM_STATUS);
+        let isGlobal = urlSearchParams.get(Filter.URL_PARAM_ONLY_GLOBAL);
         return new Filter(
             urlSearchParams.get(Filter.URL_PARAM_NAME_PATTERN) || '',
             urlSearchParams.get(Filter.URL_PARAM_TABLE_COUNT) || '',
             urlSearchParams.get(Filter.URL_PARAM_COUNTRY) || '',
-            urlSearchParams.get(Filter.URL_PARAM_ONLY_GLOBAL) || '',
+            isGlobal === 'true',
             urlStatuses && urlStatuses.length ? urlStatuses : ['ACTIVE', 'INACTIVE'],
             urlSearchParams.get(Filter.URL_PARAM_COMPANY_ID) || ''
         );

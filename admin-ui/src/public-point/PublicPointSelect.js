@@ -1,17 +1,22 @@
 import { useEffect, useState } from 'react';
+import { hasRole, ROLE } from '../common/security';
 import Select from '../common/Select';
 import publicPointService from './publicPointService';
 
-function PublicPointSelect({ companyId, ...props }) {
+function PublicPointSelect({ companyId, auth, ...props }) {
     const [options, setOptions] = useState([]);
 
     useEffect(() => {
-        if (companyId) {
+        if (companyId && hasRole(auth, ROLE.COMPANY_OWNER)) {
             publicPointService.findNames(companyId)
                 .then(response => response.data)
                 .then(data => setOptions(data.map(mapToOption)));
+        } else {
+            publicPointService.findById(auth.user.ppid)
+                .then(response => response.data)
+                .then(data => setOptions([mapToOption(data)]));
         }
-    }, [companyId])
+    }, [companyId, auth])
 
     function mapToOption(pp) {
         return {

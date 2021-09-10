@@ -48,7 +48,7 @@ function UserEditor({ auth, onSuccess, onError }) {
             .test('companyId-check', 'Required', function (value) {
                 return this.parent.role === ROLE.ADMIN || this.parent.role === ROLE.ACCOUNTANT || !isEmpty(value);
             }),
-            publicPointId: Yup.string()
+        publicPointId: Yup.string()
             .test('publicPointId-check', 'Required', function (value) {
                 let role = this.parent.role;
                 return !PP_ROLES.includes(role) || !isEmpty(value);
@@ -155,7 +155,8 @@ function UserEditor({ auth, onSuccess, onError }) {
     const canChangeRole = hasRole(auth, ROLE.ADMIN, ROLE.COMPANY_OWNER) &&
         (isCreate || (user && user.role !== ROLE.ADMIN));
     const canSetCompany = hasRole(auth, ROLE.ADMIN);
-    const isPpDisabled = !formData.role || !formData.companyId || !PP_ROLES.includes(formData.role)
+    const isPpDisabled = !hasRole(auth, ROLE.COMPANY_OWNER) || !formData.role
+        || !formData.companyId || !PP_ROLES.includes(formData.role)
 
     return (
         <div className="main-content">
@@ -226,7 +227,7 @@ function UserEditor({ auth, onSuccess, onError }) {
                                 <div className="form-group col-md-6">
                                     <label htmlFor="publicPointId">Public point</label>
                                     <Field component={PublicPointSelect} name="publicPointId"
-                                        isDisabled={isPpDisabled} isClearable
+                                        isDisabled={isPpDisabled} isClearable auth={auth}
                                         companyId={formData.companyId} onChange={onPpChange}
                                     />
                                 </div>

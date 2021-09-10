@@ -18,7 +18,6 @@ const INIT_TABLE_DATA = { items: [], seq: 0, formItems: [], deleted: [] };
 
 function PublicPointTableEditor({ auth, onSuccess, onError }) {
     const history = useHistory();
-    const isAdmin = hasRole(auth, ROLE.ADMIN);
     const query = new URLSearchParams(useLocation().search);
     const [filter, setFilter] = useState(Filter.fromUrlParams(query, auth))
     const [tableData, setTableData] = useState(INIT_TABLE_DATA);
@@ -67,14 +66,14 @@ function PublicPointTableEditor({ auth, onSuccess, onError }) {
     }, [filter, history, auth, loadTables]);
 
     useEffect(() => {
-        if (filter.companyId && filter.publicPointId) {
+        if (filter.companyId && filter.publicPointId && hasRole(auth, ROLE.PP_MANAGER)) {
             publicPointPlanService.findActivePlan(filter.publicPointId)
                 .then(response => response.data)
                 .then(setPlan);
         } else {
             setPlan();
         }
-    }, [filter, history, auth, loadTables]);
+    }, [filter, history, auth]);
 
     function onEdit() {
         setIsEdit(true);
@@ -150,7 +149,7 @@ function PublicPointTableEditor({ auth, onSuccess, onError }) {
                     Tables
                 </div>
                 <div className="main-content-body">
-                    <PublicPointTableFilter isAdmin={isAdmin} filter={filter}
+                    <PublicPointTableFilter auth={auth} filter={filter}
                         onChange={onFilterChange} plan={plan} />
                     {filter.companyId && filter.publicPointId && <div>
                         {isEdit ?
@@ -211,7 +210,7 @@ function PublicPointTableEditor({ auth, onSuccess, onError }) {
                                         </tbody>
                                     </table>
                                 </div>
-                                {!!plan && <div>
+                                {!!plan && hasRole(auth, ROLE.PP_MANAGER) && <div>
                                     <button type="button" className="btn btn-primary mr-2"
                                         onClick={onEdit}>Edit</button>
                                 </div>}
@@ -250,6 +249,9 @@ class Filter {
         if (!hasRole(auth, ROLE.ADMIN)) {
             delete urlData[Filter.URL_PARAM_COMPANY_ID];
         }
+        if (!hasRole(auth, ROLE.COMPANY_OWNER)) {
+            delete urlData[Filter.URL_PARAM_PP_ID];
+        }
         return { toUrlParams: () => urlData };
     }
 
@@ -257,10 +259,11 @@ class Filter {
         let companyId = hasRole(auth, ROLE.ADMIN) ?
             urlSearchParams.get(Filter.URL_PARAM_COMPANY_ID) || '' :
             auth.user.cmpid;
+        let ppId = hasRole(auth, ROLE.COMPANY_OWNER) ?
+            urlSearchParams.get(Filter.URL_PARAM_PP_ID) || '' :
+            auth.user.ppid;
 
-        return new Filter(companyId,
-            urlSearchParams.get(Filter.URL_PARAM_PP_ID) || ''
-        );
+        return new Filter(companyId, ppId);
     }
 }
 

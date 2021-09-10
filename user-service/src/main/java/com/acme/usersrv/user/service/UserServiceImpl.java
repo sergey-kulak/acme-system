@@ -35,6 +35,8 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+    private static final List<UserRole> STUFF_ROLES = List.of(UserRole.WAITER, UserRole.COOK);
+
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
@@ -51,7 +53,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public Mono<UUID> create(CreateUserDto saveDto) {
-        return SecurityUtils.isCompanyAccessible(saveDto.getCompanyId())
+        return SecurityUtils.isPpAccessible(saveDto.getCompanyId(), saveDto.getPublicPointId())
                 .then(createInternal(saveDto));
     }
 
@@ -83,7 +85,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Mono<Page<FullDetailsUserDto>> find(UserFilter filter, Pageable pageable) {
-        return SecurityUtils.isCompanyAccessible(filter.getCompanyId())
+        return SecurityUtils.isPpAccessible(filter.getCompanyId(), filter.getPublicPointId())
                 .then(userRepository.find(filter, pageable))
                 .map(page -> page.map(userMapper::toDto));
     }
@@ -112,7 +114,7 @@ public class UserServiceImpl implements UserService {
                         user.setPassword(passwordEncoder.encode(dto.getPassword()));
                     }
                     CompanyUserDetails currentUser = data.getT2();
-                    if (currentUser.hasAnyRole(UserRole.ADMIN, UserRole.COMPANY_OWNER)) {
+                    if (currentUser.hasAnyRole(UserRole.ADMIN, UserRole.COMPANY_OWNER, UserRole.PP_MANAGER)) {
                         user.setRole(dto.getRole());
                     }
 
@@ -123,7 +125,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private Mono<User> hasUserCompanyAccess(User user) {
-        return SecurityUtils.isCompanyAccessible(user.getCompanyId())
+        return SecurityUtils.isPpAccessible(user.getCompanyId(), user.getPublicPointId())
                 .then(Mono.just(user));
     }
 
@@ -131,6 +133,7 @@ public class UserServiceImpl implements UserService {
         return SecurityUtils.getCurrentUser()
                 .filter(currentUser ->
                         currentUser.hasAnyRole(UserRole.ADMIN, UserRole.COMPANY_OWNER)
+                                || currentUser.hasAnyRole(UserRole.PP_MANAGER) && STUFF_ROLES.contains(user.getRole())
                                 || user.getId().equals(currentUser.getId()))
                 .map(currentUser -> Tuples.of(user, currentUser))
                 .switchIfEmpty(Mono.error(new AccessDeniedException("Access denied")));

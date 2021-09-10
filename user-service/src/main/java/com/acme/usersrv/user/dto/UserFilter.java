@@ -19,6 +19,7 @@ public class UserFilter {
     private Collection<UserRole> role;
     private UUID companyId;
     private Collection<UUID> id;
+    private UUID publicPointId;
 
     @Tolerate
     public UserFilter() {

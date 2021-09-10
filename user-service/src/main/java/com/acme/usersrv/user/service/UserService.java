@@ -22,7 +22,7 @@ import java.util.UUID;
 public interface UserService {
     Mono<UUID> createCompanyOwner(UUID companyId, @Valid CreateOwnerDto createDto);
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'COMPANY_OWNER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'COMPANY_OWNER', 'PP_MANAGER')")
     Mono<UUID> create(@Valid CreateUserDto createDto);
 
     Mono<Boolean> existsByEmail(String email);
@@ -36,6 +36,6 @@ public interface UserService {
     @PreAuthorize("isAuthenticated()")
     Mono<Void> update(UUID id, @Valid UpdateUserDto dto);
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'COMPANY_OWNER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'COMPANY_OWNER','PP_MANAGER')")
     Mono<List<UserDto>> findNames(@Valid UserNameFilter filter);
 }

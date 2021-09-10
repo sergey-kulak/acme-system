@@ -53,6 +53,9 @@ public class UserRepositoryImpl extends AbstractCustomJooqRepository implements 
         if (filter.getCompanyId() != null) {
             where = where.and(USER.COMPANY_ID.eq(filter.getCompanyId()));
         }
+        if (filter.getPublicPointId() != null) {
+            where = where.and(USER.PUBLIC_POINT_ID.eq(filter.getPublicPointId()));
+        }
         if (CollectionUtils.isNotEmpty(filter.getStatus())) {
             where = where.and(USER.STATUS.in(filter.getStatus()));
         }

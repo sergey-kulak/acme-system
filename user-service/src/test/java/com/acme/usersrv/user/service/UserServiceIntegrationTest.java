@@ -4,6 +4,7 @@ import com.acme.commons.exception.EntityNotFoundException;
 import com.acme.commons.security.UserRole;
 import com.acme.testcommons.RandomTestUtils;
 import com.acme.testcommons.TxStepVerifier;
+import com.acme.testcommons.security.TestSecurityUtils;
 import com.acme.testcommons.security.WithMockAdmin;
 import com.acme.testcommons.security.WithMockCompanyOwner;
 import com.acme.testcommons.security.WithMockPpManager;
@@ -29,6 +30,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import javax.validation.ConstraintViolationException;
@@ -172,6 +174,67 @@ public class UserServiceIntegrationTest {
                 .verify();
     }
 
+    @Test
+    @WithMockPpManager
+    void findByIdInSamePp() {
+        UUID ppId = UUID.randomUUID();
+        testEntityHelper.createCompany()
+                .flatMap(cmp -> testEntityHelper.createUser(cmp, UserRole.WAITER))
+                .flatMap(user -> TestSecurityUtils.linkWithCurrentUser(user.getCompanyId())
+                        .then(TestSecurityUtils.linkPpWithCurrentUser(ppId))
+                        .then(linkWithPp(user, ppId))
+                )
+                .zipWhen(user -> userService.findById(user.getId()))
+                .as(TxStepVerifier::withRollback)
+                .assertNext(data -> {
+                    User user = data.getT1();
+                    FullDetailsUserDto dto = data.getT2();
+                    assertThat(dto, allOf(
+                            hasProperty("id", is(user.getId())),
+                            hasProperty("firstName", is(user.getFirstName())),
+                            hasProperty("lastName", is(user.getLastName())),
+                            hasProperty("email", is(user.getEmail())),
+                            hasProperty("phone", is(user.getPhone())),
+                            hasProperty("companyId", is(user.getCompanyId())),
+                            hasProperty("role", is(user.getRole())),
+                            hasProperty("status", is(user.getStatus()))
+                    ));
+                })
+                .verifyComplete();
+    }
+
+    @Test
+    @WithMockPpManager
+    void findByIdInSamePpDenied() {
+        UUID ppId = UUID.randomUUID();
+        testEntityHelper.createCompany()
+                .flatMap(cmp -> testEntityHelper.createUser(cmp, UserRole.PP_MANAGER))
+                .flatMap(user -> TestSecurityUtils.linkWithCurrentUser(user.getCompanyId())
+                        .then(TestSecurityUtils.linkPpWithCurrentUser(ppId))
+                        .then(linkWithPp(user, ppId))
+                )
+                .zipWhen(user -> userService.findById(user.getId()))
+                .as(TxStepVerifier::withRollback)
+                .expectError(AccessDeniedException.class)
+                .verify();
+    }
+
+    @Test
+    @WithMockPpManager
+    void findByIdInOtherPpDenied() {
+        UUID ppId = UUID.randomUUID();
+        testEntityHelper.createCompany()
+                .flatMap(cmp -> testEntityHelper.createUser(cmp, UserRole.PP_MANAGER))
+                .flatMap(user -> TestSecurityUtils.linkWithCurrentUser(user.getCompanyId())
+                        .then(TestSecurityUtils.linkOtherPpWithCurrentUser())
+                        .then(linkWithPp(user, ppId))
+                )
+                .zipWhen(user -> userService.findById(user.getId()))
+                .as(TxStepVerifier::withRollback)
+                .expectError(AccessDeniedException.class)
+                .verify();
+    }
+
     private UpdateUserDto buildUpdateDto() {
         return UpdateUserDto.builder()
                 .firstName(RandomTestUtils.randomString("nFirstName"))
@@ -300,7 +363,7 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
-    @WithMockPpManager
+    @WithMockCompanyOwner
     void findWithPagination() {
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Order.asc("last_name")));
         testEntityHelper.createCompany()
@@ -334,6 +397,64 @@ public class UserServiceIntegrationTest {
                 .flatMap(testEntityHelper::createCompanyOwner)
                 .zipWhen(user -> {
                             UserFilter filter = UserFilter.builder()
+                                    .build();
+                            return userService.find(filter, pageable);
+                        }
+                )
+                .as(TxStepVerifier::withRollback)
+                .expectError(AccessDeniedException.class)
+                .verify();
+    }
+
+    private Mono<User> linkWithPp(User user, UUID ppId) {
+        user.setPublicPointId(ppId);
+        return TestSecurityUtils.linkPpWithCurrentUser(ppId)
+                .then(userRepository.save(user));
+    }
+
+    @Test
+    @WithMockPpManager
+    void findWithPaginationPpManager() {
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Order.asc("last_name")));
+        UUID ppId = UUID.randomUUID();
+        testEntityHelper.createCompany()
+                .flatMap(testEntityHelper::createUserForLoggedUser)
+                .flatMap(user -> linkWithPp(user, ppId))
+                .zipWhen(user -> {
+                            UserFilter filter = UserFilter.builder()
+                                    .email(user.getEmail().substring(0, 9))
+                                    .status(Collections.singleton(user.getStatus()))
+                                    .companyId(user.getCompanyId())
+                                    .role(List.of(user.getRole()))
+                                    .id(List.of(user.getId()))
+                                    .publicPointId(ppId)
+                                    .build();
+                            return userService.find(filter, pageable);
+                        }
+                )
+                .as(TxStepVerifier::withRollback)
+                .assertNext(data -> {
+                    User user = data.getT1();
+                    Page<FullDetailsUserDto> page = data.getT2();
+                    assertThat(page.getTotalElements(), is(1L));
+                    assertTrue(mapToList(page.getContent(), FullDetailsUserDto::getId).contains(user.getId()));
+                });
+    }
+
+    @Test
+    @WithMockPpManager
+    void findWithPaginationPpManagerDenied() {
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Order.asc("last_name")));
+        testEntityHelper.createCompany()
+                .flatMap(testEntityHelper::createUserForLoggedUser)
+                .flatMap(user -> linkWithPp(user, UUID.randomUUID()))
+                .zipWhen(user -> {
+                            UserFilter filter = UserFilter.builder()
+                                    .email(user.getEmail().substring(0, 9))
+                                    .status(Collections.singleton(user.getStatus()))
+                                    .companyId(user.getCompanyId())
+                                    .role(List.of(user.getRole()))
+                                    .id(List.of(user.getId()))
                                     .build();
                             return userService.find(filter, pageable);
                         }

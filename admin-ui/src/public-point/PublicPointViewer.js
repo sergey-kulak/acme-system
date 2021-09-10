@@ -31,7 +31,7 @@ function PublicPointViewer({ auth, onSuccess, onError }) {
     const [showStatusChangeDialog, setShowStatusChangeDialog] = useState(false);
 
     const loadPublicPoint = useCallback(() => {
-        publicPointService.findById(id)
+        publicPointService.findByIdFullDetails(id)
             .then(response => setPublicPoint(response.data))
     }, [id]);
 

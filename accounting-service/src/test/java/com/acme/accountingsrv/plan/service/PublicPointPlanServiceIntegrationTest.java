@@ -121,6 +121,7 @@ class PublicPointPlanServiceIntegrationTest {
     void doubleActivePlan() {
         UUID companyId = UUID.randomUUID();
         AssignPlanDto assignDto = createAssignDto(companyId);
+        mockTableCount(0);
         testEntityHelper.createPlan()
                 .flatMap(plan -> assignPlan(assignDto, plan.getId())
                         .thenReturn(plan))

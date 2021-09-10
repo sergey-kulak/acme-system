@@ -15,6 +15,7 @@ import com.acme.testcommons.TxStepVerifier;
 import com.acme.testcommons.security.TestSecurityUtils;
 import com.acme.testcommons.security.WithMockCompanyOwner;
 import com.acme.testcommons.security.WithMockPpManager;
+import com.acme.testcommons.security.WithMockWaiter;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.core.publisher.Mono;
@@ -92,6 +93,7 @@ class PublicPointTableServiceIntegrationTest {
         SavePpTableDto itemDto = createSavePpTableDto();
         TestSecurityUtils.linkWithCurrentUser(companyId)
                 .then(testEntityHelper.createPublicPoint(companyId))
+                .flatMap(this::linkWithUser)
                 .flatMap(pp -> {
                     SavePpTablesDto dto = SavePpTablesDto.builder()
                             .publicPointId(pp.getId())
@@ -114,6 +116,7 @@ class PublicPointTableServiceIntegrationTest {
         SavePpTableDto itemDto = createSavePpTableDto();
         TestSecurityUtils.linkWithCurrentUser(companyId)
                 .then(testEntityHelper.createPublicPoint(companyId))
+                .flatMap(this::linkWithUser)
                 .flatMap(pp -> {
                     SavePpTablesDto dto = SavePpTablesDto.builder()
                             .publicPointId(pp.getId())
@@ -136,6 +139,7 @@ class PublicPointTableServiceIntegrationTest {
         SavePpTableDto itemDto = createSavePpTableDto();
         TestSecurityUtils.linkWithCurrentUser(companyId)
                 .then(testEntityHelper.createPublicPoint(companyId))
+                .flatMap(this::linkWithUser)
                 .flatMap(pp -> {
                     SavePpTablesDto dto = SavePpTablesDto.builder()
                             .publicPointId(pp.getId())
@@ -170,6 +174,7 @@ class PublicPointTableServiceIntegrationTest {
         SavePpTableDto itemDto = createSavePpTableDto();
         TestSecurityUtils.linkWithCurrentUser(companyId)
                 .then(testEntityHelper.createPublicPoint(companyId))
+                .flatMap(this::linkWithUser)
                 .flatMap(pp -> testEntityHelper.createTable(pp.getId()))
                 .flatMap(table -> {
                     SavePpTablesDto dto = SavePpTablesDto.builder()
@@ -207,6 +212,7 @@ class PublicPointTableServiceIntegrationTest {
         mockWithPlan(5);
         TestSecurityUtils.linkWithCurrentUser(companyId)
                 .then(testEntityHelper.createPublicPoint(companyId))
+                .flatMap(this::linkWithUser)
                 .flatMap(pp -> testEntityHelper.createTable(pp.getId()))
                 .flatMap(table -> {
                     SavePpTablesDto dto = SavePpTablesDto.builder()
@@ -224,11 +230,12 @@ class PublicPointTableServiceIntegrationTest {
     }
 
     @Test
-    @WithMockPpManager
+    @WithMockWaiter
     void findAll() {
         UUID companyId = UUID.randomUUID();
         TestSecurityUtils.linkWithCurrentUser(companyId)
                 .then(testEntityHelper.createPublicPoint(companyId))
+                .flatMap(this::linkWithUser)
                 .flatMap(pp -> testEntityHelper.createTable(pp.getId()))
                 .zipWhen(table -> ppTableService.findAll(table.getPublicPointId()).collectList())
                 .as(TxStepVerifier::withRollback)
@@ -247,12 +254,17 @@ class PublicPointTableServiceIntegrationTest {
                 .verifyComplete();
     }
 
+    private Mono<PublicPoint> linkWithUser(PublicPoint pp){
+        return TestSecurityUtils.linkPpWithCurrentUserReturn(pp.getId(), pp);
+    }
+
     @Test
     @WithMockPpManager
     void countAll() {
         UUID companyId = UUID.randomUUID();
         TestSecurityUtils.linkWithCurrentUser(companyId)
                 .then(testEntityHelper.createPublicPoint(companyId))
+                .flatMap(this::linkWithUser)
                 .flatMap(pp -> testEntityHelper.createTable(pp.getId()))
                 .flatMap(table -> ppTableService.countAll(table.getPublicPointId()))
                 .as(TxStepVerifier::withRollback)

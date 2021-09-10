@@ -20,12 +20,18 @@ public class SecurityUtils {
     private static final UserRole[] FULL_COMPANY_ACCESS = new UserRole[]{UserRole.ADMIN};
     private static final UserRole[] FULL_COMPANY_ACCOUNTING_ACCESS =
             new UserRole[]{UserRole.ADMIN, UserRole.ACCOUNTANT};
+    private static final UserRole[] FULL_PP_ACCESS = new UserRole[]{UserRole.ADMIN, UserRole.COMPANY_OWNER};
 
     private SecurityUtils() {
     }
 
     public static Mono<Void> isCompanyAccessible(UUID companyId) {
         return isCompanyAccessible(companyId, false);
+    }
+
+    public static Mono<Void> isPpAccessible(UUID companyId, UUID ppId) {
+        return isCompanyAccessible(companyId, false)
+                .then(isPpAccessible(ppId));
     }
 
     public static Mono<Void> isCompanyAccessible(UUID companyId, boolean accountingCtx) {
@@ -35,9 +41,20 @@ public class SecurityUtils {
                 .then();
     }
 
+    private static Mono<Void> isPpAccessible(UUID ppId) {
+        return getCurrentUser()
+                .filter(cmpUser -> hasPpAccess(cmpUser, ppId))
+                .switchIfEmpty(Mono.error(new AccessDeniedException("Access denied")))
+                .then();
+    }
+
     private static boolean hasAccess(CompanyUserDetails cmpUser, UUID companyId, boolean accountingCtx) {
         UserRole[] allAccessRole = accountingCtx ? FULL_COMPANY_ACCOUNTING_ACCESS : FULL_COMPANY_ACCESS;
         return cmpUser.hasAnyRole(allAccessRole) || Objects.equals(companyId, cmpUser.getCompanyId());
+    }
+
+    private static boolean hasPpAccess(CompanyUserDetails cmpUser, UUID ppId) {
+        return cmpUser.hasAnyRole(FULL_PP_ACCESS) || Objects.equals(ppId, cmpUser.getPublicPointId());
     }
 
     public static Mono<UUID> hasCompanyAccess(UUID companyId) {

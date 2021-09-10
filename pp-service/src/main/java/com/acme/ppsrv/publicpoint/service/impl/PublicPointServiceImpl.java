@@ -154,7 +154,7 @@ public class PublicPointServiceImpl implements PublicPointService {
     @Override
     public Mono<PublicPointDto> findById(UUID id) {
         return ppRepository.findDtoById(id)
-                .flatMap(pp -> SecurityUtils.isCompanyAccessible(pp.getCompanyId())
+                .flatMap(pp -> SecurityUtils.isPpAccessible(pp.getCompanyId(), id)
                         .thenReturn(pp))
                 .switchIfEmpty(EntityNotFoundException.of(id));
     }

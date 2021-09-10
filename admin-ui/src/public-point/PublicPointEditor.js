@@ -41,7 +41,7 @@ function PublicPointEditor({ auth, onSuccess, onError }) {
 
     useEffect(() => {
         if (!isCreate) {
-            publicPointService.findFullDetailsById(id)
+            publicPointService.findByIdFullDetails(id)
                 .then(response => {
                     setPublicPoint(response.data);
                     toFormData(response.data);

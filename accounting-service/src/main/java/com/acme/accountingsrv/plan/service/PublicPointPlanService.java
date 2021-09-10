@@ -20,7 +20,7 @@ public interface PublicPointPlanService {
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     Mono<Void> stopActivePlan(UUID publicPointId);
 
-    @PreAuthorize("hasAnyAuthority('ADMIN','COMPANY_OWNER', 'ACCOUNTANT')")
+    @PreAuthorize("hasAnyAuthority('ADMIN','COMPANY_OWNER','ACCOUNTANT','PP_MANAGER')")
     Mono<UUID> findActivePlan(UUID publicPointId);
 
     @PreAuthorize("hasAnyAuthority('ADMIN','COMPANY_OWNER', 'ACCOUNTANT')")

@@ -52,6 +52,7 @@ public class TokenServiceImpl implements TokenService {
         CompanyUserDetails userDetails = (CompanyUserDetails) authentication.getPrincipal();
         String role = CollectionUtils.getFirst(userDetails.getAuthorities()).toString();
         UUID companyId = userDetails.getCompanyId();
+        UUID ppId = userDetails.getPublicPointId();
 
         return new JWTClaimsSet.Builder()
                 .subject(userDetails.getUsername())
@@ -60,6 +61,7 @@ public class TokenServiceImpl implements TokenService {
                 .claim(JwtClaims.ID, userDetails.getId().toString())
                 .claim(JwtClaims.ROLE, role)
                 .claim(JwtClaims.COMPANY_ID, companyId == null ? null : companyId.toString())
+                .claim(JwtClaims.PUBLIC_POINT_ID, ppId == null ? null : ppId.toString())
                 .build();
     }
 

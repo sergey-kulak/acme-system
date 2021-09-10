@@ -11,7 +11,7 @@ const publicPointService = {
     findById: function (id) {
         return restApi.get(`${BASE_URL}/${id}`);
     },
-    findFullDetailsById: function (id) {
+    findByIdFullDetails: function (id) {
         return restApi.get(`${BASE_URL}/${id}/full-details`);
     },
     update: function (id, request) {

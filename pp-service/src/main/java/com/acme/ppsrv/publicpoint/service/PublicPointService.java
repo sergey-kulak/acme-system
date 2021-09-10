@@ -32,7 +32,7 @@ public interface PublicPointService {
     @PreAuthorize("isAuthenticated()")
     Mono<PublicPointDto> findById(UUID id);
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('ADMIN','COMPANY_OWNER')")
     Mono<FullDetailsPublicPointDto> findFullDetailsById(UUID id);
 
     @PreAuthorize("hasAnyAuthority('ADMIN','COMPANY_OWNER')")

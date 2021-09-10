@@ -19,6 +19,7 @@ import com.acme.testcommons.security.TestSecurityUtils;
 import com.acme.testcommons.security.WithMockAdmin;
 import com.acme.testcommons.security.WithMockCompanyOwner;
 import com.acme.testcommons.security.WithMockCook;
+import com.acme.testcommons.security.WithMockPpManager;
 import com.acme.testcommons.security.WithMockWaiter;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +56,6 @@ class PublicPointServiceIntegrationTest {
     TestEntityHelper testEntityHelper;
     @Autowired
     PublicPointPlanApi publicPointPlanApi;
-
 
     @Test
     @WithMockCompanyOwner
@@ -141,9 +141,8 @@ class PublicPointServiceIntegrationTest {
 
     }
 
-
     @Test
-    @WithMockWaiter
+    @WithMockCompanyOwner
     void findFullDetailsById() {
         UUID companyId = UUID.randomUUID();
         TestSecurityUtils.linkWithCurrentUser(companyId)
@@ -411,11 +410,12 @@ class PublicPointServiceIntegrationTest {
     }
 
     @Test
-    @WithMockCompanyOwner
+    @WithMockPpManager
     void findById() {
         UUID companyId = UUID.randomUUID();
         TestSecurityUtils.linkWithCurrentUser(companyId)
                 .then(testEntityHelper.createPublicPoint(companyId))
+                .flatMap(pp -> TestSecurityUtils.linkPpWithCurrentUserReturn(pp.getId(), pp))
                 .zipWhen(pp -> ppService.findById(pp.getId()))
                 .as(TxStepVerifier::withRollback)
                 .assertNext(pp -> {
@@ -430,5 +430,19 @@ class PublicPointServiceIntegrationTest {
                     ));
                 })
                 .verifyComplete();
+    }
+
+
+    @Test
+    @WithMockPpManager
+    void findFullDetailsByIdOtherPp() {
+        UUID companyId = UUID.randomUUID();
+        TestSecurityUtils.linkWithCurrentUser(companyId)
+                .then(testEntityHelper.createPublicPoint(companyId))
+                .flatMap(TestSecurityUtils::linkOtherPpWithCurrentUserReturn)
+                .zipWhen(pp -> ppService.findById(pp.getId()))
+                .as(TxStepVerifier::withRollback)
+                .expectError(AccessDeniedException.class)
+                .verify();
     }
 }

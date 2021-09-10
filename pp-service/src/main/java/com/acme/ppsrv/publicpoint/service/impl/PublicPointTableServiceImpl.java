@@ -38,7 +38,7 @@ public class PublicPointTableServiceImpl implements PublicPointTableService {
 
     private Mono<Void> checkAccess(UUID ppId) {
         return ppRepository.findById(ppId)
-                .flatMap(pp -> SecurityUtils.isCompanyAccessible(pp.getCompanyId()));
+                .flatMap(pp -> SecurityUtils.isPpAccessible(pp.getCompanyId(), ppId));
     }
 
     private Mono<Void> checkPlanLimit(SavePpTablesDto saveDto) {

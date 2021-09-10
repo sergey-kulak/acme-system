@@ -103,7 +103,7 @@ function CompanyViewer({ auth, onSuccess, onError }) {
                         </div>
                         <label htmlFor="status" className={labelClass}>Status:</label>
                         <div className="col-form-label col-sm-6 col-md-4">
-                            {company.status === 'STOPPED' ?
+                            {company.status === 'STOPPED' || !hasRole(auth, ROLE.COMPANY_OWNER) ?
                                 <CompanyStatusLabel status={company.status} showText /> :
                                 <a href="#status" onClick={onCompanyStatusClick}>
                                     <CompanyStatusLabel status={company.status} showText />

@@ -224,7 +224,7 @@ function PublicPointTableEditor({ auth, onSuccess, onError }) {
 
 class Filter {
     static URL_PARAM_COMPANY_ID = 'cmp';
-    static URL_PARAM_PP_ID = 'pp';;
+    static URL_PARAM_PP_ID = 'pp';
 
     constructor(companyId, publicPointId) {
         this.companyId = companyId;

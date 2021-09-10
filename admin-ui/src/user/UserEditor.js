@@ -10,7 +10,7 @@ import useHistoryBack from '../common/useHistoryBack';
 import { onError, onSuccess } from '../common/toastNotification';
 import UserRoleSelect from './UserRoleSelect';
 import CompanySelect from '../company/CompanySelect';
-import { hasRole, ROLE, getAllAccessibleRoles } from "../common/security";
+import { hasRole, ROLE, getAllAccessibleRoles, hasExactRole } from "../common/security";
 import { isEmpty } from "../common/utils";
 import PublicPointSelect from '../public-point/PublicPointSelect';
 
@@ -29,7 +29,7 @@ function UserEditor({ auth, onSuccess, onError }) {
         confirmPassword: '',
         role: '',
         companyId: hasRole(auth, ROLE.ADMIN) ? '' : auth.user.cmpid,
-        publicPointId: ''
+        publicPointId: hasRole(auth, ROLE.COMPANY_OWNER) ? '' : auth.user.ppid,
     });
     const formikRef = useRef(null);
     const historyBack = useHistoryBack("/users");
@@ -149,11 +149,14 @@ function UserEditor({ auth, onSuccess, onError }) {
 
     function roleFilter(options) {
         let roles = getAllAccessibleRoles(auth);
+        if (hasExactRole(auth, ROLE.PP_MANAGER) && auth.user.id !== id) {
+            roles = roles.filter(role => role !== ROLE.PP_MANAGER);
+        }
         return options.filter(opt => opt.value !== ROLE.ADMIN && roles.includes(opt.value))
     }
 
-    const canChangeRole = hasRole(auth, ROLE.ADMIN, ROLE.COMPANY_OWNER) &&
-        (isCreate || (user && user.role !== ROLE.ADMIN));
+    const canChangeRole = hasRole(auth, ROLE.ADMIN, ROLE.COMPANY_OWNER, ROLE.PP_MANAGER) &&
+        (isCreate || (user && user.role !== ROLE.ADMIN && auth.user.id !== id));
     const canSetCompany = hasRole(auth, ROLE.ADMIN);
     const isPpDisabled = !hasRole(auth, ROLE.COMPANY_OWNER) || !formData.role
         || !formData.companyId || !PP_ROLES.includes(formData.role)

@@ -79,7 +79,7 @@ function Sidebar({ auth, onLogout }) {
                             </li>
                         }
                         {
-                            hasRole(auth, ROLE.COMPANY_OWNER) && <li className="nav-item">
+                            hasRole(auth, ROLE.PP_MANAGER) && <li className="nav-item">
                                 <Link to="/users" className="nav-link">
                                     <Icon.Users className="feather" />
                                     <span className="nav-item-text">Users</span>

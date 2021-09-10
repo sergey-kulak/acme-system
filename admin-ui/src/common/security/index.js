@@ -22,3 +22,7 @@ export const hasRole = (auth, ...roles) => {
     return auth.isAuthenticated
         && getAllAccessibleRoles(auth).some(userRole => roles.includes(userRole));
 }
+
+export const hasExactRole = (auth, ...roles) => {
+    return auth.isAuthenticated && roles.includes(auth.user.role);
+}

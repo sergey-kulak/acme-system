@@ -74,7 +74,7 @@ function MainLayout({ auth, onLogin, onLogout }) {
                         <SecuredRoute path="/company-view/:id" auth={auth} role={ROLE.PP_MANAGER}>
                             <CompanyViewer />
                         </SecuredRoute>
-                        <SecuredRoute exact path="/users" auth={auth} role={ROLE.COMPANY_OWNER}>
+                        <SecuredRoute exact path="/users" auth={auth} role={ROLE.PP_MANAGER}>
                             <UserDashboard />
                         </SecuredRoute>
                         <Route path="/users/:id">

@@ -77,9 +77,9 @@ function PublicPointDashboard({ auth }) {
     }, [isAdmin]);
 
     function getPlanInCache(planId) {
-        return cache.retriveIfAbsent(PLAN_REGION, planId,
+        return planId ? cache.retriveIfAbsent(PLAN_REGION, planId,
             () => planService.findById(planId), 300)
-            .then(response => response.data)
+            .then(response => response.data) : undefined;
     }
 
     function onPublicPointStatusClick(e, pp) {

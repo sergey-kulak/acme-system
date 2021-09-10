@@ -6,7 +6,7 @@ import { Link, useHistory, useLocation } from "react-router-dom";
 import { GLOBAL_CACHE } from '../common/cache';
 import Pagination from '../common/Pagination';
 import { combineAsUrlParams, Pageable, Sort } from '../common/paginationUtils';
-import { hasRole, ROLE } from "../common/security";
+import { hasExactRole, hasRole, ROLE } from "../common/security";
 import ShowFilterButton from '../common/ShowFilterButton';
 import SortColumn from '../common/SortColumn';
 import { onError, onSuccess } from '../common/toastNotification';
@@ -123,9 +123,11 @@ function UserDashboard({ auth }) {
                                     <UserStatusLabel status={user.status} />
                                 </td>
                                 <td>
-                                    <Link to={`/users/${user.id}`}>
-                                        {user.lastName}
-                                    </Link>
+                                    {hasExactRole(auth, ROLE.PP_MANAGER) && user.role === 'PP_MANAGER'
+                                        && auth.user.id !== user.id ? user.lastName :
+                                        <Link to={`/users/${user.id}`}>
+                                            {user.lastName}
+                                        </Link>}
                                 </td>
                                 <td>{user.firstName}</td>
                                 <td>{user.email}</td>
@@ -153,15 +155,17 @@ class Filter {
     static URL_PARAM_ROLE = 'rl';
     static URL_PARAM_STATUS = 'st';
 
-    constructor(companyId, email, role, status) {
+    constructor(companyId, email, role, status, publicPointId) {
         this.companyId = companyId;
         this.email = email;
         this.role = role;
         this.status = status;
+        this.publicPointId = publicPointId;
     }
 
     withNewValue(field, value) {
-        let newFilter = new Filter(this.companyId, this.email, this.role, this.status);
+        let newFilter = new Filter(this.companyId, this.email, this.role,
+            this.status, this.publicPointId);
         newFilter[field] = value;
         return newFilter;
     }
@@ -184,12 +188,14 @@ class Filter {
         let companyId = hasRole(auth, ROLE.ADMIN) ?
             urlSearchParams.get(Filter.URL_PARAM_COMPANY_ID) || '' :
             auth.user.cmpid;
+        let ppId = hasRole(auth, ROLE.COMPANY_OWNER) ? undefined : auth.user.ppid;
 
         return new Filter(
             companyId,
             urlSearchParams.get(Filter.URL_PARAM_EMAIL) || '',
             urlSearchParams.getAll(Filter.URL_PARAM_ROLE),
-            urlSearchParams.getAll(Filter.URL_PARAM_STATUS)
+            urlSearchParams.getAll(Filter.URL_PARAM_STATUS),
+            ppId
         );
     }
 }

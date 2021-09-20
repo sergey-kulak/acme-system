@@ -1,0 +1,21 @@
+.dish-selector {
+    display: flex;
+    align-items: stretch;
+}
+
+.buttons-panel {
+    display: flex;
+    flex-direction: column;
+    margin-left: 0.7rem;
+    margin-right: 0.7rem;
+    justify-content: center;
+}
+
+.dish-list {
+    flex-grow: 1;
+}
+
+.dish-list .list-group {
+    max-height: 10rem;
+    overflow-y: auto;
+}

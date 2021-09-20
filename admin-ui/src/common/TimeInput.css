@@ -1,0 +1,8 @@
+.time-input > input {
+    width: 4rem;
+}
+
+.time-input > span {
+    padding-left: 2px;
+    padding-right: 2px;
+}

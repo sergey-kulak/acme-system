@@ -1,0 +1,14 @@
+
+.image-upload > input {
+  display: none;
+}
+
+.image-upload img {
+  height: 16rem;
+  border-radius: 7px;
+  border: 1px gray solid;
+}
+
+.image-upload > label {
+  cursor: pointer;
+}

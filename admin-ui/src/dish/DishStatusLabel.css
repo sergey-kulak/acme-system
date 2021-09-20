@@ -1,0 +1,13 @@
+.dish-status{
+  height: 1rem;
+  width: 1rem;
+  border-radius: 50%;
+}
+
+.del-false{
+    background-color: green;
+}
+
+.del-true{
+  background-color: red;
+}

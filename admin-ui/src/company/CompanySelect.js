@@ -22,9 +22,9 @@ function CompanySelect({ value, showTypeCheckBox = false,
         }
 
         let promise;
-        if (props.isDisabled && value) {
-            promise = companyService.findById(value)
-                .then(response => [response.data]);
+        if (props.isDisabled) {
+            promise = value ? companyService.findById(value)
+                .then(response => [response.data]) : Promise.resolve([]);
         } else {
             let statuses = onlyActive ? ['ACTIVE'] : [];
             promise = companyService.findNames(statuses)

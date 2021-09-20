@@ -43,3 +43,9 @@ export const getErrorMessage = (errorData) => {
     return typeof errorData === 'string' ? errorData :
         (errorData && errorData.error) || 'Error';
 }
+
+export const deleteIfEmpty = (obj, prop) => {
+    if (!obj[prop]) {
+        delete obj[prop];
+    }
+}

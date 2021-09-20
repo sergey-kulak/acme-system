@@ -60,9 +60,9 @@ function Pagination({ page, onPageableChange, className }) {
                         )
                     }
                     <BsPagination.Next
-                        onClick={e => onPageClick(currentPage + 1)} disabled={currentPage === totalPages} />
+                        onClick={e => onPageClick(currentPage + 1)} disabled={currentPage >= totalPages} />
                     <BsPagination.Last
-                        onClick={e => onPageClick(totalPages)} disabled={currentPage === totalPages} />
+                        onClick={e => onPageClick(totalPages)} disabled={currentPage >= totalPages} />
                 </BsPagination>
             </div>
             <div className="col-md-6 d-flex align-items-center">

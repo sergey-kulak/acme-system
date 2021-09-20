@@ -18,9 +18,8 @@ import com.acme.testcommons.TxStepVerifier;
 import com.acme.testcommons.security.TestSecurityUtils;
 import com.acme.testcommons.security.WithMockAdmin;
 import com.acme.testcommons.security.WithMockCompanyOwner;
-import com.acme.testcommons.security.WithMockCook;
+import com.acme.testcommons.security.WithMockChef;
 import com.acme.testcommons.security.WithMockPpManager;
-import com.acme.testcommons.security.WithMockWaiter;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -129,7 +128,7 @@ class PublicPointServiceIntegrationTest {
     }
 
     @Test
-    @WithMockCook
+    @WithMockChef
     void findByIdDenied() {
         UUID companyId = UUID.randomUUID();
         TestSecurityUtils.linkOtherCompanyWithCurrentUser()

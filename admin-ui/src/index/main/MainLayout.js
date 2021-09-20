@@ -21,7 +21,10 @@ import PublicPointDashboard from "../../public-point/PublicPointDashboard";
 import PublicPointEditor from "../../public-point/PublicPointEditor";
 import PublicPointViewer from "../../public-point/PublicPointViewer";
 import PublicPointTableEditor from "../../public-point/PublicPointTableEditor";
-
+import DishDashboard from "../../dish/DishDashboard";
+import DishEditor from "../../dish/DishEditor";
+import CategoryDashboard from "../../menu/CategoryDashboard";
+import CategoryEditor from "../../menu/CategoryEditor";
 
 const UPDATE_TIMEOUT = 120;
 
@@ -98,6 +101,18 @@ function MainLayout({ auth, onLogin, onLogout }) {
                         <Route exact path="/tables" auth={auth} role={ROLE.PP_MANAGER}>
                             {isTablesVisible ? <PublicPointTableEditor /> : <Redirect to="/" />}
                         </Route>
+                        <SecuredRoute exact path="/dishes" auth={auth} role={ROLE.COOK}>
+                            <DishDashboard />
+                        </SecuredRoute>
+                        <SecuredRoute path="/dishes/:id" auth={auth} role={ROLE.COOK}>
+                            <DishEditor />
+                        </SecuredRoute>
+                        <SecuredRoute exact path="/menu" auth={auth} role={ROLE.COOK}>
+                            <CategoryDashboard />
+                        </SecuredRoute>
+                        <SecuredRoute path="/menu/categories/:id" auth={auth} role={ROLE.COOK}>
+                            <CategoryEditor />
+                        </SecuredRoute>
                     </Switch>
                     <ToastContainer />
                 </div>

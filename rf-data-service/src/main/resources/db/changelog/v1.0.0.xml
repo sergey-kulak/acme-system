@@ -8,7 +8,7 @@
 	http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
     <changeSet id="1" author="sergey.kulak">
-        <ext:insertMany collectionName="countries">
+        <ext:insertMany collectionName="country">
             <ext:documents>
                 [
                 {name: 'Afghanistan', _id: 'AF', active: false},
@@ -260,7 +260,7 @@
     </changeSet>
 
     <changeSet id="2" author="sergey.kulak">
-        <ext:insertMany collectionName="currencies">
+        <ext:insertMany collectionName="currency">
             <ext:documents>
                 [
                 {_id: 'USD', name: 'US Dollar', symbol: '$', active: true},
@@ -274,7 +274,7 @@
     </changeSet>
 
     <changeSet id="3" author="sergey.kulak">
-        <ext:insertMany collectionName="languages">
+        <ext:insertMany collectionName="language">
             <ext:documents>
                 [
                 {_id: 'en', name: 'English', nativeName: 'English', active: true},

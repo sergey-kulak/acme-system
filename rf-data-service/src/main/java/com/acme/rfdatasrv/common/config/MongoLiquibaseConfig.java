@@ -14,7 +14,7 @@ import org.springframework.core.io.ResourceLoader;
 
 @Configuration
 @EnableConfigurationProperties(LiquibaseProperties.class)
-public class MongodbConfig {
+public class MongoLiquibaseConfig {
     @Autowired
     private LiquibaseProperties properties;
     @Autowired

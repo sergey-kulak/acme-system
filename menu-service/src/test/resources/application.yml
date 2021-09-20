@@ -1,0 +1,14 @@
+logging:
+  level:
+    org.springframework: info
+    org.springframework.data.mongodb: debug
+
+spring:
+  application:
+    name: catalog-service
+  config:
+    import: optional:configserver:http://test-config-service
+  liquibase:
+    enabled: true
+    change-log: db/changelog/master.xml
+    url: ${spring.data.mongodb.uri}

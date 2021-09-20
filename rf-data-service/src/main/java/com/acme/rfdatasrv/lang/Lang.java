@@ -5,7 +5,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
-@Document("languages")
+@Document("language")
 public class Lang {
     @Id
     private String code;

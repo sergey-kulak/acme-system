@@ -75,7 +75,8 @@ function PublicPointTableEditor({ auth, onSuccess, onError }) {
         }
     }, [filter, history, auth]);
 
-    function onEdit() {
+    function onEdit(e) {
+        e.preventDefault();
         setIsEdit(true);
     }
 

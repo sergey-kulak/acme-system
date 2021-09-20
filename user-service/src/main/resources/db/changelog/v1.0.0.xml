@@ -85,4 +85,12 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="6" author="sergey.kulak">
+        <sql>
+            alter type user_role add value 'CHEF' after 'ACCOUNTANT';
+        </sql>
+    </changeSet>
+
+
+
 </databaseChangeLog>

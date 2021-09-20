@@ -44,7 +44,6 @@ import java.util.UUID;
 public class PublicPointController {
     private final PublicPointService ppService;
 
-
     @PostMapping
     @SecureOperation(description = "Create a public point")
     @EntityCreatedResponse

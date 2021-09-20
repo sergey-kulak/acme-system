@@ -55,3 +55,12 @@ body {
 .cmt-btn {
   padding: .375rem .45rem;
 }
+
+.thumbnail-th {
+  width: 5rem;
+}
+
+.thumbnail {
+  height: 4rem;
+  border-radius: 3px;
+}

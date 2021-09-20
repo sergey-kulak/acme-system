@@ -21,11 +21,11 @@ spring:
     url: ${rf-data-srv.db.uri}
   data:
     mongodb:
-      host: localhost
-      port: 7021
-      database: rfdata
-      username: rfUser
-      password: rfPass
+      host: ${rf-data-srv.db.host}
+      port: ${rf-data-srv.db.port}
+      database: ${rf-data-srv.db.database}
+      username: ${rf-data-srv.db.username}
+      password: ${rf-data-srv.db.password}
 
 eureka:
   instance:

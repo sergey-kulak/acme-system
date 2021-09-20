@@ -23,3 +23,10 @@ Accounting service - 7030 - 7039
 Public point service - 7040 - 7049
 	HTTP 7040
 	DB 7041 -> 5432	
+	
+Menu service - 7050 - 7059
+	HTTP 7050
+	DB 7051 -> 27017	
+
+File service - 7060 - 7069
+	HTTP 7060

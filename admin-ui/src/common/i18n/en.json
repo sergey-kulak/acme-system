@@ -4,6 +4,7 @@
     "user.role.pp_manager": "PP manager",
     "user.role.waiter": "Waiter",
     "user.role.cook": "Cook",
+    "user.role.chef": "Chef",
     "user.role.accountant": "Accountant",
     "user.status.active": "Active",
     "user.status.inactive": "Inactive",
@@ -24,5 +25,12 @@
     "pp.status.stopped": "Stopped",
     "lang.ru": "Russian",
     "lang.pl": "Polish",
-    "lang.en": "English"
+    "lang.en": "English",
+    "day.monday": "Monday",
+    "day.tuesday": "Tuesday",
+    "day.wednesday": "Wednesday",
+    "day.thursday": "Thursday",
+    "day.friday": "Friday",
+    "day.saturday": "Saturday",
+    "day.sunday": "Sunday"
 }

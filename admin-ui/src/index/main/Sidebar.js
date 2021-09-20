@@ -63,6 +63,14 @@ function Sidebar({ auth, onLogout }) {
                             </li>
                         }
                         {
+                            hasRole(auth, ROLE.ACCOUNTANT) && <li className="nav-item">
+                                <Link to="/plans" className="nav-link">
+                                    <Icon.Pocket className="feather" />
+                                    <span className="nav-item-text">Plans</span>
+                                </Link>
+                            </li>
+                        }                        
+                        {
                             hasRole(auth, ROLE.ADMIN) && <li className="nav-item">
                                 <Link to="/companies" className="nav-link">
                                     <Icon.Package className="feather" />
@@ -95,10 +103,18 @@ function Sidebar({ auth, onLogout }) {
                             </li>
                         }
                         {
-                            hasRole(auth, ROLE.ACCOUNTANT) && <li className="nav-item">
-                                <Link to="/plans" className="nav-link">
-                                    <Icon.Pocket className="feather" />
-                                    <span className="nav-item-text">Plans</span>
+                            isTablesVisible && <li className="nav-item">
+                                <Link to="/dishes" className="nav-link">
+                                    <Icon.Coffee className="feather" />
+                                    <span className="nav-item-text">Dishes</span>
+                                </Link>
+                            </li>
+                        }
+                        {
+                            isTablesVisible && <li className="nav-item">
+                                <Link to="/menu" className="nav-link">
+                                    <Icon.BookOpen className="feather" />
+                                    <span className="nav-item-text">Menu</span>
                                 </Link>
                             </li>
                         }

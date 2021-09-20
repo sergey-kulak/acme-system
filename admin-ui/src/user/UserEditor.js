@@ -11,10 +11,10 @@ import { onError, onSuccess } from '../common/toastNotification';
 import UserRoleSelect from './UserRoleSelect';
 import CompanySelect from '../company/CompanySelect';
 import { hasRole, ROLE, getAllAccessibleRoles, hasExactRole } from "../common/security";
-import { isEmpty } from "../common/utils";
+import { getErrorMessage, isEmpty } from "../common/utils";
 import PublicPointSelect from '../public-point/PublicPointSelect';
 
-const PP_ROLES = [ROLE.PP_MANAGER, ROLE.WAITER, ROLE.COOK];
+const PP_ROLES = [ROLE.PP_MANAGER, ROLE.WAITER, ROLE.CHEF, ROLE.COOK];
 
 function UserEditor({ auth, onSuccess, onError }) {
     const { id } = useParams();
@@ -111,10 +111,7 @@ function UserEditor({ auth, onSuccess, onError }) {
                 .then(() => {
                     onSuccess(`${getFullName()} user was updated successfuly`);
                     historyBack();
-                }, error => {
-                    let errorMessage = error.response.data.error;
-                    onError(errorMessage || 'Error');
-                })
+                }, error => onError(getErrorMessage(error.response.data)))
         }
     }
 

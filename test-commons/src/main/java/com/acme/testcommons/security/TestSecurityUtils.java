@@ -54,4 +54,9 @@ public class TestSecurityUtils {
                     return cmpUser.getCompanyId();
                 });
     }
+
+    public static Mono<Void> linkWithCurrentUser(UUID companyId, UUID ppId) {
+        return linkWithCurrentUser(companyId)
+                .then(linkPpWithCurrentUser(ppId));
+    }
 }

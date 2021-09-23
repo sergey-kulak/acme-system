@@ -1,0 +1,42 @@
+.cart-item {
+    border: 1px solid lightgrey;
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 1rem;
+}
+
+.cart-item-img-container {
+    width: 35%;
+    display: flex;
+    align-items: center;
+}
+
+.cart-item-img {
+    width: 100%;
+}
+
+.cart-item-info {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    padding: 0.5rem;
+    flex-grow: 1;
+}
+
+.remove-icon {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.remove-icon .feather-icon {
+    height: 1.1rem;
+}
+
+.red-dot {
+    color: #dc3545 !important;
+    font-size: 30% !important;
+    position: absolute !important;
+    top: 0;
+    right: 0;
+}

@@ -1,0 +1,43 @@
+html,
+body {
+  height: 100%;
+}
+
+body {  
+  background-color: #f5f5f5;
+}
+
+.main-content-wrapper {
+  flex-grow: 1;
+  padding: 0rem .5rem 0 .5rem;
+  display: flex;
+  flex-direction: column;
+  padding-right: 0;
+  padding-left: 0;
+}
+
+.main-content {
+  background-color: white;   
+  padding: 1rem;
+  border-radius: .25rem;
+  box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+  flex-grow: 1;
+}
+
+.main-content-title {
+  font-weight: bold;
+  font-size: 1.5rem;
+  padding-bottom: 1rem;
+}
+
+.toast-message {
+  font-size: 1.2rem;
+}
+
+.invalid {
+  border-color: red !important;
+}
+
+.cmt-select .invalid>div {
+  border-color: red !important;
+}

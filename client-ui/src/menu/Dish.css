@@ -1,0 +1,29 @@
+.dish {
+    border: 1px solid lightgray;
+    margin-bottom: 1rem;
+}
+
+.dish-img {
+    width: 100%;
+}
+
+.dish-title {
+    font-weight: bold;
+    padding: 0.5rem 1rem;
+}
+
+.dish-composition {
+    font-style: italic;
+    padding: 0.5rem 1rem;
+}
+
+.price {
+    font-size: 1.5rem;    
+}
+
+.price-footer {
+    position: absolute;
+    background-color: rgb(211, 211, 211, .3);
+    width: 100%;
+    bottom: 0;    
+}

@@ -1,0 +1,10 @@
+.quantity-modifier input {
+    width: 2.5rem;
+    text-align: center;
+    border: 1px solid lightgrey;
+}
+
+.quantity-modifier .feather-icon {
+    height: 1rem;
+    color: black;
+}

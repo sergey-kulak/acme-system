@@ -1,5 +1,6 @@
 package com.acme.usersrv.company.service;
 
+import com.acme.commons.security.UserAuthenticated;
 import com.acme.usersrv.company.CompanyStatus;
 import com.acme.usersrv.company.dto.CompanyDto;
 import com.acme.usersrv.company.dto.CompanyFilter;
@@ -32,7 +33,7 @@ public interface CompanyService {
     @PreAuthorize("hasAuthority('ADMIN')")
     Mono<Void> changeStatus(UUID id, @NotNull CompanyStatus status);
 
-    @PreAuthorize("isAuthenticated()")
+    @UserAuthenticated
     Mono<CompanyDto> findById(UUID id);
 
     @PreAuthorize("hasAnyAuthority('ADMIN', 'COMPANY_OWNER','PP_MANAGER')")

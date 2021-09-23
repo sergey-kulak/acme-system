@@ -10,7 +10,10 @@ const publicPointTableService = {
     },
     save: function (request) {
         return restApi.post(BASE_URL, request);
-    }
+    },
+    getClientUiUrl: function (id) {
+        return restApi.get(`${BASE_URL}/${id}/client-ui-url`);
+    },
 }
 
 export default publicPointTableService;

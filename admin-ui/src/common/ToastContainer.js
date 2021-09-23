@@ -1,6 +1,12 @@
 import Toast from 'react-bootstrap/Toast';
-import { clearMessage } from './toastNotification';
+import * as Icon from 'react-feather';
 import { connect } from "react-redux";
+import { clearMessage } from './toastNotification';
+
+const DEFAULT_OPTIONS = {
+    autohide: true,
+    delay: 3000
+}
 
 function ToastContainer({ toast, clearMessage }) {
     function getToastStyle() {
@@ -13,16 +19,27 @@ function ToastContainer({ toast, clearMessage }) {
     }
 
     const hasMessage = !!toast.message
+    const options = { ...DEFAULT_OPTIONS, ...((toast && toast.options) || {}) }
+
     return (
         hasMessage && <Toast onClose={clearMessage} show={true} className="rounded"
-            delay={3000} autohide
+            delay={options.delay} autohide={options.autohide}
             style={{
                 position: 'fixed',
                 bottom: '1.5rem',
                 right: '1.5rem',
             }}>
-            <Toast.Body className={'rounded ' + getToastStyle()}>
-                <span className="toast-message">{toast.message}</span>
+            <Toast.Body className={'rounded text-break ' + getToastStyle()} >
+                <div className="d-flex">
+                    <div>
+                        <span className="toast-message">{toast.message}</span>
+                    </div>
+                    {!options.autohide && <div>
+                        <a href="#close" onClick={clearMessage}>
+                            <Icon.XCircle className="filter-icon" />
+                        </a>
+                    </div>}
+                </div>
             </Toast.Body>
         </Toast>
 

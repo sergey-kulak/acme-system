@@ -13,12 +13,13 @@ export const onError = (message) => {
         });
 }
 
-export const onSuccess = (message) => {
+export const onSuccess = (message, options) => {
     return dispatch =>
         dispatch({
             type: ACTIONS.NOTIFY, payload: {
-                message: message,
-                type: 'success'
+                message,
+                type: 'success',
+                options
             }
         });
 }

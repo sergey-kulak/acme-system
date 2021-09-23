@@ -20,4 +20,5 @@ public class PublicPointTable {
     @Column("seat_count")
     private int seatCount;
     private String description;
+    private String code;
 }

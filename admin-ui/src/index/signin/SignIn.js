@@ -60,9 +60,6 @@ function SignIn({ onLogin }) {
     )
 }
 
-export default connect(
-    state => {
-        return {}
-    }, {
+export default connect(() => ({}), {
     onLogin
 })(SignIn);

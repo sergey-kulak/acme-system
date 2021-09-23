@@ -1,5 +1,6 @@
 package com.acme.menusrv.dish.service;
 
+import com.acme.commons.security.NotAccountantAuthenticated;
 import com.acme.menusrv.dish.dto.CreateDishDto;
 import com.acme.menusrv.dish.dto.DishDto;
 import com.acme.menusrv.dish.dto.DishFilter;
@@ -28,6 +29,7 @@ public interface DishService {
     @PreAuthorize("hasAnyAuthority('ADMIN','COMPANY_OWNER','PP_MANAGER','CHEF')")
     Mono<Void> delete(UUID id);
 
+    @NotAccountantAuthenticated
     Mono<DishDto> findById(UUID id);
 
     @PreAuthorize("hasAnyAuthority('ADMIN','COMPANY_OWNER','PP_MANAGER','CHEF','COOK')")

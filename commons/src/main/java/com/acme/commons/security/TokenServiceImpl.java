@@ -1,7 +1,5 @@
-package com.acme.usersrv.common.security;
+package com.acme.commons.security;
 
-import com.acme.commons.security.CompanyUserDetails;
-import com.acme.commons.security.JwtClaims;
 import com.acme.commons.utils.CollectionUtils;
 import com.nimbusds.jose.JOSEObjectType;
 import com.nimbusds.jose.JWSAlgorithm;

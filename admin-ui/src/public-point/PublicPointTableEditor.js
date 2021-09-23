@@ -143,6 +143,13 @@ function PublicPointTableEditor({ auth, onSuccess, onError }) {
         }));
     }
 
+    function onGetUrlClick(e, table) {
+        e.preventDefault();
+        publicPointTableService.getClientUiUrl(table.id)
+            .then(response => onSuccess(response.data, { autohide: false })
+                , error => onError(getErrorMessage(error.response.data)))
+    }
+
     return (
         <div className="main-content">
             <div>
@@ -162,7 +169,7 @@ function PublicPointTableEditor({ auth, onSuccess, onError }) {
                                 <Form noValidate>
                                     <div className="mb-3">
                                         <table className="table table-hover table-responsive-md mb-0">
-                                            <TableHeader isEdit />
+                                            <TableHeader />
                                             <tbody>
                                                 {
                                                     tableData.formItems.map((table, index) =>
@@ -206,6 +213,12 @@ function PublicPointTableEditor({ auth, onSuccess, onError }) {
                                                         <td>{table.name}</td>
                                                         <td>{table.seatCount}</td>
                                                         <td>{table.description}</td>
+                                                        <td className="del-btn-td">
+                                                            <a href="#url"
+                                                                onClick={e => onGetUrlClick(e, table)}>
+                                                                <Icon.Link className="filter-icon" />
+                                                            </a>
+                                                        </td>
                                                     </tr>
                                                 )}
                                         </tbody>
@@ -268,7 +281,7 @@ class Filter {
     }
 }
 
-function TableHeader({ isEdit }) {
+function TableHeader() {
     return (
         <thead>
             <tr>
@@ -276,7 +289,7 @@ function TableHeader({ isEdit }) {
                 <th style={{ width: '30%' }}>Name</th>
                 <th style={{ width: '6%' }}>Seats</th>
                 <th>Description</th>
-                {isEdit && <th style={{ width: '1%' }} />}
+                <th style={{ width: '1%' }} />
             </tr>
         </thead>
     );

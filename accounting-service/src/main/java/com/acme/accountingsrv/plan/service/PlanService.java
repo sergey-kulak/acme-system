@@ -6,6 +6,7 @@ import com.acme.accountingsrv.plan.dto.PlanWithCountDto;
 import com.acme.accountingsrv.plan.dto.SavePlanDto;
 import com.acme.accountingsrv.plan.dto.PlanDto;
 import com.acme.accountingsrv.plan.dto.PlanFilter;
+import com.acme.commons.security.UserAuthenticated;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,7 +29,7 @@ public interface PlanService {
     @PreAuthorize("hasAnyAuthority('ADMIN','ACCOUNTANT')")
     Mono<Void> changeStatus(UUID id, @NotNull PlanStatus newStatus);
 
-    @PreAuthorize("isAuthenticated()")
+    @UserAuthenticated
     Mono<PlanWithCountriesDto> findById(UUID id);
 
     @PreAuthorize("hasAnyAuthority('ADMIN','ACCOUNTANT')")

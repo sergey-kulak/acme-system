@@ -1,5 +1,6 @@
 package com.acme.usersrv.user.service;
 
+import com.acme.commons.security.UserAuthenticated;
 import com.acme.usersrv.company.dto.CreateOwnerDto;
 import com.acme.usersrv.user.dto.CreateUserDto;
 import com.acme.usersrv.user.dto.FullDetailsUserDto;
@@ -11,7 +12,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
@@ -30,10 +30,10 @@ public interface UserService {
     @PreAuthorize("hasAnyAuthority('ADMIN', 'COMPANY_OWNER', 'PP_MANAGER')")
     Mono<Page<FullDetailsUserDto>> find(UserFilter userFilter, Pageable pageable);
 
-    @PreAuthorize("isAuthenticated()")
+    @UserAuthenticated
     Mono<FullDetailsUserDto> findById(UUID id);
 
-    @PreAuthorize("isAuthenticated()")
+    @UserAuthenticated
     Mono<Void> update(UUID id, @Valid UpdateUserDto dto);
 
     @PreAuthorize("hasAnyAuthority('ADMIN', 'COMPANY_OWNER','PP_MANAGER')")

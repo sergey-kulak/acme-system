@@ -1,5 +1,6 @@
 package com.acme.menusrv.menu.service;
 
+import com.acme.commons.security.NotAccountantUserAuthenticated;
 import com.acme.menusrv.menu.dto.CategoryDto;
 import com.acme.menusrv.menu.dto.CreateCategoryDto;
 import com.acme.menusrv.menu.dto.UpdateCategoryDto;
@@ -20,12 +21,12 @@ public interface CategoryService {
     @PreAuthorize("hasAnyAuthority('ADMIN','COMPANY_OWNER','PP_MANAGER')")
     Mono<Void> update(UUID id, @Valid UpdateCategoryDto dto);
 
-    @PreAuthorize("hasAnyAuthority('ADMIN','COMPANY_OWNER','PP_MANAGER','CHEF','COOK')")
+    @NotAccountantUserAuthenticated
     Mono<CategoryDto> findById(UUID id);
 
     @PreAuthorize("hasAnyAuthority('ADMIN','COMPANY_OWNER','PP_MANAGER')")
     Mono<Void> update(@Valid UpdateMenuDto dto);
 
-    @PreAuthorize("hasAnyAuthority('ADMIN','COMPANY_OWNER','PP_MANAGER','CHEF','COOK')")
+    @NotAccountantUserAuthenticated
     Flux<CategoryDto> findAll(UUID companyId, UUID publicPointId);
 }

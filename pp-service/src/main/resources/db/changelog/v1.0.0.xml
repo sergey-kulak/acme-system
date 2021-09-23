@@ -77,4 +77,14 @@
         </createIndex>
     </changeSet>
 
+    <changeSet id="3" author="sergey.kulak">
+        <delete tableName="public_point_table"/>
+
+        <addColumn tableName="public_point_table">
+            <column name="code" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

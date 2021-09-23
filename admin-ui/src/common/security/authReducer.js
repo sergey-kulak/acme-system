@@ -26,7 +26,6 @@ const buildState = () => {
 
 const INIT_STATE = buildState();
 
-
 export const onLogin = (data) => {
     return dispatch => dispatch({ type: ACTIONS.LOGIN_SUCCESS, payload: data })
 }

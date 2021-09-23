@@ -21,6 +21,7 @@ import reactor.core.publisher.Mono;
 
 import java.text.ParseException;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -63,9 +64,10 @@ public class ParseTokenServiceImpl implements ParseTokenService {
             UUID publicPointId = getUuid(claimsSet, JwtClaims.PUBLIC_POINT_ID);
             UUID id = UUID.fromString(claimsSet.getStringClaim(JwtClaims.ID));
 
-
-            CompanyUser user = new CompanyUser(id, companyId, username,
-                    StringUtils.EMPTY, UserRole.valueOf(role), publicPointId);
+            CompanyUser user = Objects.equals(role, SecurityUtils.CLIENT_AUTHORITY) ?
+                    new CompanyUser(id, companyId, publicPointId) :
+                    new CompanyUser(id, companyId, username,
+                            StringUtils.EMPTY, UserRole.valueOf(role), publicPointId);
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
             authentication.setDetails(accessToken);

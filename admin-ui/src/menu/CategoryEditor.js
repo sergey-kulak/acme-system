@@ -131,7 +131,7 @@ function CategoryEditor({ auth, onSuccess, onError }) {
                                     <div className="form-group col-8">
                                         <label htmlFor="endTime">Week days</label>
                                         <Field component={DaySelect} name="days" isMulti
-                                            isDisabled />
+                                            isDisabled={!canEdit} />
                                     </div>
                                 </div>
                                 <div className="form-row">

@@ -1,4 +1,4 @@
-package com.acme.usersrv.common.security;
+package com.acme.commons.security;
 
 import org.springframework.security.core.Authentication;
 

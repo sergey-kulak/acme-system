@@ -6,6 +6,7 @@ import com.acme.ppsrv.publicpoint.PublicPointTable;
 import com.acme.ppsrv.publicpoint.repository.PublicPointRepository;
 import com.acme.ppsrv.publicpoint.repository.PublicPointTableRepository;
 import com.acme.testcommons.RandomTestUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.core.publisher.Mono;
@@ -45,6 +46,7 @@ public class TestEntityHelper {
         table.setDescription(RandomTestUtils.randomString("descr"));
         table.setPublicPointId(publicPointId);
         table.setSeatCount(RandomUtils.nextInt(4, 20));
+        table.setCode(RandomStringUtils.randomAlphanumeric(50));
 
         return ppTableRepository.save(table);
     }

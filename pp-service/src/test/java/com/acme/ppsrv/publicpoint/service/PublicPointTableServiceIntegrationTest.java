@@ -18,6 +18,7 @@ import com.acme.testcommons.security.WithMockPpManager;
 import com.acme.testcommons.security.WithMockWaiter;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -29,8 +30,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.isNotNull;
 import static org.mockito.Mockito.when;
 
 @ServiceIntegrationTest
@@ -159,7 +162,8 @@ class PublicPointTableServiceIntegrationTest {
                             hasProperty("name", is(itemDto.getName())),
                             hasProperty("description", is(itemDto.getDescription())),
                             hasProperty("publicPointId", is(pp.getId())),
-                            hasProperty("seatCount", is(itemDto.getSeatCount()))
+                            hasProperty("seatCount", is(itemDto.getSeatCount())),
+                            hasProperty("code", notNullValue())
                     ));
                 })
                 .verifyComplete();
@@ -199,7 +203,8 @@ class PublicPointTableServiceIntegrationTest {
                             hasProperty("name", is(itemDto.getName())),
                             hasProperty("description", is(itemDto.getDescription())),
                             hasProperty("publicPointId", is(oldTable.getPublicPointId())),
-                            hasProperty("seatCount", is(itemDto.getSeatCount()))
+                            hasProperty("seatCount", is(itemDto.getSeatCount())),
+                            hasProperty("code", is(oldTable.getCode()))
                     ));
                 })
                 .verifyComplete();
@@ -254,7 +259,7 @@ class PublicPointTableServiceIntegrationTest {
                 .verifyComplete();
     }
 
-    private Mono<PublicPoint> linkWithUser(PublicPoint pp){
+    private Mono<PublicPoint> linkWithUser(PublicPoint pp) {
         return TestSecurityUtils.linkPpWithCurrentUserReturn(pp.getId(), pp);
     }
 
@@ -270,5 +275,35 @@ class PublicPointTableServiceIntegrationTest {
                 .as(TxStepVerifier::withRollback)
                 .assertNext(count -> assertEquals(1, count))
                 .verifyComplete();
+    }
+
+    @Test
+    @WithMockPpManager
+    void getCode() {
+        UUID companyId = UUID.randomUUID();
+        TestSecurityUtils.linkWithCurrentUser(companyId)
+                .then(testEntityHelper.createPublicPoint(companyId))
+                .flatMap(this::linkWithUser)
+                .flatMap(pp -> testEntityHelper.createTable(pp.getId()))
+                .zipWhen(table -> ppTableService.getCode(table.getId()))
+                .as(TxStepVerifier::withRollback)
+                .assertNext(data -> assertEquals(data.getT1().getCode(), data.getT2()))
+                .verifyComplete();
+    }
+
+    @Test
+    @WithMockPpManager
+    void getCodeDenied() {
+        UUID companyId = UUID.randomUUID();
+        UUID ppId = UUID.randomUUID();
+        TestSecurityUtils.linkWithCurrentUser(companyId)
+                .then(testEntityHelper.createPublicPoint(companyId))
+                .flatMap(pp -> TestSecurityUtils.linkOtherPpWithCurrentUser()
+                        .thenReturn(pp))
+                .flatMap(pp -> testEntityHelper.createTable(pp.getId()))
+                .zipWhen(table -> ppTableService.getCode(table.getId()))
+                .as(TxStepVerifier::withRollback)
+                .expectError(AccessDeniedException.class)
+                .verify();
     }
 }

@@ -1,5 +1,6 @@
 package com.acme.usersrv.common.security;
 
+import com.acme.commons.security.TokenService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;

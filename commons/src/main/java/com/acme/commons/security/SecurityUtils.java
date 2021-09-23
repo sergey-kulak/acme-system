@@ -14,6 +14,7 @@ import java.util.UUID;
 import java.util.function.Function;
 
 public class SecurityUtils {
+    public static final String CLIENT_AUTHORITY = "CLIENT";
     private static final UUID BG_ADMIN_ID = UUID.fromString("d4d742b0-26f8-4440-970b-5182a0744217");
     private static final String BG_ADMIN_EMAIL = "bg-admin@acme.com";
 

@@ -1,36 +1,21 @@
 package com.acme.ppsrv.publicpoint.controller;
 
-import com.acme.commons.dto.IdDto;
-import com.acme.commons.openapi.EntityCreatedResponse;
-import com.acme.commons.openapi.EntityNotFoundResponse;
-import com.acme.commons.openapi.OpenApiPage;
 import com.acme.commons.openapi.SecureOperation;
 import com.acme.commons.openapi.ValidationErrorResponse;
-import com.acme.commons.utils.ResponseUtils;
-import com.acme.ppsrv.publicpoint.dto.CreatePublicPointDto;
-import com.acme.ppsrv.publicpoint.dto.FullDetailsPublicPointDto;
-import com.acme.ppsrv.publicpoint.dto.PublicPointDto;
-import com.acme.ppsrv.publicpoint.dto.PublicPointFilter;
-import com.acme.ppsrv.publicpoint.dto.PublicPointStatusDto;
+import com.acme.ppsrv.publicpoint.dto.ClientLoginRequest;
+import com.acme.ppsrv.publicpoint.dto.ClientLoginResponse;
 import com.acme.ppsrv.publicpoint.dto.PublicPointTableDto;
 import com.acme.ppsrv.publicpoint.dto.SavePpTablesDto;
-import com.acme.ppsrv.publicpoint.dto.UpdatePublicPointDto;
-import com.acme.ppsrv.publicpoint.service.PublicPointService;
+import com.acme.ppsrv.publicpoint.service.PublicPointTableLoginService;
 import com.acme.ppsrv.publicpoint.service.PublicPointTableService;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springdoc.api.annotations.ParameterObject;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -46,6 +31,8 @@ import java.util.UUID;
 @Tag(name = "Public Point Table Api", description = "Public Point Table Management Api")
 public class PublicPointTableController {
     private final PublicPointTableService ppTableService;
+    private final PublicPointTableLoginService ppTableLoginService;
+    private final Environment env;
 
     @PostMapping
     @SecureOperation(description = "Save public point tables")
@@ -66,5 +53,24 @@ public class PublicPointTableController {
     @ApiResponse(responseCode = "200")
     public Mono<Long> countAll(@RequestParam UUID publicPointId) {
         return ppTableService.countAll(publicPointId);
+    }
+
+    @PostMapping("/login")
+    @SecureOperation(description = "Login as client table user")
+    @ApiResponse(responseCode = "200")
+    public Mono<ClientLoginResponse> login(@RequestBody ClientLoginRequest request) {
+        return ppTableLoginService.login(request);
+    }
+
+    @GetMapping("/{id}/client-ui-url")
+    @SecureOperation(description = "Get public point url")
+    @ApiResponse(responseCode = "200")
+    public Mono<String> getClientIOUrl(@PathVariable UUID id) {
+        return ppTableService.getCode(id)
+                .map(this::buildClientUiUrl);
+    }
+
+    private String buildClientUiUrl(String code) {
+        return String.format(env.getProperty("pp-srv.client-ui-login-url", StringUtils.EMPTY), code);
     }
 }

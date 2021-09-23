@@ -1,8 +1,8 @@
 package com.acme.commons.security;
 
-import com.acme.commons.utils.CollectionUtils;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
@@ -16,6 +16,7 @@ public class CompanyUser extends User implements CompanyUserDetails {
     private UUID id;
     private UUID companyId;
     private UUID publicPointId;
+    private UserRole role;
 
     public CompanyUser(UUID id, UUID companyId,
                        String username, String password, UserRole role,
@@ -24,16 +25,29 @@ public class CompanyUser extends User implements CompanyUserDetails {
         this.id = id;
         this.companyId = companyId;
         this.publicPointId = publicPointId;
+        this.role = role;
+    }
+
+    /**
+     * Table client user
+     *
+     * @param id            - table id
+     * @param companyId
+     * @param publicPointId
+     */
+    public CompanyUser(UUID id, UUID companyId, UUID publicPointId) {
+        super(id.toString(), StringUtils.EMPTY, Collections.singletonList(new SimpleGrantedAuthority("CLIENT")));
+        this.id = id;
+        this.companyId = companyId;
+        this.publicPointId = publicPointId;
     }
 
     @Override
     public boolean hasAnyRole(UserRole... roles) {
-        return Arrays.asList(roles).contains(getRole());
+        return role != null && Arrays.asList(roles).contains(role);
     }
 
-    @Override
     public UserRole getRole() {
-        String authority = CollectionUtils.getFirst(getAuthorities()).getAuthority();
-        return UserRole.valueOf(authority);
+        return role;
     }
 }

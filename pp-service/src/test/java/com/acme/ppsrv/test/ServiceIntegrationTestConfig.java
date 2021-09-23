@@ -1,5 +1,6 @@
 package com.acme.ppsrv.test;
 
+import com.acme.commons.security.TokenService;
 import com.acme.ppsrv.plan.api.PublicPointPlanApi;
 import com.acme.testcommons.Transactions;
 import com.acme.testcommons.security.TestUserDetailsService;
@@ -37,5 +38,10 @@ public class ServiceIntegrationTestConfig {
     @Bean
     public PublicPointPlanApi publicPointPlanApi() {
         return Mockito.mock(PublicPointPlanApi.class);
+    }
+
+    @Bean
+    public TokenService tokenService() {
+        return Mockito.mock(TokenService.class);
     }
 }

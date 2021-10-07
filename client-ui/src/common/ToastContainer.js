@@ -1,7 +1,7 @@
-import Toast from 'react-bootstrap/Toast';
-import * as Icon from 'react-feather';
-import { connect } from "react-redux";
-import { clearMessage } from './toastNotification';
+import Toast from 'react-bootstrap/Toast'
+import * as Icon from 'react-feather'
+import { connect } from "react-redux"
+import { clearMessage } from './toastNotification'
 
 const DEFAULT_OPTIONS = {
     autohide: true,
@@ -12,9 +12,9 @@ function ToastContainer({ toast, clearMessage }) {
     function getToastStyle() {
         switch (toast.type) {
             case 'error':
-                return 'bg-danger';
+                return 'bg-danger'
             default:
-                return 'bg-success';
+                return 'bg-success'
         }
     }
 
@@ -43,13 +43,13 @@ function ToastContainer({ toast, clearMessage }) {
             </Toast.Body>
         </Toast>
 
-    );
+    )
 }
 
 const mapStateToProps = ({ toast }) => {
-    return { toast };
-};
+    return { toast }
+}
 
 export default connect(mapStateToProps, {
     clearMessage
-})(ToastContainer);
+})(ToastContainer)

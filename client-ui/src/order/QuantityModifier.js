@@ -1,17 +1,17 @@
-import * as Icon from 'react-feather';
-import './QuantityModifier.css';
+import * as Icon from 'react-feather'
+import './QuantityModifier.css'
 
 function QuantityModifier({ value, onChange }) {
 
     function onIncreaseClick(e) {
-        e.preventDefault();
-        onChange(value + 1);
+        e.preventDefault()
+        onChange(value + 1)
     }
 
     function onDecreaseClick(e) {
-        e.preventDefault();
+        e.preventDefault()
         if (value > 1) {
-            onChange(value - 1);
+            onChange(value - 1)
         }
     }
 
@@ -25,7 +25,7 @@ function QuantityModifier({ value, onChange }) {
                 <Icon.Plus className="feather-icon" />
             </a>
         </div>
-    );
+    )
 }
 
-export default QuantityModifier;
+export default QuantityModifier

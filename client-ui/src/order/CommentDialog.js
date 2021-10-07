@@ -1,25 +1,25 @@
-import { useState } from 'react';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
+import { useState } from 'react'
+import Button from 'react-bootstrap/Button'
+import Modal from 'react-bootstrap/Modal'
 
 
 function CommentDialog({ show, comment, onClose }) {
-    const [newComment, setNewStatus] = useState(comment);
+    const [newComment, setNewStatus] = useState(comment)
 
     function handleChange(e) {
-        setNewStatus(e.target.value);
+        setNewStatus(e.target.value)
     }
 
     function onSave() {
-        onClose(newComment);
+        onClose(newComment)
     }
 
     function onHide() {
-        onClose(comment);
+        onClose(comment)
     }
 
     function onClear() {
-        onClose(null);
+        onClose(null)
     }
 
     return (
@@ -45,7 +45,7 @@ function CommentDialog({ show, comment, onClose }) {
                 </Button>
             </Modal.Footer>
         </Modal>
-    );
+    )
 }
 
-export default CommentDialog;
+export default CommentDialog

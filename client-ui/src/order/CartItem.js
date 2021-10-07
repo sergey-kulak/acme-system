@@ -1,18 +1,18 @@
-import './CartItem.css';
-import * as Icon from 'react-feather';
-import QuantityModifier from './QuantityModifier';
+import './CartItem.css'
+import * as Icon from 'react-feather'
+import QuantityModifier from './QuantityModifier'
 
 function CartItem({ cartItem, dish, image, currency, onChange, onRemove, onChangeComment }) {
 
     function changeCommentClick(e) {
-        e.preventDefault();
+        e.preventDefault()
         if (onChangeComment) {
-            onChangeComment(cartItem);
+            onChangeComment(cartItem)
         }
     }
 
     function onRemoveClick(e) {
-        e.preventDefault();
+        e.preventDefault()
         onRemove(cartItem.dishId)
     }
 
@@ -52,7 +52,7 @@ function CartItem({ cartItem, dish, image, currency, onChange, onRemove, onChang
                 </a>
             </div>
         </div>}
-    </>);
+    </>)
 }
 
-export default CartItem;
+export default CartItem

@@ -1,28 +1,28 @@
-import { useCallback, useEffect, useState } from "react";
-import { connect } from "react-redux";
-import { useLocation, useParams } from "react-router";
-import fileService from "../common/fileService";
-import { onAdd } from "../order/cartReducer";
-import { onSuccess } from "../common/toastNotification";
-import Dish from "./Dish";
-import menuService from "./menuService";
-import { byProperty } from "../common/utils";
+import { useCallback, useEffect, useState } from "react"
+import { connect } from "react-redux"
+import { useLocation, useParams } from "react-router"
+import fileService from "../common/fileService"
+import { onAdd } from "../order/cartReducer"
+import { onSuccess } from "../common/toastNotification"
+import Dish from "./Dish"
+import menuService from "./menuService"
+import { byProperty } from "../common/utils"
 
 function Menu({ auth, onAdd, onSuccess }) {
-    const { categoryId } = useParams();
-    const { state } = useLocation();
+    const { categoryId } = useParams()
+    const { state } = useLocation()
     const [categoryName, setCategoryName] = useState()
-    const [dishes, setDishes] = useState([]);
-    const [imageUrls, setImageUrls] = useState({});
+    const [dishes, setDishes] = useState([])
+    const [imageUrls, setImageUrls] = useState({})
 
     const loadData = useCallback(() => {
         return menuService.findDishes(categoryId)
             .then(response => response.data)
-    }, [categoryId]);
+    }, [categoryId])
 
     const loadImages = useCallback(data => {
         if (!data.length) {
-            return Promise.resolve(data);
+            return Promise.resolve(data)
         }
         let request = {
             companyId: auth.user.cmpid,
@@ -34,18 +34,18 @@ function Menu({ auth, onAdd, onSuccess }) {
         return fileService.getDishImageUrls(request)
             .then(response => setImageUrls(response.data))
             .then(() => data)
-    }, [auth]);
+    }, [auth])
 
     useEffect(() => {
         if (categoryId) {
             loadData()
                 .then(loadImages)
                 .then(data => {
-                    data.sort(byProperty('name'));
-                    setDishes(data);
+                    data.sort(byProperty('name'))
+                    setDishes(data)
                 })
         }
-    }, [categoryId, loadData, loadImages]);
+    }, [categoryId, loadData, loadImages])
 
     useEffect(() => {
         if (!state || !state.categoryName) {
@@ -54,16 +54,16 @@ function Menu({ auth, onAdd, onSuccess }) {
                 .then(categories => categories.filter(ctg => ctg.id === categoryId))
                 .then(setCategoryName)
         } else {
-            setCategoryName(state.categoryName);
+            setCategoryName(state.categoryName)
         }
-    }, [state, categoryId]);
+    }, [state, categoryId])
 
     function onAddClick(dish) {
         onAdd({
             dishId: dish.id,
             quantity: 1
-        });
-        onSuccess('Added', { delay: 600 });
+        })
+        onSuccess('Added', { delay: 600 })
     }
 
     return (
@@ -83,12 +83,12 @@ function Menu({ auth, onAdd, onSuccess }) {
                 </div>
             </div>}
         </div>
-    );
+    )
 }
 
 const mapStateToProps = ({ auth }) => {
-    return { auth };
-};
+    return { auth }
+}
 export default connect(mapStateToProps, {
     onAdd, onSuccess
-})(Menu);
+})(Menu)

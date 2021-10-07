@@ -1,25 +1,25 @@
 
-import React, { useCallback, useEffect, useState } from "react";
-import { connect } from "react-redux";
-import { onRemove, onUpdate, onSetOrderId } from "../order/cartReducer";
-import { onSuccess } from "../common/toastNotification";
-import CartItem from "./CartItem";
-import menuService from "../menu/menuService";
-import fileService from "../common/fileService";
-import { isEmptyObject } from "../common/utils";
-import CommentDialog from "./CommentDialog";
-import OrderItem from "./OrderItem";
-import { FormattedMessage } from "react-intl";
+import React, { useCallback, useEffect, useState } from "react"
+import { connect } from "react-redux"
+import { onRemove, onUpdate, onSetOrderId } from "../order/cartReducer"
+import { onSuccess } from "../common/toastNotification"
+import CartItem from "./CartItem"
+import menuService from "../menu/menuService"
+import fileService from "../common/fileService"
+import { isEmptyObject } from "../common/utils"
+import CommentDialog from "./CommentDialog"
+import OrderItem from "./OrderItem"
+import { FormattedMessage } from "react-intl"
 
 function MyOrder({ auth, cart, onRemove, onUpdate, onSetOrderId, onSuccess }) {
-    const [dishes, setDishes] = useState({});
-    const [imageUrls, setImageUrls] = useState({});
-    const [modifiedCartItem, setModifiedCartItem] = useState();
-    const [order, setOrder] = useState();
+    const [dishes, setDishes] = useState({})
+    const [imageUrls, setImageUrls] = useState({})
+    const [modifiedCartItem, setModifiedCartItem] = useState()
+    const [order, setOrder] = useState()
 
     const loadImages = useCallback(data => {
         if (!data.length) {
-            return Promise.resolve(data);
+            return Promise.resolve(data)
         }
         let request = {
             companyId: auth.user.cmpid,
@@ -34,52 +34,52 @@ function MyOrder({ auth, cart, onRemove, onUpdate, onSetOrderId, onSuccess }) {
                 ...response.data
             })))
             .then(() => data)
-    }, [auth]);
+    }, [auth])
 
     useEffect(() => {
         if (!cart.orderId || !!order) {
-            let orderItems = (order && order.items) || [];
+            let orderItems = (order && order.items) || []
             let dishIds = [
                 ...cart.items.map(item => item.dishId),
                 ...orderItems.map(item => item.dishId)
             ]
 
-            let loadedDishIds = Object.keys(dishes);
-            let newDishIds = dishIds.filter(id => !loadedDishIds.includes(id));
+            let loadedDishIds = Object.keys(dishes)
+            let newDishIds = dishIds.filter(id => !loadedDishIds.includes(id))
             if (newDishIds.length) {
                 let promises = newDishIds.map(dishId =>
                     menuService.findDish(dishId)
                         .then(response => response.data)
-                );
+                )
 
                 Promise.all(promises)
                     .then(loadImages)
                     .then(data => {
-                        let dishes = {};
-                        data.forEach(dish => dishes[dish.id] = dish);
+                        let dishes = {}
+                        data.forEach(dish => dishes[dish.id] = dish)
                         setDishes(prev => ({
                             ...prev,
                             ...dishes
-                        }));
+                        }))
                     })
             }
         }
-    }, [cart, order, dishes, loadImages]);
+    }, [cart, order, dishes, loadImages])
 
     useEffect(() => {
         if (cart.orderId) {
             menuService.findOrderById(cart.orderId)
                 .then(response => response.data)
-                .then(setOrder);
+                .then(setOrder)
         } else {
             setOrder()
         }
-    }, [cart.orderId, cart.orderUpdateTime]);
+    }, [cart.orderId, cart.orderUpdateTime])
 
     function buildCartItem(item) {
-        let dish = dishes[item.dishId];
+        let dish = dishes[item.dishId]
         if (!dish) {
-            return <React.Fragment key={item.dishId}></React.Fragment>;
+            return <React.Fragment key={item.dishId}></React.Fragment>
         }
 
         return <CartItem key={item.dishId}
@@ -92,7 +92,7 @@ function MyOrder({ auth, cart, onRemove, onUpdate, onSetOrderId, onSuccess }) {
     function buildOrderItem(item) {
         let dish = dishes[item.dishId]
         if (!dish) {
-            return <React.Fragment key={item.id}></React.Fragment>;
+            return <React.Fragment key={item.id}></React.Fragment>
         }
 
         return <OrderItem key={item.id}
@@ -102,30 +102,30 @@ function MyOrder({ auth, cart, onRemove, onUpdate, onSetOrderId, onSuccess }) {
     }
 
     function onChangeComment(cartItem) {
-        setModifiedCartItem(cartItem);
+        setModifiedCartItem(cartItem)
     }
 
     function onCommentDialogClose(comment) {
-        onUpdate({ ...modifiedCartItem, comment });
-        setModifiedCartItem(null);
+        onUpdate({ ...modifiedCartItem, comment })
+        setModifiedCartItem(null)
     }
 
     function onPlaceOrderClick() {
         if (!order) {
             let items = cart.items.map(item => {
-                let dish = dishes[item.dishId];
+                let dish = dishes[item.dishId]
 
                 return {
                     ...item,
                     price: dish.price,
                     dishName: dish.name
-                };
-            });
+                }
+            })
             menuService.placeOrder({ items })
                 .then(response => {
-                    let orderId = response.data.id;
-                    onSuccess(`Your order was placed`);
-                    onSetOrderId(orderId);
+                    let orderId = response.data.id
+                    onSuccess(`Your order was placed`)
+                    onSetOrderId(orderId)
                 })
         } else {
             alert('Adding to an order is not implemented yet')
@@ -141,7 +141,7 @@ function MyOrder({ auth, cart, onRemove, onUpdate, onSetOrderId, onSuccess }) {
     }
 
     function onNewOrderClick() {
-        onSetOrderId();
+        onSetOrderId()
     }
 
     return (
@@ -187,12 +187,12 @@ function MyOrder({ auth, cart, onRemove, onUpdate, onSetOrderId, onSuccess }) {
                     </div>}
             </div>
         </div>
-    );
+    )
 }
 
 const mapStateToProps = ({ auth, cart }) => {
-    return { auth, cart };
-};
+    return { auth, cart }
+}
 export default connect(mapStateToProps, {
     onRemove, onUpdate, onSetOrderId, onSuccess
-})(MyOrder);
+})(MyOrder)

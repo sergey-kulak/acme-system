@@ -1,11 +1,11 @@
-import './Dish.css';
-import * as Icon from 'react-feather';
+import './Dish.css'
+import * as Icon from 'react-feather'
 
 function Dish({ dish, image, currency, onAddClick }) {
 
     function addToCart(e) {
-        e.preventDefault();
-        onAddClick(dish);
+        e.preventDefault()
+        onAddClick(dish)
     }
 
     return (
@@ -28,7 +28,7 @@ function Dish({ dish, image, currency, onAddClick }) {
                 {dish.composition}
             </div>
         </div>
-    );
+    )
 }
 
-export default Dish;
+export default Dish

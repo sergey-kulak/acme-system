@@ -1,7 +1,7 @@
-import { combineReducers } from 'redux';
+import { combineReducers } from 'redux'
 import auth from './security/authReducer'
 import toastNotification from './toastNotification'
-import cart from '../order/cartReducer';
+import cart from '../order/cartReducer'
 import rsocket from './rsocket'
 
 export default combineReducers({
@@ -9,4 +9,4 @@ export default combineReducers({
     toast: toastNotification,
     cart: cart,
     rsocket: rsocket
-});
+})

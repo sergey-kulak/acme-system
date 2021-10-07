@@ -1,32 +1,32 @@
-import { useEffect, useState } from 'react';
-import Button from 'react-bootstrap/Button';
-import * as Icon from 'react-feather';
-import { connect } from 'react-redux';
-import { Link } from "react-router-dom";
-import './Sidebar.css';
-import menuService from '../../menu/menuService';
-import { onSuccess } from "../../common/toastNotification";
+import { useEffect, useState } from 'react'
+import Button from 'react-bootstrap/Button'
+import * as Icon from 'react-feather'
+import { connect } from 'react-redux'
+import { Link } from "react-router-dom"
+import './Sidebar.css'
+import menuService from '../../menu/menuService'
+import { onSuccess } from "../../common/toastNotification"
 
 function Sidebar({ auth, cart, rsocket, onSuccess }) {
-    const [isOpened, setIsOpened] = useState(false);
-    const [categories, setCategories] = useState([]);
+    const [isOpened, setIsOpened] = useState(false)
+    const [categories, setCategories] = useState([])
 
     useEffect(() => {
         menuService.getCategories()
             .then(response => response.data)
             .then(setCategories)
-    }, []);
+    }, [])
 
     function handleMobileMenuToggle() {
-        setIsOpened(!isOpened);
+        setIsOpened(!isOpened)
     }
 
     function doNothing(e) {
-        e.preventDefault();
+        e.preventDefault()
     }
 
     function hide() {
-        setIsOpened(false);
+        setIsOpened(false)
     }
 
     function hadleCallWaiterClick() {
@@ -34,9 +34,9 @@ function Sidebar({ auth, cart, rsocket, onSuccess }) {
             .then(() => onSuccess('Waiters have been informed and will come to you very soon'))
     }
 
-    const sbClass = isOpened ? 'opened' : '';
-    const cartTotal = cart.items.reduce((acc, item) => acc + item.quantity, 0);
-    const rsocketClass = rsocket.isOnline ? 'badge-success online' : 'badge-danger offline';
+    const sbClass = isOpened ? 'opened' : ''
+    const cartTotal = cart.items.reduce((acc, item) => acc + item.quantity, 0)
+    const rsocketClass = rsocket.isOnline ? 'badge-success online' : 'badge-danger offline'
 
     return (
         <div className="px-0">
@@ -107,8 +107,8 @@ function Sidebar({ auth, cart, rsocket, onSuccess }) {
     )
 }
 
-const mapStateToProps = ({ auth, cart, rsocket }) => ({ auth, cart, rsocket });
+const mapStateToProps = ({ auth, cart, rsocket }) => ({ auth, cart, rsocket })
 
 export default connect(mapStateToProps, {
     onSuccess
-})(Sidebar);
+})(Sidebar)

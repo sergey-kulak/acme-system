@@ -10,7 +10,7 @@ export const onError = (message) => {
                 message: message,
                 type: 'error'
             }
-        });
+        })
 }
 
 export const onSuccess = (message, options) => {
@@ -21,26 +21,26 @@ export const onSuccess = (message, options) => {
                 type: 'success',
                 options
             }
-        });
+        })
 }
 
 export const clearMessage = () => {
     return dispatch =>
         dispatch({
             type: ACTIONS.CLEAR, payload: {}
-        });
+        })
 }
 
 const reducer = (state = {}, action) => {
     switch (action.type) {
         case ACTIONS.NOTIFY: {
-            return action.payload;
+            return action.payload
         }
         case ACTIONS.CLEAR: {
-            return {};
+            return {}
         }
         default:
-            return state;
+            return state
     }
 }
-export default reducer;
+export default reducer

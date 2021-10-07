@@ -1,5 +1,5 @@
-import { FormattedMessage } from 'react-intl';
-import './OrderItem.css';
+import { FormattedMessage } from 'react-intl'
+import './OrderItem.css'
 
 function OrderItem({ orderItem, dish, image, currency }) {
 
@@ -23,7 +23,7 @@ function OrderItem({ orderItem, dish, image, currency }) {
                 </div>
             </div>
         </div>}
-    </>);
+    </>)
 }
 
-export default OrderItem;
+export default OrderItem

@@ -1,0 +1,24 @@
+.order-item {
+    border: 1px solid lightgrey;
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 1rem;
+}
+
+.order-item-img-container {
+    width: 35%;
+    display: flex;
+    align-items: center;
+}
+
+.order-item-img {
+    width: 100%;
+}
+
+.order-item-info {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    padding: 0.5rem;
+    flex-grow: 1;
+}

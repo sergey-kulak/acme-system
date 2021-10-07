@@ -1,5 +1,11 @@
 package com.acme.ppsrv.test;
 
+import com.acme.ppsrv.order.Order;
+import com.acme.ppsrv.order.OrderItem;
+import com.acme.ppsrv.order.OrderItemStatus;
+import com.acme.ppsrv.order.OrderStatus;
+import com.acme.ppsrv.order.repository.OrderItemRepository;
+import com.acme.ppsrv.order.repository.OrderRepository;
 import com.acme.ppsrv.publicpoint.PublicPoint;
 import com.acme.ppsrv.publicpoint.PublicPointStatus;
 import com.acme.ppsrv.publicpoint.PublicPointTable;
@@ -11,6 +17,8 @@ import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.core.publisher.Mono;
 
+import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
 
@@ -19,6 +27,10 @@ public class TestEntityHelper {
     private PublicPointRepository ppRepository;
     @Autowired
     private PublicPointTableRepository ppTableRepository;
+    @Autowired
+    private OrderRepository orderRepository;
+    @Autowired
+    private OrderItemRepository orderItemRepository;
 
     public Mono<PublicPoint> createPublicPoint(UUID companyId) {
         return createPublicPoint(companyId, PublicPointStatus.ACTIVE);
@@ -49,5 +61,33 @@ public class TestEntityHelper {
         table.setCode(RandomStringUtils.randomAlphanumeric(50));
 
         return ppTableRepository.save(table);
+    }
+
+    public Mono<Order> createOrder(UUID companyId, UUID publicPointId, UUID tableId) {
+        Order order = new Order();
+        order.setCompanyId(companyId);
+        order.setPublicPointId(publicPointId);
+        order.setTableId(tableId);
+        order.setCreatedDate(Instant.now());
+        order.setStatus(OrderStatus.CREATED);
+        order.setNumber(RandomStringUtils.randomAlphanumeric(10));
+
+        return orderRepository.save(order)
+                .flatMap(savedOrder -> createOrderItem(savedOrder.getId())
+                        .thenReturn(savedOrder));
+    }
+
+    private Mono<OrderItem> createOrderItem(UUID orderId) {
+        OrderItem item = new OrderItem();
+        item.setOrderId(orderId);
+        item.setStatus(OrderItemStatus.CREATED);
+        item.setDishId(UUID.randomUUID());
+        item.setDishName(RandomTestUtils.randomString("dish"));
+        item.setCreatedDate(Instant.now());
+        item.setQuantity(2);
+        item.setPrice(new BigDecimal("5.5"));
+        item.setComment(RandomTestUtils.randomString("comment"));
+
+        return orderItemRepository.save(item);
     }
 }

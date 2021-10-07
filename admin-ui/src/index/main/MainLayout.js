@@ -25,6 +25,9 @@ import DishDashboard from "../../dish/DishDashboard";
 import DishEditor from "../../dish/DishEditor";
 import CategoryDashboard from "../../menu/CategoryDashboard";
 import CategoryEditor from "../../menu/CategoryEditor";
+import LiveOrdersDashboard from "../../order/LiveOrdersDashboard";
+import OrderDashboard from "../../order/OrderDashboard";
+import OrderViewer from "../../order/OrderViewer";
 
 const UPDATE_TIMEOUT = 120;
 
@@ -112,6 +115,15 @@ function MainLayout({ auth, onLogin, onLogout }) {
                         </SecuredRoute>
                         <SecuredRoute path="/menu/categories/:id" auth={auth} role={ROLE.COOK}>
                             <CategoryEditor />
+                        </SecuredRoute>
+                        <SecuredRoute path="/live-orders" auth={auth} role={ROLE.COOK}>
+                            <LiveOrdersDashboard />
+                        </SecuredRoute>
+                        <SecuredRoute exact path="/orders" auth={auth} role={ROLE.COOK}>
+                            <OrderDashboard />
+                        </SecuredRoute>
+                        <SecuredRoute path="/orders/:id" auth={auth} role={ROLE.COOK}>
+                            <OrderViewer />
                         </SecuredRoute>
                     </Switch>
                     <ToastContainer />

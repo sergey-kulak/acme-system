@@ -48,6 +48,13 @@ public class PublicPointTableController {
         return ppTableService.findAll(publicPointId);
     }
 
+    @GetMapping("/{id}")
+    @SecureOperation(description = "Find public point table by id")
+    @ApiResponse(responseCode = "200")
+    public Mono<PublicPointTableDto> findById(@PathVariable UUID id) {
+        return ppTableService.findById(id);
+    }
+
     @GetMapping("/count")
     @SecureOperation(description = "Find public point tables")
     @ApiResponse(responseCode = "200")
@@ -65,7 +72,7 @@ public class PublicPointTableController {
     @GetMapping("/{id}/client-ui-url")
     @SecureOperation(description = "Get public point url")
     @ApiResponse(responseCode = "200")
-    public Mono<String> getClientIOUrl(@PathVariable UUID id) {
+    public Mono<String> getClientUiUrl(@PathVariable UUID id) {
         return ppTableService.getCode(id)
                 .map(this::buildClientUiUrl);
     }

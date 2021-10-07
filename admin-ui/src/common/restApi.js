@@ -32,8 +32,11 @@ restApi.interceptors.response.use(
 );
 
 export const buildGetFilterParams = (filter, pageable, sort) => {
-  const params = { ...clean(filter), ...pageable, };
-  params.page -= 1;
+  let params = { ...clean(filter) };
+  if (pageable) {
+    params = { ...params, ...pageable };
+    params.page -= 1;
+  }
   if (sort) {
     params.sort = `${sort.field},${sort.direction}`;
   }

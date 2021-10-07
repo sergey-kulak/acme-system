@@ -4,6 +4,8 @@ import lombok.Builder;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -17,6 +19,8 @@ public class UpdateDishDto {
     @NotBlank
     private String primaryImage;
     private List<String> images;
+    @NotNull
+    private BigDecimal price;
 
 
 }

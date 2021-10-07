@@ -5,6 +5,7 @@ import io.r2dbc.spi.RowMetadata;
 import org.jooq.AttachableQueryPart;
 import org.jooq.DSLContext;
 import org.jooq.EnumType;
+import org.jooq.Fields;
 import org.jooq.Param;
 import org.jooq.SortField;
 import org.jooq.SortOrder;
@@ -52,18 +53,18 @@ public class AbstractCustomJooqRepository extends AbstractCustomR2dbcRepository 
                 .all();
     }
 
-    public Collection<SortField<?>> getSortFields(TableImpl<?> table, Sort sort) {
+    public Collection<SortField<?>> getSortFields(Fields fields, Sort sort) {
         return sort == null ? Collections.emptyList() :
                 sort.stream()
-                        .map(order -> toSortField(table, order))
+                        .map(order -> toSortField(fields, order))
                         .collect(Collectors.toList());
     }
 
-    private SortField<?> toSortField(TableImpl<?> table, Sort.Order order) {
+    private SortField<?> toSortField(Fields fields, Sort.Order order) {
         String fieldName = order.getProperty();
         Sort.Direction sortDirection = order.getDirection();
 
-        return table.fieldsRow()
+        return fields.fieldsRow()
                 .field(fieldName)
                 .sort(sortDirection == Sort.Direction.ASC ? SortOrder.ASC : SortOrder.DESC);
     }

@@ -24,4 +24,7 @@ public interface PublicPointTableService {
 
     @PreAuthorize("hasAnyAuthority('ADMIN','COMPANY_OWNER', 'PP_MANAGER')")
     Mono<Long> countAll(UUID publicPointId);
+
+    @NotAccountantUserAuthenticated
+    Mono<PublicPointTableDto> findById(UUID id);
 }

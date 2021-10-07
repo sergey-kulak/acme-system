@@ -13,6 +13,7 @@ import dishService from './dishService';
 import DishFilter from './DishFilter';
 import DishStatusLabel from './DishStatusLabel';
 import fileService from '../common/fileService';
+import publicPointService from '../public-point/publicPointService';
 
 function DishDashboard({ auth, onError, onSuccess }) {
     const history = useHistory();
@@ -24,6 +25,7 @@ function DishDashboard({ auth, onError, onSuccess }) {
     const [filter, setFilter] = useState(Filter.fromUrlParams(query, auth));
     const [showFilter, setShowFilter] = useState(true);
     const [imageUrls, setImageUrls] = useState({});
+    const [publicPoint, setPublicPoint] = useState();
 
     const loadData = useCallback(() => {
         return dishService.find(filter, pageable, sort)
@@ -53,12 +55,12 @@ function DishDashboard({ auth, onError, onSuccess }) {
                 .then(setPage)
                 .then(() => {
                     let filterUrlParams = filter.toUrlParams(auth);
-                    history.replace(combineAsUrlParams(filterUrlParams));
+                    history.replace(combineAsUrlParams(filterUrlParams, pageable, sort));
                 });
         } else {
             setPage({ content: [] });
         }
-    }, [filter, history, auth, loadData, loadImages]);
+    }, [pageable, sort, filter, history, auth, loadData, loadImages]);
 
     function onPageableChange(page) {
         setPageable(page);
@@ -83,7 +85,16 @@ function DishDashboard({ auth, onError, onSuccess }) {
         }
     }
 
+    useEffect(() => {
+        if (filter.publicPointId) {
+            publicPointService.findByIdFullDetails(filter.publicPointId)
+                .then(response => response.data)
+                .then(setPublicPoint);
+        }
+    }, [filter.publicPointId]);
+
     const canEdit = hasRole(auth, ROLE.PP_MANAGER);
+    const priceColumnName = 'Price' + (publicPoint ? ', ' + publicPoint.currency : '');
 
     return (
         <div className="main-content">
@@ -114,6 +125,7 @@ function DishDashboard({ auth, onError, onSuccess }) {
                             <SortColumn field="name" name="Name" sort={sort} onClick={onSortChange} />
                             <th>Description</th>
                             <th>Composition</th>
+                            <SortColumn field="price" name={priceColumnName} sort={sort} onClick={onSortChange} />
                             <th>Tags</th>
                         </tr>
                     </thead>
@@ -138,6 +150,7 @@ function DishDashboard({ auth, onError, onSuccess }) {
                                 </td>
                                 <td>{dish.description}</td>
                                 <td>{dish.composition}</td>
+                                <td>{dish.price}</td>
                                 <td>{(dish.tags || []).join(', ')}</td>
                             </tr>)}
                     </tbody>

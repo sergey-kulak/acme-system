@@ -56,6 +56,10 @@ body {
   padding: .375rem .45rem;
 }
 
+.cmt-small-btn {
+  padding: .2rem .3rem;
+}
+
 .thumbnail-th {
   width: 5rem;
 }
@@ -63,4 +67,8 @@ body {
 .thumbnail {
   height: 4rem;
   border-radius: 3px;
+}
+
+.live-orders td {
+  vertical-align: middle;
 }

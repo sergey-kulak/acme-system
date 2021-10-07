@@ -33,6 +33,7 @@ public class PublicPointTableLoginServiceImpl implements PublicPointTableLoginSe
     private ClientLoginResponse map(PublicPointTable ppTable, PublicPoint pp) {
         return ClientLoginResponse.builder()
                 .publicPointName(pp.getName())
+                .currency(pp.getCurrency())
                 .accessToken(generateToken(ppTable, pp))
                 .build();
     }

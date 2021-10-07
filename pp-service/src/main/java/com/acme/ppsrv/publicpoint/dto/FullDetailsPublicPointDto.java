@@ -17,4 +17,5 @@ public class FullDetailsPublicPointDto {
     private String address;
     private String primaryLang;
     private List<String> langs;
+    private String currency;
 }

@@ -87,4 +87,137 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="4" author="sergey.kulak">
+        <addColumn tableName="public_point">
+            <column name="currency" type="varchar(3)" defaultValue="USD">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="5" author="sergey.kulak">
+        <sql>
+            create type order_status as enum ('CREATED','IN_PROGRESS','READY','DELIVERED','PAID');
+        </sql>
+
+        <sql>
+            create type order_item_status as enum ('CREATED','IN_PROGRESS','DONE');
+        </sql>
+
+        <createTable tableName="order">
+            <column name="id" type="UUID" defaultValueComputed="uuid_generate_v4()">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="company_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="public_point_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="number" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="order_status">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="paid_date" type="timestamp"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="order"
+                                 baseColumnNames="public_point_id"
+                                 constraintName="fk_order_pp_id"
+                                 referencedTableName="public_point"
+                                 referencedColumnNames="id"/>
+
+        <createIndex tableName="order" indexName="order_pp_id_idx">
+            <column name="public_point_id"/>
+        </createIndex>
+
+        <createTable tableName="order_item">
+            <column name="id" type="UUID" defaultValueComputed="uuid_generate_v4()">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="order_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="order_item_status">
+                <constraints nullable="false"/>
+            </column>
+            <column name="dish_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="dish_name" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="price" type="decimal(6,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="done_date" type="timestamp"/>
+        </createTable>
+
+    </changeSet>
+
+    <changeSet id="6" author="sergey.kulak">
+        <addColumn tableName="order_item">
+            <column name="quantity" type="integer">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="7" author="sergey.kulak">
+        <addColumn tableName="order_item">
+            <column name="comment" type="varchar(200)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="8" author="sergey.kulak">
+        <sql>
+            alter type order_status add value 'CONFIRMED' after 'CREATED';
+            alter type order_status add value 'DECLINED' after 'PAID';
+        </sql>
+    </changeSet>
+
+    <changeSet id="9" author="sergey.kulak">
+        <addForeignKeyConstraint baseTableName="order_item"
+                                 baseColumnNames="order_id"
+                                 constraintName="fk_order_item_ord_id"
+                                 referencedTableName="order"
+                                 referencedColumnNames="id"/>
+
+        <createIndex tableName="order_item" indexName="order_item_order_id_idx">
+            <column name="order_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="10" author="sergey.kulak">
+        <addColumn tableName="order">
+            <column name="table_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <addForeignKeyConstraint baseTableName="order"
+                                 baseColumnNames="table_id"
+                                 constraintName="fk_order_table_id"
+                                 referencedTableName="public_point_table"
+                                 referencedColumnNames="id"/>
+
+        <createIndex tableName="order" indexName="order_table_id_idx">
+            <column name="table_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="11" author="sergey.kulak">
+        <sql>
+            alter type order_item_status add value 'DECLINED' after 'DONE';
+        </sql>
+    </changeSet>
+
 </databaseChangeLog>

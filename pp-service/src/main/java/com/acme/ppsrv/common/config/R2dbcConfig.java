@@ -1,5 +1,7 @@
 package com.acme.ppsrv.common.config;
 
+import com.acme.ppsrv.order.OrderItemStatus;
+import com.acme.ppsrv.order.OrderStatus;
 import com.acme.ppsrv.publicpoint.PublicPointStatus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +21,10 @@ import java.util.List;
 public class R2dbcConfig {
     private static List<Object> CONVERTERS = Arrays.asList(
             new EnumWriteSupport<PublicPointStatus>() {
+            },
+            new EnumWriteSupport<OrderStatus>() {
+            },
+            new EnumWriteSupport<OrderItemStatus>() {
             }
     );
 

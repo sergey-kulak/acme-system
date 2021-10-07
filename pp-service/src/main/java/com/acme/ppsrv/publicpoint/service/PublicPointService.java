@@ -1,5 +1,6 @@
 package com.acme.ppsrv.publicpoint.service;
 
+import com.acme.commons.security.NotAccountantUserAuthenticated;
 import com.acme.commons.security.UserAuthenticated;
 import com.acme.ppsrv.publicpoint.PublicPointStatus;
 import com.acme.ppsrv.publicpoint.dto.CreatePublicPointDto;
@@ -33,7 +34,7 @@ public interface PublicPointService {
     @UserAuthenticated
     Mono<PublicPointDto> findById(UUID id);
 
-    @PreAuthorize("hasAnyAuthority('ADMIN','COMPANY_OWNER')")
+    @NotAccountantUserAuthenticated
     Mono<FullDetailsPublicPointDto> findFullDetailsById(UUID id);
 
     @PreAuthorize("hasAnyAuthority('ADMIN','COMPANY_OWNER')")

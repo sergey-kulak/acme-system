@@ -6,6 +6,7 @@ import { onAdd } from "../order/cartReducer";
 import { onSuccess } from "../common/toastNotification";
 import Dish from "./Dish";
 import menuService from "./menuService";
+import { byProperty } from "../common/utils";
 
 function Menu({ auth, onAdd, onSuccess }) {
     const { categoryId } = useParams();
@@ -39,7 +40,10 @@ function Menu({ auth, onAdd, onSuccess }) {
         if (categoryId) {
             loadData()
                 .then(loadImages)
-                .then(setDishes)
+                .then(data => {
+                    data.sort(byProperty('name'));
+                    setDishes(data);
+                })
         }
     }, [categoryId, loadData, loadImages]);
 
@@ -72,6 +76,7 @@ function Menu({ auth, onAdd, onSuccess }) {
                     {
                         dishes.map(dish => <Dish dish={dish} key={dish.id}
                             onAddClick={onAddClick}
+                            currency={auth.data.currency}
                             image={imageUrls[dish.primaryImage]}
                         />)
                     }

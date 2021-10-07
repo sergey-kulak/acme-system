@@ -73,7 +73,7 @@ public class PublicPointServiceImpl implements PublicPointService {
     @Transactional
     public Mono<Void> update(UUID id, UpdatePublicPointDto saveDto) {
         return ppRepository.findById(id)
-                .flatMap(pp -> SecurityUtils.isCompanyAccessible(pp.getCompanyId())
+                .flatMap(pp -> SecurityUtils.isPpAccessible(pp.getCompanyId(), id)
                         .thenReturn(pp))
                 .flatMap(plan -> update(plan, saveDto))
                 .switchIfEmpty(EntityNotFoundException.of(id))
@@ -92,7 +92,7 @@ public class PublicPointServiceImpl implements PublicPointService {
     @Override
     public Mono<Void> changeStatus(UUID id, PublicPointStatus newStatus) {
         return ppRepository.findById(id)
-                .flatMap(pp -> SecurityUtils.isCompanyAccessible(pp.getCompanyId())
+                .flatMap(pp -> SecurityUtils.isPpAccessible(pp.getCompanyId(), id)
                         .thenReturn(pp))
                 .flatMap(pp -> isValidChange(pp, newStatus))
                 .flatMap(pp -> checkPlanForActive(pp, newStatus))
@@ -144,7 +144,7 @@ public class PublicPointServiceImpl implements PublicPointService {
     @Override
     public Mono<FullDetailsPublicPointDto> findFullDetailsById(UUID id) {
         return ppRepository.findById(id)
-                .flatMap(pp -> SecurityUtils.isCompanyAccessible(pp.getCompanyId())
+                .flatMap(pp -> SecurityUtils.isPpAccessible(pp.getCompanyId(), id)
                         .thenReturn(pp))
                 .zipWhen(pp -> ppRepository.getLangs(pp.getId()))
                 .map(data -> mapper.toDto(data.getT1(), data.getT2()))

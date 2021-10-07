@@ -25,6 +25,8 @@ public class CreatePublicPointDto {
     @NotBlank
     private String primaryLang;
     private Set<String> langs;
+    @NotBlank
+    private String currency;
 
     @Tolerate
     public CreatePublicPointDto() {

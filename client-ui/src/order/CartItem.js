@@ -2,7 +2,7 @@ import './CartItem.css';
 import * as Icon from 'react-feather';
 import QuantityModifier from './QuantityModifier';
 
-function CartItem({ cartItem, dish, image, onChange, onRemove, onChangeComment }) {
+function CartItem({ cartItem, dish, image, currency, onChange, onRemove, onChangeComment }) {
 
     function changeCommentClick(e) {
         e.preventDefault();
@@ -35,7 +35,9 @@ function CartItem({ cartItem, dish, image, onChange, onRemove, onChangeComment }
                             onChange={onQuantityChange} />
                     </div>
                     <div className="flex-grow-1 text-center">
-                        <span className="font-weight-bold">15$</span>
+                        <span className="font-weight-bold">
+                            {dish.price * cartItem.quantity} {currency}
+                        </span>
                     </div>
                     <div className="position-relative">
                         <a href="#message" onClick={changeCommentClick} className="">

@@ -32,5 +32,20 @@
     "day.thursday": "Thursday",
     "day.friday": "Friday",
     "day.saturday": "Saturday",
-    "day.sunday": "Sunday"
+    "day.sunday": "Sunday",
+    "currency.symbol.USD": "$",
+    "currency.name.USD": "US Dollar",
+    "currency.symbol.EUR": "€",
+    "currency.name.EUR": "Euro",
+    "order.status.created": "Created",
+    "order.status.confirmed": "Confirmed",
+    "order.status.in_progress": "In progress",
+    "order.status.ready": "Ready",
+    "order.status.delivered": "Delivered",
+    "order.status.paid": "Paid",
+    "order.status.declined": "Declined",
+    "orderitem.status.created": "Created",
+    "orderitem.status.in_progress": "In progress",
+    "orderitem.status.done": "Done",
+    "orderitem.status.declined": "Declined"
 }

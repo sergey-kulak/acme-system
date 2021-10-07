@@ -8,6 +8,7 @@ import lombok.experimental.Tolerate;
 @Builder
 public class ClientLoginResponse {
     private String publicPointName;
+    private String currency;
     private String accessToken;
 
     @Tolerate

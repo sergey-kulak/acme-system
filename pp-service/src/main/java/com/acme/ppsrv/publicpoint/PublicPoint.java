@@ -20,5 +20,5 @@ public class PublicPoint {
     private String city;
     private String address;
     private String primaryLang;
-
+    private String currency;
 }

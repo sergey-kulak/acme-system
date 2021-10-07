@@ -8,6 +8,9 @@ const publicPointTableService = {
             params: { publicPointId }
         });
     },
+    findById: function (id) {
+        return restApi.get(`${BASE_URL}/${id}`);
+    },
     save: function (request) {
         return restApi.post(BASE_URL, request);
     },

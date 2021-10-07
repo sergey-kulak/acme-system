@@ -49,12 +49,12 @@ public class SecurityUtils {
                 .then();
     }
 
-    private static boolean hasAccess(CompanyUserDetails cmpUser, UUID companyId, boolean accountingCtx) {
+    public static boolean hasAccess(CompanyUserDetails cmpUser, UUID companyId, boolean accountingCtx) {
         UserRole[] allAccessRole = accountingCtx ? FULL_COMPANY_ACCOUNTING_ACCESS : FULL_COMPANY_ACCESS;
         return cmpUser.hasAnyRole(allAccessRole) || Objects.equals(companyId, cmpUser.getCompanyId());
     }
 
-    private static boolean hasPpAccess(CompanyUserDetails cmpUser, UUID ppId) {
+    public static boolean hasPpAccess(CompanyUserDetails cmpUser, UUID ppId) {
         return cmpUser.hasAnyRole(FULL_PP_ACCESS) || Objects.equals(ppId, cmpUser.getPublicPointId());
     }
 

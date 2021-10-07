@@ -2,6 +2,8 @@ package com.acme.menusrv.dish.dto;
 
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -17,4 +19,5 @@ public class FullDetailsDishDto {
     private String primaryImage;
     private List<String> images;
     private boolean deleted;
+    private BigDecimal price;
 }

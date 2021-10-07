@@ -166,6 +166,12 @@ function PublicPointViewer({ auth, onSuccess, onError }) {
         return wrapValue(publicPoint.langs.map(langLabel).join(", "));
     }
 
+    function currencyLabel() {
+        let crName = intl.formatMessage({ id: `currency.name.${publicPoint.currency}` });
+        let crSymbol = intl.formatMessage({ id: `currency.symbol.${publicPoint.currency}` });
+        return `${crName}, ${crSymbol}`;
+    }
+
     const labelClass = "col-sm-4 col-md-2 col-form-label text-sm-right font-italic";
     const controlClass = "col-sm-8 col-md-4";
 
@@ -206,7 +212,7 @@ function PublicPointViewer({ auth, onSuccess, onError }) {
                     <div className="form-group row mb-0">
                         <label htmlFor="company" className={labelClass}>Company:</label>
                         <div className={controlClass}>
-                            <input readOnly value={ (company && company.fullName) || ''} name="company"
+                            <input readOnly value={(company && company.fullName) || ''} name="company"
                                 type="text" className="form-control-plaintext" />
                         </div>
                         <label htmlFor="description" className={labelClass}>Description:</label>
@@ -237,6 +243,13 @@ function PublicPointViewer({ auth, onSuccess, onError }) {
                             <label htmlFor="email" className={labelClass}>Additional languages:</label>
                             <div className={controlClass}>
                                 <input readOnly value={addLangLabels()} name="langs"
+                                    type="text" className="form-control-plaintext" />
+                            </div>
+                        </div>
+                        <div className="form-group row mb-0">
+                            <label htmlFor="currency" className={labelClass}>Currency:</label>
+                            <div className={controlClass}>
+                                <input readOnly value={currencyLabel()} name="Currency"
                                     type="text" className="form-control-plaintext" />
                             </div>
                         </div>

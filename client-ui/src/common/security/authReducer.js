@@ -42,7 +42,8 @@ const reducer = (state = INIT_STATE, action) => {
             const accessToken = action.payload.accessToken;
             localStorage.setItem("accessToken", accessToken);
             localStorage.setItem("data", JSON.stringify({
-                publicPointName: action.payload.publicPointName
+                publicPointName: action.payload.publicPointName,
+                currency: action.payload.currency
             }));
 
             return buildState();

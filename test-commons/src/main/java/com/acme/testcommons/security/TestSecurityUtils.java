@@ -59,4 +59,12 @@ public class TestSecurityUtils {
         return linkWithCurrentUser(companyId)
                 .then(linkPpWithCurrentUser(ppId));
     }
+
+    public static Mono<Void> linkWithCurrentUser(UUID companyId, UUID ppId, UUID tableId) {
+        return linkWithCurrentUser(companyId, ppId)
+                .then(getCurrentUser())
+                .doOnSuccess(cmpUser -> cmpUser.setId(tableId))
+                .then();
+
+    }
 }

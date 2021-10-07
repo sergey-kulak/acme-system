@@ -12,6 +12,7 @@ import CompanySelect from '../company/CompanySelect';
 import { hasRole, ROLE } from "../common/security";
 import { getErrorMessage } from "../common/utils";
 import LangSelect from '../common/rf-data/LangSelect';
+import CurrencySelect from '../common/rf-data/CurrencySelect';
 
 function PublicPointEditor({ auth, onSuccess, onError }) {
     const { id } = useParams();
@@ -25,6 +26,7 @@ function PublicPointEditor({ auth, onSuccess, onError }) {
         address: '',
         primaryLang: '',
         langs: [],
+        currency: '',
         companyId: hasRole(auth, ROLE.ADMIN) ? '' : auth.user.cmpid
     });
     const historyBack = useHistoryBack("/public-points");
@@ -36,6 +38,7 @@ function PublicPointEditor({ auth, onSuccess, onError }) {
         address: Yup.string().required('Required'),
         primaryLang: Yup.string().required('Required'),
         langs: Yup.array().of(Yup.string()),
+        currency: Yup.string().required('Required'),
         companyId: Yup.string().required('Required')
     });
 
@@ -57,7 +60,8 @@ function PublicPointEditor({ auth, onSuccess, onError }) {
             address: publicPoint.address,
             primaryLang: publicPoint.primaryLang,
             langs: publicPoint.langs.filter(lang => lang !== publicPoint.primaryLang),
-            companyId: publicPoint.companyId
+            companyId: publicPoint.companyId,
+            currency: publicPoint.currency
         })
     };
 
@@ -164,6 +168,12 @@ function PublicPointEditor({ auth, onSuccess, onError }) {
                                         optionFilter={langFilter}/>
                                 </div>
                             </div>
+                            <div className="form-row">
+                                <div className="form-group col-md-6">
+                                    <label htmlFor="currency">Currency</label>
+                                    <Field component={CurrencySelect} name="currency"/>
+                                </div>
+                            </div>                            
                             <button type="submit" className="btn btn-primary mr-2">Save</button>
                             <BackButton defaultPath="/public-points">Back</BackButton>
                         </Form>

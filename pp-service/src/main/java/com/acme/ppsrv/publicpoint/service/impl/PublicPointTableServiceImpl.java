@@ -111,4 +111,11 @@ public class PublicPointTableServiceImpl implements PublicPointTableService {
                 .map(PublicPointTable::getCode)
                 .switchIfEmpty(EntityNotFoundException.of(id));
     }
+
+    @Override
+    public Mono<PublicPointTableDto> findById(UUID id) {
+        return ppTableRepository.findById(id)
+                .flatMap(table -> checkAccess(table.getPublicPointId()).thenReturn(table))
+                .map(ppTableMapper::toDto);
+    }
 }

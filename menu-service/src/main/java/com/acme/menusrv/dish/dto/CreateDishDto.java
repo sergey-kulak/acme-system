@@ -6,6 +6,7 @@ import lombok.experimental.Tolerate;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,6 +25,8 @@ public class CreateDishDto {
     @NotBlank
     private String primaryImage;
     private List<String> images;
+    @NotNull
+    private BigDecimal price;
 
     @Tolerate
     public CreateDishDto() {

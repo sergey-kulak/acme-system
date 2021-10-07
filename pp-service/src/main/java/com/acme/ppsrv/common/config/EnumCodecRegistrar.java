@@ -1,5 +1,7 @@
 package com.acme.ppsrv.common.config;
 
+import com.acme.ppsrv.order.OrderItemStatus;
+import com.acme.ppsrv.order.OrderStatus;
 import com.acme.ppsrv.publicpoint.PublicPointStatus;
 import io.netty.buffer.ByteBufAllocator;
 import io.r2dbc.postgresql.api.PostgresqlConnection;
@@ -16,6 +18,8 @@ public class EnumCodecRegistrar implements CodecRegistrar {
                                     CodecRegistry registry) {
         return EnumCodec.builder()
                 .withEnum("public_point_status", PublicPointStatus.class)
+                .withEnum("order_status", OrderStatus.class)
+                .withEnum("order_item_status", OrderItemStatus.class)
                 .build()
                 .register(connection, allocator, registry);
     }

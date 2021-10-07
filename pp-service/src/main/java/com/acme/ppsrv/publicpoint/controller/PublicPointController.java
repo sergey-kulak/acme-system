@@ -13,6 +13,7 @@ import com.acme.ppsrv.publicpoint.dto.PublicPointDto;
 import com.acme.ppsrv.publicpoint.dto.PublicPointFilter;
 import com.acme.ppsrv.publicpoint.dto.PublicPointStatusDto;
 import com.acme.ppsrv.publicpoint.dto.UpdatePublicPointDto;
+import com.acme.ppsrv.publicpoint.service.PublicPointNotificationService;
 import com.acme.ppsrv.publicpoint.service.PublicPointService;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -43,6 +44,7 @@ import java.util.UUID;
 @Tag(name = "Public Point Api", description = "Public Point Management Api")
 public class PublicPointController {
     private final PublicPointService ppService;
+    private final PublicPointNotificationService notificationService;
 
     @PostMapping
     @SecureOperation(description = "Create a public point")
@@ -100,6 +102,13 @@ public class PublicPointController {
     @ApiResponse(responseCode = "200")
     public Flux<PublicPointDto> findNames(@RequestParam UUID companyId) {
         return ppService.findNames(companyId);
+    }
+
+    @PostMapping("/call-waiter")
+    @SecureOperation(description = "Call a waiter")
+    @ApiResponse(responseCode = "200")
+    public Mono<Void> callWaiter() {
+        return notificationService.callWaiter();
     }
 
     @Schema(name = "public point page")

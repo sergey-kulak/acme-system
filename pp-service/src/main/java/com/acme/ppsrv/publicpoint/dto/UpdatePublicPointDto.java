@@ -24,6 +24,8 @@ public class UpdatePublicPointDto {
     @NotBlank
     private String primaryLang;
     private Set<String> langs;
+    @NotBlank
+    private String currency;
 
     @Tolerate
     public UpdatePublicPointDto() {

@@ -10,16 +10,23 @@ spring:
     name: api-gateway
   cloud:
     gateway:
+      routes:
+        - id: pp-service-rs
+          uri: lb:ws://pp-service
+          predicates:
+            - Path=/pp-service-rsocket
+          filters:
+            - SetPath=/rsocket
       discovery:
         locator:
           enabled: true
           lower-case-service-id: true
           include-expression: "!serviceId.equals('CONFIG-SERVICE')"
           filters:
-          - name: RewritePath
-            args:
-              regexp: "'/' + serviceId + '/?(?<remaining>.*)'"
-              replacement: "'/api/${remaining}'"
+            - name: RewritePath
+              args:
+                regexp: "'/' + serviceId + '/?(?<remaining>.*)'"
+                replacement: "'/api/${remaining}'"
 
 eureka:
   client:

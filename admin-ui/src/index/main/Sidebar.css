@@ -89,3 +89,23 @@
   max-width: 4.2rem;
   height: 1rem;  
 }
+
+.rsocket-status {
+  font-size: 30% !important;
+  position: absolute !important;
+  top: 13px;
+  left: 45px;
+}
+
+.offline {
+  color: #dc3545 !important;  
+}
+
+.online {
+  color: green !important;
+}
+
+.rsocket-status-mobile {
+  top: 9px;
+  left: 39px;
+}

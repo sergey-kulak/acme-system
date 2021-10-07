@@ -15,6 +15,7 @@ import { getErrorMessage } from "../common/utils";
 import CompanySelect from '../company/CompanySelect';
 import PublicPointSelect from '../public-point/PublicPointSelect';
 import dishService from './dishService';
+import publicPointService from '../public-point/publicPointService';
 import TagSelect from './TagSelect';
 
 function DishEditor({ auth, onSuccess, onError }) {
@@ -29,10 +30,12 @@ function DishEditor({ auth, onSuccess, onError }) {
         tags: [],
         companyId: state && state.companyId,
         publicPointId: state && state.publicPointId,
+        price: ''
     });
     const [image, setImage] = useState();
     const [imageUrl, setImageUrl] = useState();
     const formikRef = useRef(null);
+    const [publicPoint, setPublicPoint] = useState();
     const historyBack = useHistoryBack("/dishes");
 
     const validationSchema = Yup.object({
@@ -40,7 +43,8 @@ function DishEditor({ auth, onSuccess, onError }) {
         description: Yup.string().required('Required'),
         composition: Yup.string().required('Required'),
         companyId: Yup.string().required('Required'),
-        publicPointId: Yup.string().required('Required')
+        publicPointId: Yup.string().required('Required'),
+        price: Yup.number().typeError('Must be a number').required('Required'),
     });
 
     const loadImage = useCallback((data) => {
@@ -79,9 +83,18 @@ function DishEditor({ auth, onSuccess, onError }) {
             composition: dish.composition,
             tags: dish.tags,
             companyId: dish.companyId,
-            publicPointId: dish.publicPointId
+            publicPointId: dish.publicPointId,
+            price: dish.price
         });
     }
+
+    useEffect(() => {
+        if (formData.publicPointId) {
+            publicPointService.findByIdFullDetails(formData.publicPointId)
+                .then(response => response.data)
+                .then(setPublicPoint);
+        }
+    }, [formData.publicPointId]);
 
     function uploadImage() {
         let imageKey = `${dish && dish.id ? dish.id : uuidv4()}/${uuidv4()}.jpg`;
@@ -203,6 +216,18 @@ function DishEditor({ auth, onSuccess, onError }) {
                                             isDisabled auth={auth}
                                             companyId={formData.companyId}
                                         />
+                                    </div>
+                                </div>
+                                <div className="form-row">
+                                    <div className="form-group col-md-4">
+                                        <label htmlFor="price">
+                                            Price
+                                            {!!publicPoint && <>, {publicPoint.currency}</>}
+                                        </label>
+                                        <Field component={HighlightInput} name="price"
+                                            type="text" className="form-control"
+                                            isDisabled={!canEdit} />
+
                                     </div>
                                 </div>
                                 {canEdit && <button type="submit" className="btn btn-primary mr-2">Save</button>}

@@ -76,3 +76,18 @@
   top: 2px !important;
   right: 2px;
 }
+
+.rsocket-status {
+  font-size: 30% !important;
+  position: absolute !important;
+  top: 9px;
+  left: 39px;
+}
+
+.offline {
+  color: #dc3545 !important;  
+}
+
+.online {
+  color: green !important;
+}

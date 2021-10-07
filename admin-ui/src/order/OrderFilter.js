@@ -1,43 +1,43 @@
-import { DebounceInput } from 'react-debounce-input';
-import moment from "moment";
-import DatePicker from "react-datepicker";
-import { hasRole, ROLE } from '../common/security';
-import CompanySelect from '../company/CompanySelect';
-import PublicPointSelect from '../public-point/PublicPointSelect';
-import OrderStatusSelect from './OrderStatusSelect';
-import DishSelect from '../dish/DishSelect';
+import { DebounceInput } from 'react-debounce-input'
+import moment from "moment"
+import DatePicker from "react-datepicker"
+import { hasRole, ROLE } from '../common/security'
+import CompanySelect from '../company/CompanySelect'
+import PublicPointSelect from '../public-point/PublicPointSelect'
+import OrderStatusSelect from './OrderStatusSelect'
+import DishSelect from '../dish/DishSelect'
 
-const FORMAT = 'yyyy-MM-DD';
+const FORMAT = 'yyyy-MM-DD'
 
 function OrderFilter({ auth, filter, onChange }) {
 
     function onCompanyChange(companyId) {
-        onChange(filter.withNewValue('companyId', companyId));
+        onChange(filter.withNewValue('companyId', companyId))
     }
 
     function onPublicPointChange(publicPointId) {
-        onChange(filter.withNewValue('publicPointId', publicPointId));
+        onChange(filter.withNewValue('publicPointId', publicPointId))
     }
 
     function onStatusChange(status) {
-        onChange(filter.withNewValue('status', status));
+        onChange(filter.withNewValue('status', status))
     }
 
     function onDishChange(dishId) {
-        onChange(filter.withNewValue('dishId', dishId));
+        onChange(filter.withNewValue('dishId', dishId))
     }
 
     function handleChange(e) {
-        onChange(filter.withNewValue(e.target.name, e.target.value));
+        onChange(filter.withNewValue(e.target.name, e.target.value))
     }
 
     function onCreatedDateChange(field, date) {
         onChange(filter.withNewValue(field, 
-            date && moment(date).format(FORMAT)));
+            date && moment(date).format(FORMAT)))
     }
 
     function toDate(value) {
-        return value && new Date(value);
+        return value && new Date(value)
     }
 
     return (
@@ -108,4 +108,4 @@ function OrderFilter({ auth, filter, onChange }) {
 }
 
 
-export default OrderFilter;
+export default OrderFilter

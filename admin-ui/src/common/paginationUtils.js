@@ -1,12 +1,12 @@
-import * as utils from './utils';
+import * as utils from './utils'
 
 export class Pageable {
-    static URL_PARAM_PAGE = 'page';
-    static URL_PARAM_SIZE = 'size';
+    static URL_PARAM_PAGE = 'page'
+    static URL_PARAM_SIZE = 'size'
 
     constructor(page, size) {
-        this.page = page;
-        this.size = size;
+        this.page = page
+        this.size = size
     }
 
     toUrlParams() {
@@ -20,16 +20,16 @@ export class Pageable {
         return new Pageable(
             Number(urlSearchParams.get(Pageable.URL_PARAM_PAGE) || '1'),
             Number(urlSearchParams.get(Pageable.URL_PARAM_SIZE) || '5'),
-        );
+        )
     }
 }
 
 export class Sort {
-    static URL_PARAM = 'sort';
+    static URL_PARAM = 'sort'
 
     constructor(field, direction) {
-        this.field = field;
-        this.direction = direction;
+        this.field = field
+        this.direction = direction
     }
 
     toUrlParams() {
@@ -39,37 +39,37 @@ export class Sort {
     }
 
     static fromUrlParams(urlSearchParams, defaultField, defaultDirection) {
-        let paramValue = urlSearchParams.get(Sort.URL_PARAM);
+        let paramValue = urlSearchParams.get(Sort.URL_PARAM)
         if (paramValue) {
-            let values = paramValue.split(',');
-            return new Sort(values[0], values[1] || 'asc');
+            let values = paramValue.split(',')
+            return new Sort(values[0], values[1] || 'asc')
         } else {
-            return new Sort(defaultField, defaultDirection || 'asc');
+            return new Sort(defaultField, defaultDirection || 'asc')
         }
     }
 }
 
 export const combineAsUrlParams = (...paramObjects) => {
-    let query = '';
+    let query = ''
     if (paramObjects && paramObjects.length) {
         for (let paramObj of paramObjects) {
-            let params = (paramObj.toUrlParams && paramObj.toUrlParams()) || {};
-            utils.clearEmptyProps(params);
+            let params = (paramObj.toUrlParams && paramObj.toUrlParams()) || {}
+            utils.clearEmptyProps(params)
 
             for (let param in params) {
-                let paramValue = params[param];
+                let paramValue = params[param]
                 if (!Array.isArray(paramValue)) {
-                    paramValue = [paramValue];
+                    paramValue = [paramValue]
                 }
                 for (let singleValue of paramValue) {
                     if (query.length) {
-                        query += '&';
+                        query += '&'
                     }
-                    query += `${param}=${singleValue}`;
+                    query += `${param}=${singleValue}`
                 }
             }
         }
     }
 
-    return '?' + query;
+    return '?' + query
 }

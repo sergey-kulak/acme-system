@@ -1,30 +1,30 @@
-import { useState, useEffect } from 'react';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
-import PlanCard from './PlanCard';
-import planService from './planService';
+import { useState, useEffect } from 'react'
+import Button from 'react-bootstrap/Button'
+import Modal from 'react-bootstrap/Modal'
+import PlanCard from './PlanCard'
+import planService from './planService'
 
 
 function ChoosePlanDialog({ show, country, onClose }) {
-    const [plan, setPlan] = useState();
-    const [plans, setPlans] = useState([]);
+    const [plan, setPlan] = useState()
+    const [plans, setPlans] = useState([])
 
     useEffect(() => {
         planService.findActive(country)
             .then(response => setPlans(response.data
-                .sort((p1, p2) => p1.maxTableCount - p2.maxTableCount)));
-    }, [country]);
+                .sort((p1, p2) => p1.maxTableCount - p2.maxTableCount)))
+    }, [country])
 
     function onChoose() {
-        onClose(plan && plan.id);
+        onClose(plan && plan.id)
     }
 
     function getCardClassName(cardPlan) {
-        return plan && plan.id === cardPlan.id ? 'border-primary selected' : '';
+        return plan && plan.id === cardPlan.id ? 'border-primary selected' : ''
     }
 
     function onCardClick(newPlan) {
-        setPlan(newPlan);
+        setPlan(newPlan)
     }
 
     return (
@@ -58,7 +58,7 @@ function ChoosePlanDialog({ show, country, onClose }) {
                 </Button>
             </Modal.Footer>
         </Modal>
-    );
+    )
 }
 
-export default ChoosePlanDialog;
+export default ChoosePlanDialog

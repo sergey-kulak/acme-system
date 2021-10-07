@@ -1,15 +1,15 @@
-import { useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom"
 
 function useHistoryBack(defaultPath) {
-    const history = useHistory();
+    const history = useHistory()
 
     return () => {
         if (history.length > 1) {
-            history.goBack();
+            history.goBack()
         } else {
-            history.push(defaultPath);
+            history.push(defaultPath)
         }
-    };
+    }
 }
 
-export default useHistoryBack;
+export default useHistoryBack

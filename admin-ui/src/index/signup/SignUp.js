@@ -1,14 +1,14 @@
-import { Field, Form, Formik } from 'formik';
-import { Link } from "react-router-dom";
-import { connect } from "react-redux";
-import * as Yup from 'yup';
-import HighlightInput from '../../common/HighlightInput';
-import CountrySelect from '../../common/rf-data/CountrySelect';
-import companyService from '../../company/companyService';
-import './SignUp.css';
-import { getErrorMessage} from '../../common/utils';
-import { onSuccess, onError } from '../../common/toastNotification';
-import ToastContainer from '../../common/ToastContainer';
+import { Field, Form, Formik } from 'formik'
+import { Link } from "react-router-dom"
+import { connect } from "react-redux"
+import * as Yup from 'yup'
+import HighlightInput from '../../common/HighlightInput'
+import CountrySelect from '../../common/rf-data/CountrySelect'
+import companyService from '../../company/companyService'
+import './SignUp.css'
+import { getErrorMessage} from '../../common/utils'
+import { onSuccess, onError } from '../../common/toastNotification'
+import ToastContainer from '../../common/ToastContainer'
 
 const TEST_DATA = {
     fullName: 'Company 111',
@@ -26,7 +26,7 @@ const TEST_DATA = {
     phone: '+375291111112',
     password: 'qwe123',
     confirmPassword: 'qwe123',
-};
+}
 
 function SignUp({ onSuccess, onError }) {
     
@@ -46,7 +46,7 @@ function SignUp({ onSuccess, onError }) {
         phone: '',
         password: '',
         confirmPassword: ''
-    };
+    }
 
     const validationSchema = Yup.object({
         fullName: Yup.string().required('Required'),
@@ -68,7 +68,7 @@ function SignUp({ onSuccess, onError }) {
             .test('passwords-match', 'Passwords must match', function (value) {
                 return this.parent.password === value
             })
-    });
+    })
 
     function onSubmit(formData, actions) {
         const request = {
@@ -93,9 +93,9 @@ function SignUp({ onSuccess, onError }) {
         companyService.register(request)
             .then(() => {
                 if (actions.resetForm) {
-                    actions.resetForm();
+                    actions.resetForm()
                 }
-                onSuccess('Company request was sent successfuly. Check your email for next steps');
+                onSuccess('Company request was sent successfuly. Check your email for next steps')
             }, error => onError(getErrorMessage(error.response.data)))
     }
 
@@ -213,8 +213,8 @@ function SignUp({ onSuccess, onError }) {
     )
 }
 
-const mapStateToProps = () => ({});
+const mapStateToProps = () => ({})
 
 export default connect(mapStateToProps, {
     onSuccess, onError
-})(SignUp);
+})(SignUp)

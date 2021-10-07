@@ -1,25 +1,25 @@
-import { Field, Form, Formik } from 'formik';
-import { useEffect, useState, useRef } from "react";
-import { connect } from 'react-redux';
-import { useParams } from "react-router-dom";
-import * as Yup from 'yup';
-import BackButton from "../common/BackButton";
-import userService from './userService';
-import HighlightInput from '../common/HighlightInput';
-import useHistoryBack from '../common/useHistoryBack';
-import { onError, onSuccess } from '../common/toastNotification';
-import UserRoleSelect from './UserRoleSelect';
-import CompanySelect from '../company/CompanySelect';
-import { hasRole, ROLE, getAllAccessibleRoles, hasExactRole } from "../common/security";
-import { getErrorMessage, isEmpty } from "../common/utils";
-import PublicPointSelect from '../public-point/PublicPointSelect';
+import { Field, Form, Formik } from 'formik'
+import { useEffect, useState, useRef } from "react"
+import { connect } from 'react-redux'
+import { useParams } from "react-router-dom"
+import * as Yup from 'yup'
+import BackButton from "../common/BackButton"
+import userService from './userService'
+import HighlightInput from '../common/HighlightInput'
+import useHistoryBack from '../common/useHistoryBack'
+import { onError, onSuccess } from '../common/toastNotification'
+import UserRoleSelect from './UserRoleSelect'
+import CompanySelect from '../company/CompanySelect'
+import { hasRole, ROLE, getAllAccessibleRoles, hasExactRole } from "../common/security"
+import { getErrorMessage, isEmpty } from "../common/utils"
+import PublicPointSelect from '../public-point/PublicPointSelect'
 
-const PP_ROLES = [ROLE.PP_MANAGER, ROLE.WAITER, ROLE.CHEF, ROLE.COOK];
+const PP_ROLES = [ROLE.PP_MANAGER, ROLE.WAITER, ROLE.CHEF, ROLE.COOK]
 
 function UserEditor({ auth, onSuccess, onError }) {
-    const { id } = useParams();
-    const isCreate = id === 'new';
-    const [user, setUser] = useState();
+    const { id } = useParams()
+    const isCreate = id === 'new'
+    const [user, setUser] = useState()
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -30,9 +30,9 @@ function UserEditor({ auth, onSuccess, onError }) {
         role: '',
         companyId: hasRole(auth, ROLE.ADMIN) ? '' : auth.user.cmpid,
         publicPointId: hasRole(auth, ROLE.COMPANY_OWNER) ? '' : auth.user.ppid,
-    });
-    const formikRef = useRef(null);
-    const historyBack = useHistoryBack("/users");
+    })
+    const formikRef = useRef(null)
+    const historyBack = useHistoryBack("/users")
 
     const validationSchema = Yup.object({
         firstName: Yup.string().required('Required'),
@@ -46,32 +46,32 @@ function UserEditor({ auth, onSuccess, onError }) {
         role: Yup.string().required('Required'),
         companyId: Yup.string()
             .test('companyId-check', 'Required', function (value) {
-                return this.parent.role === ROLE.ADMIN || this.parent.role === ROLE.ACCOUNTANT || !isEmpty(value);
+                return this.parent.role === ROLE.ADMIN || this.parent.role === ROLE.ACCOUNTANT || !isEmpty(value)
             }),
         publicPointId: Yup.string()
             .test('publicPointId-check', 'Required', function (value) {
-                let role = this.parent.role;
-                return !PP_ROLES.includes(role) || !isEmpty(value);
+                let role = this.parent.role
+                return !PP_ROLES.includes(role) || !isEmpty(value)
             })
-    });
+    })
 
     function passwordSchema() {
-        let pswSchema = Yup.string().min(6, 'Must be 6 characters or longer');
+        let pswSchema = Yup.string().min(6, 'Must be 6 characters or longer')
         if (isCreate) {
-            pswSchema = pswSchema.required('Required');
+            pswSchema = pswSchema.required('Required')
         }
-        return pswSchema;
+        return pswSchema
     }
 
     useEffect(() => {
         if (!isCreate) {
             userService.findById(id)
                 .then(response => {
-                    setUser(response.data);
-                    toFormData(response.data);
-                });
+                    setUser(response.data)
+                    toFormData(response.data)
+                })
         }
-    }, [id, isCreate]);
+    }, [id, isCreate])
 
     function toFormData(user) {
         setFormData({
@@ -84,39 +84,39 @@ function UserEditor({ auth, onSuccess, onError }) {
             password: '',
             confirmPassword: '',
             publicPointId: user.publicPointId || '',
-        });
+        })
     }
 
     function getFullName() {
-        return `${user.lastName} ${user.firstName}`;
+        return `${user.lastName} ${user.firstName}`
     }
 
     function onSubmit(formData) {
-        let request = { ...formData };
+        let request = { ...formData }
         if (isCreate) {
             userService.create(request)
                 .then(() => {
-                    onSuccess(`${request.lastName} ${request.firstName} user was created successfuly`);
-                    historyBack();
+                    onSuccess(`${request.lastName} ${request.firstName} user was created successfuly`)
+                    historyBack()
                 }, error => {
-                    let errorMessage = error.response.data.error;
-                    onError(errorMessage || 'Error');
+                    let errorMessage = error.response.data.error
+                    onError(errorMessage || 'Error')
                 })
         } else {
             if (!request.password) {
-                delete request.password;
-                delete request.confirmPassword;
+                delete request.password
+                delete request.confirmPassword
             }
             userService.update(user.id, request)
                 .then(() => {
-                    onSuccess(`${getFullName()} user was updated successfuly`);
-                    historyBack();
+                    onSuccess(`${getFullName()} user was updated successfuly`)
+                    historyBack()
                 }, error => onError(getErrorMessage(error.response.data)))
         }
     }
 
     function getFormikValues() {
-        return formikRef.current && formikRef.current.values;
+        return formikRef.current && formikRef.current.values
     }
 
     function onCompanyChange(cmpId) {
@@ -141,20 +141,20 @@ function UserEditor({ auth, onSuccess, onError }) {
         setFormData({
             ...getFormikValues(),
             publicPointId: ppId
-        });
+        })
     }
 
     function roleFilter(options) {
-        let roles = getAllAccessibleRoles(auth);
+        let roles = getAllAccessibleRoles(auth)
         if (hasExactRole(auth, ROLE.PP_MANAGER) && auth.user.id !== id) {
-            roles = roles.filter(role => role !== ROLE.PP_MANAGER);
+            roles = roles.filter(role => role !== ROLE.PP_MANAGER)
         }
         return options.filter(opt => opt.value !== ROLE.ADMIN && roles.includes(opt.value))
     }
 
     const canChangeRole = hasRole(auth, ROLE.ADMIN, ROLE.COMPANY_OWNER, ROLE.PP_MANAGER) &&
-        (isCreate || (user && user.role !== ROLE.ADMIN && auth.user.id !== id));
-    const canSetCompany = hasRole(auth, ROLE.ADMIN);
+        (isCreate || (user && user.role !== ROLE.ADMIN && auth.user.id !== id))
+    const canSetCompany = hasRole(auth, ROLE.ADMIN)
     const isPpDisabled = !hasRole(auth, ROLE.COMPANY_OWNER) || !formData.role
         || !formData.companyId || !PP_ROLES.includes(formData.role)
 
@@ -239,13 +239,13 @@ function UserEditor({ auth, onSuccess, onError }) {
                 </div>
             </div>
         </div>
-    );
+    )
 }
 
 const mapStateToProps = ({ auth }) => {
-    return { auth };
-};
+    return { auth }
+}
 
 export default connect(mapStateToProps, {
     onSuccess, onError
-})(UserEditor);
+})(UserEditor)

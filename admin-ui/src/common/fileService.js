@@ -1,8 +1,8 @@
-import restApi  from '../common/restApi';
-import axios from "axios";
+import restApi  from '../common/restApi'
+import axios from "axios"
 
-const IMAGE_BASE_URL = '/file-service/images';
-const awsApi = axios.create();
+const IMAGE_BASE_URL = '/file-service/images'
+const awsApi = axios.create()
 
 const fileService = {
     upload: function (file, url) {
@@ -10,11 +10,11 @@ const fileService = {
             headers: {
                 "Content-Type": "image/jpg",
             }
-        });
+        })
     },
     getDishImageUrls: function (request) {
-        return restApi.post(`${IMAGE_BASE_URL}/dish`, request);
+        return restApi.post(`${IMAGE_BASE_URL}/dish`, request)
     }
 }
 
-export default fileService;
+export default fileService

@@ -1,44 +1,44 @@
-import { useEffect, useState } from "react";
-import { FormattedMessage } from "react-intl";
-import { connect } from "react-redux";
-import { useParams } from "react-router";
-import BackButton from "../common/BackButton";
-import orderService from "./orderService";
-import companyService from "../company/companyService";
-import publicPointService from "../public-point/publicPointService";
-import dishService from "../dish/dishService";
-import moment from "moment";
-import publicPointTableService from "../public-point/publicPointTableService";
+import { useEffect, useState } from "react"
+import { FormattedMessage } from "react-intl"
+import { connect } from "react-redux"
+import { useParams } from "react-router"
+import BackButton from "../common/BackButton"
+import orderService from "./orderService"
+import companyService from "../company/companyService"
+import publicPointService from "../public-point/publicPointService"
+import dishService from "../dish/dishService"
+import moment from "moment"
+import publicPointTableService from "../public-point/publicPointTableService"
 
 function OrderViewer({ auth }) {
-    const params = useParams();
-    const id = params.id;
-    const [order, setOrder] = useState();
-    const [company, setCompany] = useState();
-    const [publicPoint, setPublicPoint] = useState();
-    const [table, setTable] = useState();
-    const [dishes, setDishes] = useState({});
+    const params = useParams()
+    const id = params.id
+    const [order, setOrder] = useState()
+    const [company, setCompany] = useState()
+    const [publicPoint, setPublicPoint] = useState()
+    const [table, setTable] = useState()
+    const [dishes, setDishes] = useState({})
 
-    const labelClass = "col-sm-4 col-md-2 col-form-label text-sm-right font-italic";
-    const controlClass = "col-sm-8 col-md-4";
+    const labelClass = "col-sm-4 col-md-2 col-form-label text-sm-right font-italic"
+    const controlClass = "col-sm-8 col-md-4"
 
     useEffect(() => {
         orderService.findById(id)
             .then(response => response.data)
-            .then(setOrder);
-    }, [id]);
+            .then(setOrder)
+    }, [id])
 
     useEffect(() => {
         if (order) {
             companyService.findById(order.companyId)
                 .then(response => response.data)
-                .then(setCompany);
+                .then(setCompany)
             publicPointService.findByIdFullDetails(order.publicPointId)
                 .then(response => response.data)
-                .then(setPublicPoint);
+                .then(setPublicPoint)
             publicPointTableService.findById(order.tableId)
                 .then(response => response.data)
-                .then(setTable);
+                .then(setTable)
 
             let dishPromises = order.items.map(item =>
                 dishService.findById(item.dishId)
@@ -47,16 +47,16 @@ function OrderViewer({ auth }) {
 
             Promise.all(dishPromises)
                 .then(data => {
-                    let dishes = {};
-                    data.forEach(item => dishes[item.id] = item);
-                    setDishes(dishes);
+                    let dishes = {}
+                    data.forEach(item => dishes[item.id] = item)
+                    setDishes(dishes)
                 })
         }
-    }, [order]);
+    }, [order])
 
     function priceLabel() {
         return order.totalPrice +
-            (publicPoint ? ` ${publicPoint.currency}` : '');
+            (publicPoint ? ` ${publicPoint.currency}` : '')
     }
 
     function formatDate(date) {
@@ -65,7 +65,7 @@ function OrderViewer({ auth }) {
 
     function dishName(dishId) {
         let dish = dishes[dishId]
-        return dish && dish.name;
+        return dish && dish.name
     }
 
     return (
@@ -159,9 +159,9 @@ function OrderViewer({ auth }) {
 }
 
 const mapStateToProps = ({ auth }) => {
-    return { auth };
-};
+    return { auth }
+}
 
 export default connect(mapStateToProps, {
 
-})(OrderViewer);
+})(OrderViewer)

@@ -1,12 +1,12 @@
-import { IntlProvider } from 'react-intl';
-import { connect } from "react-redux";
-import { BrowserRouter as Router, Redirect, Route, Switch } from "react-router-dom";
-import { LOCALES } from '../common/i18n/locales';
-import { messages } from '../common/i18n/messages';
-import MainLayout from './main/MainLayout';
-import SignIn from './signin/SignIn';
-import SignUp from './signup/SignUp';
-import Welcome from './welcome/Welcome';
+import { IntlProvider } from 'react-intl'
+import { connect } from "react-redux"
+import { BrowserRouter as Router, Redirect, Route, Switch } from "react-router-dom"
+import { LOCALES } from '../common/i18n/locales'
+import { messages } from '../common/i18n/messages'
+import MainLayout from './main/MainLayout'
+import SignIn from './signin/SignIn'
+import SignUp from './signup/SignUp'
+import Welcome from './welcome/Welcome'
 
 function App({ auth }) {
   const locale = LOCALES.ENGLISH
@@ -33,13 +33,13 @@ function App({ auth }) {
         </Switch>
       </Router>
     </IntlProvider>
-  );
+  )
 }
 
 
 const mapStateToProps = ({ auth }) => {
-  return { auth };
-};
+  return { auth }
+}
 export default connect(mapStateToProps,
   dispatch => ({})
-)(App);
+)(App)

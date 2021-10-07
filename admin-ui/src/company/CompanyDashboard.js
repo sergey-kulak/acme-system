@@ -1,70 +1,70 @@
-import { useEffect, useState, useCallback } from 'react';
-import { connect } from "react-redux";
-import { Link, useHistory, useLocation } from "react-router-dom";
-import companyService from './companyService';
-import Pagination from '../common/Pagination';
-import { combineAsUrlParams, Pageable, Sort } from '../common/paginationUtils';
-import ShowFilterButton from '../common/ShowFilterButton';
-import SortColumn from '../common/SortColumn';
-import ChangeCompanyStatusDialog from './ChangeCompanyStatusDialog';
-import './CompanyDashboard.css';
-import CompanyFilter from "./CompanyFilter";
+import { useEffect, useState, useCallback } from 'react'
+import { connect } from "react-redux"
+import { Link, useHistory, useLocation } from "react-router-dom"
+import companyService from './companyService'
+import Pagination from '../common/Pagination'
+import { combineAsUrlParams, Pageable, Sort } from '../common/paginationUtils'
+import ShowFilterButton from '../common/ShowFilterButton'
+import SortColumn from '../common/SortColumn'
+import ChangeCompanyStatusDialog from './ChangeCompanyStatusDialog'
+import './CompanyDashboard.css'
+import CompanyFilter from "./CompanyFilter"
 import { onSuccess, onError } from '../common/toastNotification'
-import CompanyStatusLabel from './CompanyStatusLabel';
-import { getErrorMessage } from '../common/utils';
+import CompanyStatusLabel from './CompanyStatusLabel'
+import { getErrorMessage } from '../common/utils'
 
 function CompanyDashboard({ onSuccess, onError }) {
-    const history = useHistory();
-    const query = new URLSearchParams(useLocation().search);
+    const history = useHistory()
+    const query = new URLSearchParams(useLocation().search)
 
-    const [page, setPage] = useState({ content: [] });
-    const [pageable, setPageable] = useState(Pageable.fromUrlParams(query));
-    const [sort, setSort] = useState(Sort.fromUrlParams(query, 'full_name'));
-    const [filter, setFilter] = useState(Filter.fromUrlParams(query));
-    const [showFilter, setShowFilter] = useState(false);
-    const [showStatusChangeDialog, setShowStatusChangeDialog] = useState(false);
-    const [modifiedCompany, setModifiedCompany] = useState();
+    const [page, setPage] = useState({ content: [] })
+    const [pageable, setPageable] = useState(Pageable.fromUrlParams(query))
+    const [sort, setSort] = useState(Sort.fromUrlParams(query, 'full_name'))
+    const [filter, setFilter] = useState(Filter.fromUrlParams(query))
+    const [showFilter, setShowFilter] = useState(false)
+    const [showStatusChangeDialog, setShowStatusChangeDialog] = useState(false)
+    const [modifiedCompany, setModifiedCompany] = useState()
 
     const loadData = useCallback(() => {
         return companyService.find(filter, pageable, sort)
             .then(response => setPage(response.data))
-    }, [filter, pageable, sort]);
+    }, [filter, pageable, sort])
 
     useEffect(() => {
         loadData()
             .then(() => {
-                history.replace(combineAsUrlParams(filter, pageable, sort));
-            });
-    }, [pageable, sort, filter, history, loadData]);
+                history.replace(combineAsUrlParams(filter, pageable, sort))
+            })
+    }, [pageable, sort, filter, history, loadData])
 
     function onPageableChange(page) {
-        setPageable(page);
+        setPageable(page)
     }
 
     function onSortChange(sort) {
-        setSort(sort);
+        setSort(sort)
     }
 
     function onFilterChange(filter) {
-        setFilter(filter);
+        setFilter(filter)
     }
 
     function onCompanyStatusClick(e, modifiedCompany) {
-        e.preventDefault();
-        setModifiedCompany(modifiedCompany);
-        setShowStatusChangeDialog(true);
+        e.preventDefault()
+        setModifiedCompany(modifiedCompany)
+        setShowStatusChangeDialog(true)
     }
 
     function onStatusChange(newStatus) {
-        setShowStatusChangeDialog(false);
+        setShowStatusChangeDialog(false)
         if (newStatus) {
             companyService.changeStatus(modifiedCompany.id, { status: newStatus })
                 .then(() => {
-                    onSuccess("Company status was changed successfully");
-                    loadData();
+                    onSuccess("Company status was changed successfully")
+                    loadData()
                 }, error => {
-                    onError(getErrorMessage(error.response.data));
-                });
+                    onError(getErrorMessage(error.response.data))
+                })
         }
     }
     
@@ -127,27 +127,27 @@ function CompanyDashboard({ onSuccess, onError }) {
                 }
             </div>
         </div>
-    );
+    )
 }
 
 class Filter {
-    static URL_PARAM_NAME_PATTERN = 'np';
-    static URL_PARAM_VATIN = 'vi';
-    static URL_PARAM_COUNTRY = 'cn';
-    static URL_PARAM_STATUS = 'st';
+    static URL_PARAM_NAME_PATTERN = 'np'
+    static URL_PARAM_VATIN = 'vi'
+    static URL_PARAM_COUNTRY = 'cn'
+    static URL_PARAM_STATUS = 'st'
 
     constructor(namePattern, vatin, country, status) {
-        this.namePattern = namePattern;
-        this.vatin = vatin;
-        this.country = country;
-        this.status = status;
+        this.namePattern = namePattern
+        this.vatin = vatin
+        this.country = country
+        this.status = status
     }
 
     withNewValue(field, value) {
         let newFilter = new Filter(this.namePattern, this.vatin,
-            this.country, this.status);
-        newFilter[field] = value;
-        return newFilter;
+            this.country, this.status)
+        newFilter[field] = value
+        return newFilter
     }
 
     toUrlParams() {
@@ -160,20 +160,20 @@ class Filter {
     }
 
     static fromUrlParams(urlSearchParams) {
-        let urlStatuses = urlSearchParams.getAll(Filter.URL_PARAM_STATUS);
+        let urlStatuses = urlSearchParams.getAll(Filter.URL_PARAM_STATUS)
         return new Filter(
             urlSearchParams.get(Filter.URL_PARAM_NAME_PATTERN) || '',
             urlSearchParams.get(Filter.URL_PARAM_VATIN) || '',
             urlSearchParams.get(Filter.URL_PARAM_COUNTRY) || '',
             urlStatuses && urlStatuses.length ? urlStatuses : ['INACTIVE'],
-        );
+        )
     }
 }
 
 const mapStateToProps = ({ auth }) => {
-    return { auth };
-};
+    return { auth }
+}
 
 export default connect(mapStateToProps, {
     onSuccess, onError
-})(CompanyDashboard);
+})(CompanyDashboard)

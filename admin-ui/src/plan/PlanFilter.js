@@ -1,30 +1,30 @@
-import { DebounceInput } from 'react-debounce-input';
-import { useState } from 'react';
-import PlanStatusSelect from './PlanStatusSelect';
-import CountrySelect from '../common/rf-data/CountrySelect';
-import CompanySelect from '../company/CompanySelect';
+import { DebounceInput } from 'react-debounce-input'
+import { useState } from 'react'
+import PlanStatusSelect from './PlanStatusSelect'
+import CountrySelect from '../common/rf-data/CountrySelect'
+import CompanySelect from '../company/CompanySelect'
 
 function PlanFilter({ filter, onChange }) {
-    const [statuses, setStatuses] = useState(filter.status);
+    const [statuses, setStatuses] = useState(filter.status)
 
     function handleChange(e) {
-        onChange(filter.withNewValue(e.target.name, e.target.value));
+        onChange(filter.withNewValue(e.target.name, e.target.value))
     }
 
     function onBlur() {
-        onChange(filter.withNewValue('status', statuses));
+        onChange(filter.withNewValue('status', statuses))
     }
 
     function onCountryChange(country) {
-        onChange(filter.withNewValue('country', country));
+        onChange(filter.withNewValue('country', country))
     }
 
     function onOnlyGlobalChange(e) {
-        onChange(filter.withNewValue('onlyGlobal', e.target.checked));
+        onChange(filter.withNewValue('onlyGlobal', e.target.checked))
     }
 
     function onCompanyChange(companyId) {
-        onChange(filter.withNewValue('companyId', companyId));
+        onChange(filter.withNewValue('companyId', companyId))
     }
 
     return (
@@ -66,7 +66,7 @@ function PlanFilter({ filter, onChange }) {
                     showTypeCheckBox={true}/>
             </div>            
         </div>
-    );
+    )
 }
 
-export default PlanFilter;
+export default PlanFilter

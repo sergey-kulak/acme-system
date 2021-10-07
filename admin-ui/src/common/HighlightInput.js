@@ -1,4 +1,4 @@
-import { getIn } from 'formik';
+import { getIn } from 'formik'
 
 function HighlightInput({
     field,
@@ -11,19 +11,19 @@ function HighlightInput({
     }
 
     function createElement() {
-        field.value = field.value === undefined ? '' : field.value;
+        field.value = field.value === undefined ? '' : field.value
         let className = `${props.className} ${getValidClass()}`
         switch (props.tag || 'input') {
             case 'textarea':
-                return <textarea {...field} {...props} className={className} />;
+                return <textarea {...field} {...props} className={className} />
             default:
                 return <input {...field} {...props} className={className} />
 
         }
     }
     
-    const element = createElement();
-    const error = getIn(errors, field.name);    
+    const element = createElement()
+    const error = getIn(errors, field.name)    
 
     return (
         <>
@@ -39,7 +39,7 @@ function HighlightInput({
             }
 
         </>
-    );
+    )
 }
 
-export default HighlightInput;
+export default HighlightInput

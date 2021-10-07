@@ -1,28 +1,28 @@
-import moment from "moment";
-import { useCallback, useEffect, useState } from "react";
-import { FormattedMessage } from "react-intl";
-import { connect } from "react-redux";
-import { Link, useHistory, useLocation } from "react-router-dom";
-import Pagination from "../common/Pagination";
-import { combineAsUrlParams, Pageable, Sort } from "../common/paginationUtils";
-import { hasRole, ROLE } from "../common/security";
-import ShowFilterButton from "../common/ShowFilterButton";
-import SortColumn from "../common/SortColumn";
-import { onSuccess } from '../common/toastNotification';
-import publicPointService from "../public-point/publicPointService";
-import OrderFilter from "./OrderFilter";
-import orderService from "./orderService";
+import moment from "moment"
+import { useCallback, useEffect, useState } from "react"
+import { FormattedMessage } from "react-intl"
+import { connect } from "react-redux"
+import { Link, useHistory, useLocation } from "react-router-dom"
+import Pagination from "../common/Pagination"
+import { combineAsUrlParams, Pageable, Sort } from "../common/paginationUtils"
+import { hasRole, ROLE } from "../common/security"
+import ShowFilterButton from "../common/ShowFilterButton"
+import SortColumn from "../common/SortColumn"
+import { onSuccess } from '../common/toastNotification'
+import publicPointService from "../public-point/publicPointService"
+import OrderFilter from "./OrderFilter"
+import orderService from "./orderService"
 
 function OrderDashboard({ auth }) {
-    const history = useHistory();
-    const query = new URLSearchParams(useLocation().search);
+    const history = useHistory()
+    const query = new URLSearchParams(useLocation().search)
 
-    const [page, setPage] = useState({ content: [] });
-    const [pageable, setPageable] = useState(Pageable.fromUrlParams(query));
-    const [sort, setSort] = useState(Sort.fromUrlParams(query, 'created_date', 'desc'));
-    const [filter, setFilter] = useState(Filter.fromUrlParams(query, auth));
-    const [showFilter, setShowFilter] = useState(true);
-    const [publicPoint, setPublicPoint] = useState();
+    const [page, setPage] = useState({ content: [] })
+    const [pageable, setPageable] = useState(Pageable.fromUrlParams(query))
+    const [sort, setSort] = useState(Sort.fromUrlParams(query, 'created_date', 'desc'))
+    const [filter, setFilter] = useState(Filter.fromUrlParams(query, auth))
+    const [showFilter, setShowFilter] = useState(true)
+    const [publicPoint, setPublicPoint] = useState()
 
     const loadData = useCallback(() => {
         return orderService.find(filter, pageable, sort)
@@ -34,32 +34,32 @@ function OrderDashboard({ auth }) {
         if (filter.companyId && filter.publicPointId) {
             loadData()
                 .then(() => {
-                    let filterUrlParams = filter.toUrlParams(auth);
-                    history.replace(combineAsUrlParams(filterUrlParams, pageable, sort));
-                });;
+                    let filterUrlParams = filter.toUrlParams(auth)
+                    history.replace(combineAsUrlParams(filterUrlParams, pageable, sort))
+                })
         } else {
-            setPage({ content: [] });
+            setPage({ content: [] })
         }
-    }, [filter, pageable, sort, history, auth, loadData]);
+    }, [filter, pageable, sort, history, auth, loadData])
 
     useEffect(() => {
         if (filter.publicPointId) {
             publicPointService.findByIdFullDetails(filter.publicPointId)
                 .then(response => response.data)
-                .then(setPublicPoint);
+                .then(setPublicPoint)
         }
-    }, [filter.publicPointId]);
+    }, [filter.publicPointId])
 
     function onPageableChange(page) {
-        setPageable(page);
+        setPageable(page)
     }
 
     function onSortChange(sort) {
-        setSort(sort);
+        setSort(sort)
     }
 
     function onFilterChange(filter) {
-        setFilter(filter);
+        setFilter(filter)
     }
 
     return (
@@ -108,59 +108,59 @@ function OrderDashboard({ auth }) {
                 <Pagination className="mt-4" page={page} onPageableChange={onPageableChange} />
             </div>}
         </div>
-    );
+    )
 }
 
 function getDefaultFromCreatedDate() {
-    return moment().subtract(30, "days").format("yyyy-MM-DD");
+    return moment().subtract(30, "days").format("yyyy-MM-DD")
 }
 
 class Filter {
-    static URL_PARAM_COMPANY_ID = 'cmp';
-    static URL_PARAM_PP_ID = 'pp';
-    static URL_PARAM_ORDER_NUMBER = 'on';
-    static URL_PARAM_STATUS = 'st';
-    static URL_PARAM_FROM_PRICE = 'fp';
-    static URL_PARAM_TO_PRICE = 'tp';
-    static URL_PARAM_FROM_DATE = 'fd';
-    static URL_PARAM_TO_DATE = 'td';
-    static URL_PARAM_DISH_ID = 'di';
+    static URL_PARAM_COMPANY_ID = 'cmp'
+    static URL_PARAM_PP_ID = 'pp'
+    static URL_PARAM_ORDER_NUMBER = 'on'
+    static URL_PARAM_STATUS = 'st'
+    static URL_PARAM_FROM_PRICE = 'fp'
+    static URL_PARAM_TO_PRICE = 'tp'
+    static URL_PARAM_FROM_DATE = 'fd'
+    static URL_PARAM_TO_DATE = 'td'
+    static URL_PARAM_DISH_ID = 'di'
 
     constructor(companyId, publicPointId, number, status,
         fromTotalPrice, toTotalPrice, fromCreatedDate, toCreatedDate,
         dishId) {
-        this.publicPointId = publicPointId;
-        this.companyId = companyId;
-        this.number = number;
-        this.status = status;
-        this.fromTotalPrice = fromTotalPrice;
-        this.toTotalPrice = toTotalPrice;
-        this.fromCreatedDate = fromCreatedDate;
-        this.toCreatedDate = toCreatedDate;
-        this.dishId = dishId;
+        this.publicPointId = publicPointId
+        this.companyId = companyId
+        this.number = number
+        this.status = status
+        this.fromTotalPrice = fromTotalPrice
+        this.toTotalPrice = toTotalPrice
+        this.fromCreatedDate = fromCreatedDate
+        this.toCreatedDate = toCreatedDate
+        this.dishId = dishId
     }
 
     withNewValue(field, value) {
         let newFilter = new Filter(this.companyId, this.publicPointId,
             this.number, this.status, this.fromTotalPrice, this.toTotalPrice,
-            this.fromCreatedDate, this.toCreatedDate, this.dishId);
-        newFilter[field] = value;
+            this.fromCreatedDate, this.toCreatedDate, this.dishId)
+        newFilter[field] = value
         if (field === 'companyId') {
-            newFilter.publicPointId = '';
+            newFilter.publicPointId = ''
         }
         if (field === 'companyId' || field === 'publicPointId') {
-            newFilter.number = '';
-            newFilter.status = '';
-            newFilter.fromTotalPrice = '';
-            newFilter.toTotalPrice = '';
-            newFilter.fromCreatedDate = '';
-            newFilter.toCreatedDate = '';
-            newFilter.dishId = '';
+            newFilter.number = ''
+            newFilter.status = ''
+            newFilter.fromTotalPrice = ''
+            newFilter.toTotalPrice = ''
+            newFilter.fromCreatedDate = ''
+            newFilter.toCreatedDate = ''
+            newFilter.dishId = ''
         }
         if (field === 'publicPointId' && newFilter.publicPointId && !newFilter.fromCreatedDate) {
-            newFilter.fromCreatedDate = getDefaultFromCreatedDate();
+            newFilter.fromCreatedDate = getDefaultFromCreatedDate()
         }
-        return newFilter;
+        return newFilter
     }
 
     toUrlParams(auth) {
@@ -174,24 +174,24 @@ class Filter {
             [Filter.URL_PARAM_FROM_DATE]: this.fromCreatedDate,
             [Filter.URL_PARAM_TO_DATE]: this.toCreatedDate,
             [Filter.URL_PARAM_DISH_ID]: this.dishId
-        };
+        }
 
         if (!hasRole(auth, ROLE.ADMIN)) {
-            delete urlData[Filter.URL_PARAM_COMPANY_ID];
+            delete urlData[Filter.URL_PARAM_COMPANY_ID]
         }
         if (!hasRole(auth, ROLE.COMPANY_OWNER)) {
-            delete urlData[Filter.URL_PARAM_PP_ID];
+            delete urlData[Filter.URL_PARAM_PP_ID]
         }
-        return { toUrlParams: () => urlData };
+        return { toUrlParams: () => urlData }
     }
 
     static fromUrlParams(urlSearchParams, auth) {
         let companyId = hasRole(auth, ROLE.ADMIN) ?
             urlSearchParams.get(Filter.URL_PARAM_COMPANY_ID) || '' :
-            auth.user.cmpid;
+            auth.user.cmpid
         let ppId = hasRole(auth, ROLE.COMPANY_OWNER) ?
             urlSearchParams.get(Filter.URL_PARAM_PP_ID) || '' :
-            auth.user.ppid;
+            auth.user.ppid
         return new Filter(companyId, ppId,
             urlSearchParams.get(Filter.URL_PARAM_ORDER_NUMBER) || '',
             urlSearchParams.get(Filter.URL_PARAM_STATUS) || '',
@@ -199,14 +199,14 @@ class Filter {
             urlSearchParams.get(Filter.URL_PARAM_TO_PRICE) || '',
             urlSearchParams.get(Filter.URL_PARAM_FROM_DATE) || '',
             urlSearchParams.get(Filter.URL_PARAM_TO_DATE) || '',
-            urlSearchParams.get(Filter.URL_PARAM_DISH_ID) || '');
+            urlSearchParams.get(Filter.URL_PARAM_DISH_ID) || '')
     }
 }
 
 const mapStateToProps = ({ auth }) => {
-    return { auth };
-};
+    return { auth }
+}
 
 export default connect(mapStateToProps, {
     onSuccess
-})(OrderDashboard);
+})(OrderDashboard)

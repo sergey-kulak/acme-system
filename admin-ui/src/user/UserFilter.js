@@ -1,27 +1,27 @@
-import { DebounceInput } from 'react-debounce-input';
-import { useState } from 'react';
-import UserRoleSelect from './UserRoleSelect';
-import CompanySelect from "../company/CompanySelect";
-import UserStatusSelect from './UserStatusSelect';
+import { DebounceInput } from 'react-debounce-input'
+import { useState } from 'react'
+import UserRoleSelect from './UserRoleSelect'
+import CompanySelect from "../company/CompanySelect"
+import UserStatusSelect from './UserStatusSelect'
 
 function UserFilter({ isAdmin, filter, onChange }) {
-    const [statuses, setStatuses] = useState(filter.status);
-    const [roles, setRoles] = useState(filter.role);
+    const [statuses, setStatuses] = useState(filter.status)
+    const [roles, setRoles] = useState(filter.role)
 
     function handleChange(e) {
-        onChange(filter.withNewValue(e.target.name, e.target.value));
+        onChange(filter.withNewValue(e.target.name, e.target.value))
     }
 
     function handleCompanyChange(companyId) {
-        onChange(filter.withNewValue('companyId', companyId));
+        onChange(filter.withNewValue('companyId', companyId))
     }
 
     function onStatusBlur() {
-        onChange(filter.withNewValue('status', statuses));
+        onChange(filter.withNewValue('status', statuses))
     }
 
     function onRoleBlur() {
-        onChange(filter.withNewValue('role', roles));
+        onChange(filter.withNewValue('role', roles))
     }
 
     return (
@@ -55,7 +55,7 @@ function UserFilter({ isAdmin, filter, onChange }) {
                 </UserStatusSelect>
             </div>
         </div>
-    );
+    )
 }
 
-export default UserFilter;
+export default UserFilter

@@ -1,29 +1,29 @@
-import { Field, Form, Formik } from 'formik';
-import { useCallback, useEffect, useRef, useState } from "react";
-import * as Icon from 'react-feather';
-import { connect } from 'react-redux';
-import { useHistory, useLocation } from 'react-router';
-import * as Yup from 'yup';
-import HighlightInput from '../common/HighlightInput';
-import { combineAsUrlParams } from '../common/paginationUtils';
-import { hasRole, ROLE } from '../common/security';
-import { onError, onSuccess } from '../common/toastNotification';
-import { getErrorMessage } from '../common/utils';
-import publicPointPlanService from '../plan/publicPointPlanService';
-import './PublicPointTableEditor.css';
-import PublicPointTableFilter from './PublicPointTableFilter';
-import publicPointTableService from './publicPointTableService';
+import { Field, Form, Formik } from 'formik'
+import { useCallback, useEffect, useRef, useState } from "react"
+import * as Icon from 'react-feather'
+import { connect } from 'react-redux'
+import { useHistory, useLocation } from 'react-router'
+import * as Yup from 'yup'
+import HighlightInput from '../common/HighlightInput'
+import { combineAsUrlParams } from '../common/paginationUtils'
+import { hasRole, ROLE } from '../common/security'
+import { onError, onSuccess } from '../common/toastNotification'
+import { getErrorMessage } from '../common/utils'
+import publicPointPlanService from '../plan/publicPointPlanService'
+import './PublicPointTableEditor.css'
+import PublicPointTableFilter from './PublicPointTableFilter'
+import publicPointTableService from './publicPointTableService'
 
-const INIT_TABLE_DATA = { items: [], seq: 0, formItems: [], deleted: [] };
+const INIT_TABLE_DATA = { items: [], seq: 0, formItems: [], deleted: [] }
 
 function PublicPointTableEditor({ auth, onSuccess, onError }) {
-    const history = useHistory();
-    const query = new URLSearchParams(useLocation().search);
+    const history = useHistory()
+    const query = new URLSearchParams(useLocation().search)
     const [filter, setFilter] = useState(Filter.fromUrlParams(query, auth))
-    const [tableData, setTableData] = useState(INIT_TABLE_DATA);
-    const [isEdit, setIsEdit] = useState(false);
-    const [plan, setPlan] = useState();
-    const formikRef = useRef(null);
+    const [tableData, setTableData] = useState(INIT_TABLE_DATA)
+    const [isEdit, setIsEdit] = useState(false)
+    const [plan, setPlan] = useState()
+    const formikRef = useRef(null)
 
     const validationSchema = Yup.array().of(
         Yup.object().shape({
@@ -33,10 +33,10 @@ function PublicPointTableEditor({ auth, onSuccess, onError }) {
                 .required('Required')
                 .min(1, 'Min 1')
         })
-    );
+    )
 
     function onFilterChange(filter) {
-        setFilter(filter);
+        setFilter(filter)
     }
 
     const loadTables = useCallback(() => {
@@ -48,80 +48,80 @@ function PublicPointTableEditor({ auth, onSuccess, onError }) {
                     seq: tables.length,
                     formItems: [...tables],
                     deleted: []
-                });
+                })
             })
 
-    }, [filter]);
+    }, [filter])
 
     useEffect(() => {
         if (filter.companyId && filter.publicPointId) {
             loadTables()
                 .then(() => {
-                    let filterUrlParams = filter.toUrlParams(auth);
-                    history.replace(combineAsUrlParams(filterUrlParams));
-                });
+                    let filterUrlParams = filter.toUrlParams(auth)
+                    history.replace(combineAsUrlParams(filterUrlParams))
+                })
         } else {
-            setTableData(INIT_TABLE_DATA);
+            setTableData(INIT_TABLE_DATA)
         }
-    }, [filter, history, auth, loadTables]);
+    }, [filter, history, auth, loadTables])
 
     useEffect(() => {
         if (filter.companyId && filter.publicPointId && hasRole(auth, ROLE.PP_MANAGER)) {
             publicPointPlanService.findActivePlan(filter.publicPointId)
                 .then(response => response.data)
-                .then(setPlan);
+                .then(setPlan)
         } else {
-            setPlan();
+            setPlan()
         }
-    }, [filter, history, auth]);
+    }, [filter, history, auth])
 
     function onEdit(e) {
-        e.preventDefault();
-        setIsEdit(true);
+        e.preventDefault()
+        setIsEdit(true)
     }
 
     function onSave() {
-        let formItems = getFormikValues();
+        let formItems = getFormikValues()
         let changed = formItems.filter(item => !item.id || isChanged(item))
         if (!changed.length && !tableData.deleted.length) {
-            setIsEdit(false);
-            return;
+            setIsEdit(false)
+            return
         }
         let request = {
             publicPointId: filter.publicPointId,
             changed: changed,
             deleted: tableData.deleted
-        };
+        }
         publicPointTableService.save(request)
             .then(() => {
-                onSuccess(`Tables were updated successfuly`);
-                setIsEdit(false);
-                loadTables();
+                onSuccess(`Tables were updated successfuly`)
+                setIsEdit(false)
+                loadTables()
             }, error => onError(getErrorMessage(error.response.data)))
     }
 
     function isChanged(chItem) {
         return tableData.items.some(item => item.id === chItem.id
             && (item.name !== chItem.name || item.seatCount !== chItem.seatCount
-                || item.description !== chItem.description));
+                || item.description !== chItem.description))
     }
 
     function getFormikValues() {
-        return formikRef.current && formikRef.current.values;
+        return formikRef.current && formikRef.current.values
     }
 
     function onCancel() {
-        setIsEdit(false);
+        setIsEdit(false)
         setTableData(prev => ({
             ...prev,
             formItems: [...prev.items],
             seq: prev.items.length
-        }));
+        }))
     }
 
     function addTable(e) {
-        e.preventDefault();
-        let formItems = getFormikValues();
+        e.preventDefault()
+        let formItems = getFormikValues()
         setTableData(prev => ({
             ...prev,
             formItems: formItems.concat([{
@@ -130,21 +130,21 @@ function PublicPointTableEditor({ auth, onSuccess, onError }) {
                 description: ''
             }]),
             seq: prev.seq + 1
-        }));
+        }))
     }
 
     function deleteTable(e, table, index) {
-        e.preventDefault();
-        let formItems = getFormikValues();
+        e.preventDefault()
+        let formItems = getFormikValues()
         setTableData(prev => ({
             ...prev,
             formItems: formItems.filter((item, itemIndex) => itemIndex !== index),
             deleted: table.id ? prev.deleted.concat([table.id]) : prev.deleted,
-        }));
+        }))
     }
 
     function onGetUrlClick(e, table) {
-        e.preventDefault();
+        e.preventDefault()
         publicPointTableService.getClientUiUrl(table.id)
             .then(response => onSuccess(response.data, { autohide: false })
                 , error => onError(getErrorMessage(error.response.data)))
@@ -237,47 +237,47 @@ function PublicPointTableEditor({ auth, onSuccess, onError }) {
 }
 
 class Filter {
-    static URL_PARAM_COMPANY_ID = 'cmp';
-    static URL_PARAM_PP_ID = 'pp';
+    static URL_PARAM_COMPANY_ID = 'cmp'
+    static URL_PARAM_PP_ID = 'pp'
 
     constructor(companyId, publicPointId) {
-        this.companyId = companyId;
-        this.publicPointId = publicPointId;
+        this.companyId = companyId
+        this.publicPointId = publicPointId
     }
 
     withNewValue(field, value) {
-        let newFilter = new Filter(this.companyId, this.publicPointId);
-        newFilter[field] = value;
+        let newFilter = new Filter(this.companyId, this.publicPointId)
+        newFilter[field] = value
         if (field === 'companyId') {
-            newFilter.publicPointId = undefined;
+            newFilter.publicPointId = undefined
         }
-        return newFilter;
+        return newFilter
     }
 
     toUrlParams(auth) {
         let urlData = {
             [Filter.URL_PARAM_COMPANY_ID]: this.companyId,
             [Filter.URL_PARAM_PP_ID]: this.publicPointId
-        };
+        }
 
         if (!hasRole(auth, ROLE.ADMIN)) {
-            delete urlData[Filter.URL_PARAM_COMPANY_ID];
+            delete urlData[Filter.URL_PARAM_COMPANY_ID]
         }
         if (!hasRole(auth, ROLE.COMPANY_OWNER)) {
-            delete urlData[Filter.URL_PARAM_PP_ID];
+            delete urlData[Filter.URL_PARAM_PP_ID]
         }
-        return { toUrlParams: () => urlData };
+        return { toUrlParams: () => urlData }
     }
 
     static fromUrlParams(urlSearchParams, auth) {
         let companyId = hasRole(auth, ROLE.ADMIN) ?
             urlSearchParams.get(Filter.URL_PARAM_COMPANY_ID) || '' :
-            auth.user.cmpid;
+            auth.user.cmpid
         let ppId = hasRole(auth, ROLE.COMPANY_OWNER) ?
             urlSearchParams.get(Filter.URL_PARAM_PP_ID) || '' :
-            auth.user.ppid;
+            auth.user.ppid
 
-        return new Filter(companyId, ppId);
+        return new Filter(companyId, ppId)
     }
 }
 
@@ -292,7 +292,7 @@ function TableHeader() {
                 <th style={{ width: '1%' }} />
             </tr>
         </thead>
-    );
+    )
 }
 
 function EditCell({ index, fieldName }) {
@@ -303,9 +303,9 @@ function EditCell({ index, fieldName }) {
 }
 
 const mapStateToProps = ({ auth }) => {
-    return { auth };
-};
+    return { auth }
+}
 
 export default connect(mapStateToProps, {
     onSuccess, onError
-})(PublicPointTableEditor);
+})(PublicPointTableEditor)

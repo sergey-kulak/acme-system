@@ -1,25 +1,25 @@
-import { Form } from 'react-bootstrap';
-import { DebounceInput } from 'react-debounce-input';
-import { hasRole, ROLE } from '../common/security';
-import CompanySelect from '../company/CompanySelect';
-import PublicPointSelect from '../public-point/PublicPointSelect';
+import { Form } from 'react-bootstrap'
+import { DebounceInput } from 'react-debounce-input'
+import { hasRole, ROLE } from '../common/security'
+import CompanySelect from '../company/CompanySelect'
+import PublicPointSelect from '../public-point/PublicPointSelect'
 
 function DishFilter({ auth, filter, onChange }) {
 
     function onCompanyChange(companyId) {
-        onChange(filter.withNewValue('companyId', companyId));
+        onChange(filter.withNewValue('companyId', companyId))
     }
 
     function onPublicPointChange(publicPointId) {
-        onChange(filter.withNewValue('publicPointId', publicPointId));
+        onChange(filter.withNewValue('publicPointId', publicPointId))
     }
 
     function handleChange(e) {
-        onChange(filter.withNewValue(e.target.name, e.target.value));
+        onChange(filter.withNewValue(e.target.name, e.target.value))
     }
 
     function onWithDeletedChange(e) {
-        onChange(filter.withNewValue('withDeleted', e.target.checked));
+        onChange(filter.withNewValue('withDeleted', e.target.checked))
     }
 
     return (
@@ -55,4 +55,4 @@ function DishFilter({ auth, filter, onChange }) {
     )
 }
 
-export default DishFilter;
+export default DishFilter

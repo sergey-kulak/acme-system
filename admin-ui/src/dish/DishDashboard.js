@@ -1,40 +1,40 @@
-import { useCallback, useEffect, useState } from 'react';
-import * as Icon from 'react-feather';
-import { connect } from "react-redux";
-import { Link, useHistory, useLocation } from "react-router-dom";
-import Pagination from '../common/Pagination';
-import { combineAsUrlParams, Pageable, Sort } from '../common/paginationUtils';
-import { hasRole, ROLE } from "../common/security";
-import ShowFilterButton from '../common/ShowFilterButton';
-import SortColumn from '../common/SortColumn';
-import { onError, onSuccess } from '../common/toastNotification';
-import { getErrorMessage } from '../common/utils';
-import dishService from './dishService';
-import DishFilter from './DishFilter';
-import DishStatusLabel from './DishStatusLabel';
-import fileService from '../common/fileService';
-import publicPointService from '../public-point/publicPointService';
+import { useCallback, useEffect, useState } from 'react'
+import * as Icon from 'react-feather'
+import { connect } from "react-redux"
+import { Link, useHistory, useLocation } from "react-router-dom"
+import Pagination from '../common/Pagination'
+import { combineAsUrlParams, Pageable, Sort } from '../common/paginationUtils'
+import { hasRole, ROLE } from "../common/security"
+import ShowFilterButton from '../common/ShowFilterButton'
+import SortColumn from '../common/SortColumn'
+import { onError, onSuccess } from '../common/toastNotification'
+import { getErrorMessage } from '../common/utils'
+import dishService from './dishService'
+import DishFilter from './DishFilter'
+import DishStatusLabel from './DishStatusLabel'
+import fileService from '../common/fileService'
+import publicPointService from '../public-point/publicPointService'
 
 function DishDashboard({ auth, onError, onSuccess }) {
-    const history = useHistory();
-    const query = new URLSearchParams(useLocation().search);
+    const history = useHistory()
+    const query = new URLSearchParams(useLocation().search)
 
-    const [page, setPage] = useState({ content: [] });
-    const [pageable, setPageable] = useState(Pageable.fromUrlParams(query));
-    const [sort, setSort] = useState(Sort.fromUrlParams(query, 'name'));
-    const [filter, setFilter] = useState(Filter.fromUrlParams(query, auth));
-    const [showFilter, setShowFilter] = useState(true);
-    const [imageUrls, setImageUrls] = useState({});
-    const [publicPoint, setPublicPoint] = useState();
+    const [page, setPage] = useState({ content: [] })
+    const [pageable, setPageable] = useState(Pageable.fromUrlParams(query))
+    const [sort, setSort] = useState(Sort.fromUrlParams(query, 'name'))
+    const [filter, setFilter] = useState(Filter.fromUrlParams(query, auth))
+    const [showFilter, setShowFilter] = useState(true)
+    const [imageUrls, setImageUrls] = useState({})
+    const [publicPoint, setPublicPoint] = useState()
 
     const loadData = useCallback(() => {
         return dishService.find(filter, pageable, sort)
-            .then(response => response.data);
-    }, [filter, pageable, sort]);
+            .then(response => response.data)
+    }, [filter, pageable, sort])
 
     const loadImages = useCallback((filter, data) => {
         if (!data.content.length) {
-            return Promise.resolve(data);
+            return Promise.resolve(data)
         }
         let request = {
             companyId: filter.companyId,
@@ -54,33 +54,33 @@ function DishDashboard({ auth, onError, onSuccess }) {
                 .then(data => loadImages(filter, data))
                 .then(setPage)
                 .then(() => {
-                    let filterUrlParams = filter.toUrlParams(auth);
-                    history.replace(combineAsUrlParams(filterUrlParams, pageable, sort));
-                });
+                    let filterUrlParams = filter.toUrlParams(auth)
+                    history.replace(combineAsUrlParams(filterUrlParams, pageable, sort))
+                })
         } else {
-            setPage({ content: [] });
+            setPage({ content: [] })
         }
-    }, [pageable, sort, filter, history, auth, loadData, loadImages]);
+    }, [pageable, sort, filter, history, auth, loadData, loadImages])
 
     function onPageableChange(page) {
-        setPageable(page);
+        setPageable(page)
     }
 
     function onSortChange(sort) {
-        setSort(sort);
+        setSort(sort)
     }
 
     function onFilterChange(filter) {
-        setFilter(filter);
+        setFilter(filter)
     }
 
     function onDishStatusClick(e, dish) {
-        e.preventDefault();
+        e.preventDefault()
         if (window.confirm(`Are you sure to delete ${dish.name}`)) {
             dishService.delete(dish.id)
                 .then(() => {
-                    onSuccess(`${dish.name} dish was deleted successfuly`);
-                    loadData();
+                    onSuccess(`${dish.name} dish was deleted successfuly`)
+                    loadData()
                 }, error => onError(getErrorMessage(error.response.data)))
         }
     }
@@ -89,12 +89,12 @@ function DishDashboard({ auth, onError, onSuccess }) {
         if (filter.publicPointId) {
             publicPointService.findByIdFullDetails(filter.publicPointId)
                 .then(response => response.data)
-                .then(setPublicPoint);
+                .then(setPublicPoint)
         }
-    }, [filter.publicPointId]);
+    }, [filter.publicPointId])
 
-    const canEdit = hasRole(auth, ROLE.PP_MANAGER);
-    const priceColumnName = 'Price' + (publicPoint ? ', ' + publicPoint.currency : '');
+    const canEdit = hasRole(auth, ROLE.PP_MANAGER)
+    const priceColumnName = 'Price' + (publicPoint ? ', ' + publicPoint.currency : '')
 
     return (
         <div className="main-content">
@@ -162,25 +162,25 @@ function DishDashboard({ auth, onError, onSuccess }) {
 }
 
 class Filter {
-    static URL_PARAM_COMPANY_ID = 'cmp';
-    static URL_PARAM_PP_ID = 'pp';
-    static URL_PARAM_NAME_PATTERN = 'np';
-    static URL_PARAM_WITH_DELETED = 'wd';
+    static URL_PARAM_COMPANY_ID = 'cmp'
+    static URL_PARAM_PP_ID = 'pp'
+    static URL_PARAM_NAME_PATTERN = 'np'
+    static URL_PARAM_WITH_DELETED = 'wd'
 
     constructor(companyId, publicPointId, namePattern, withDeleted) {
-        this.publicPointId = publicPointId;
-        this.companyId = companyId;
-        this.namePattern = namePattern;
-        this.withDeleted = withDeleted;
+        this.publicPointId = publicPointId
+        this.companyId = companyId
+        this.namePattern = namePattern
+        this.withDeleted = withDeleted
     }
 
     withNewValue(field, value) {
-        let newFilter = new Filter(this.companyId, this.publicPointId, this.namePattern, this.withDeleted);
-        newFilter[field] = value;
+        let newFilter = new Filter(this.companyId, this.publicPointId, this.namePattern, this.withDeleted)
+        newFilter[field] = value
         if (field === 'companyId') {
-            newFilter.publicPointId = undefined;
+            newFilter.publicPointId = undefined
         }
-        return newFilter;
+        return newFilter
     }
 
     toUrlParams(auth) {
@@ -189,35 +189,35 @@ class Filter {
             [Filter.URL_PARAM_PP_ID]: this.publicPointId,
             [Filter.URL_PARAM_NAME_PATTERN]: this.namePattern,
             [Filter.URL_PARAM_WITH_DELETED]: this.withDeleted
-        };
+        }
 
         if (!hasRole(auth, ROLE.ADMIN)) {
-            delete urlData[Filter.URL_PARAM_COMPANY_ID];
+            delete urlData[Filter.URL_PARAM_COMPANY_ID]
         }
         if (!hasRole(auth, ROLE.COMPANY_OWNER)) {
-            delete urlData[Filter.URL_PARAM_PP_ID];
+            delete urlData[Filter.URL_PARAM_PP_ID]
         }
-        return { toUrlParams: () => urlData };
+        return { toUrlParams: () => urlData }
     }
 
     static fromUrlParams(urlSearchParams, auth) {
         let companyId = hasRole(auth, ROLE.ADMIN) ?
             urlSearchParams.get(Filter.URL_PARAM_COMPANY_ID) || '' :
-            auth.user.cmpid;
+            auth.user.cmpid
         let ppId = hasRole(auth, ROLE.COMPANY_OWNER) ?
             urlSearchParams.get(Filter.URL_PARAM_PP_ID) || '' :
-            auth.user.ppid;
+            auth.user.ppid
         return new Filter(companyId, ppId,
             urlSearchParams.get(Filter.URL_PARAM_NAME_PATTERN) || '',
             urlSearchParams.get(Filter.URL_PARAM_WITH_DELETED) === 'true' || false,
-        );
+        )
     }
 }
 
 const mapStateToProps = ({ auth }) => {
-    return { auth };
-};
+    return { auth }
+}
 
 export default connect(mapStateToProps, {
     onSuccess, onError
-})(DishDashboard);
+})(DishDashboard)

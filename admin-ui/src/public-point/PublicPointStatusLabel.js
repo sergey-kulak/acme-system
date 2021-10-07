@@ -1,6 +1,6 @@
-import { memo } from 'react';
-import { FormattedMessage } from 'react-intl';
-import './PublicPointStatusLabel.css';
+import { memo } from 'react'
+import { FormattedMessage } from 'react-intl'
+import './PublicPointStatusLabel.css'
 
 function PublicPointStatusLabel({ status, showText }) {
 
@@ -11,7 +11,7 @@ function PublicPointStatusLabel({ status, showText }) {
                 <FormattedMessage id={`company.status.${status.toLowerCase()}`} />
             </div>}
         </div>
-    );
+    )
 }
 
-export default memo(PublicPointStatusLabel);
+export default memo(PublicPointStatusLabel)

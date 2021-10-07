@@ -1,4 +1,4 @@
-import { connect } from "react-redux";
+import { connect } from "react-redux"
 
 function Home({ user }) {
     return (
@@ -11,9 +11,9 @@ function Home({ user }) {
 }
 
 const mapStateToProps = ({ auth }) => {
-    return { user: auth.user };
-};
+    return { user: auth.user }
+}
 
 export default connect(mapStateToProps,
     dispatch => ({})
-)(Home);
+)(Home)

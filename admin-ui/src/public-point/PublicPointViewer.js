@@ -1,50 +1,50 @@
-import { useCallback, useEffect, useState } from "react";
-import * as Icon from 'react-feather';
-import { FormattedDate, useIntl } from 'react-intl';
-import { connect } from 'react-redux';
-import { Link, Redirect, useParams } from "react-router-dom";
-import BackButton from "../common/BackButton";
-import { hasRole, ROLE } from "../common/security";
-import { onError, onSuccess } from '../common/toastNotification';
-import { getErrorMessage } from "../common/utils";
-import companyService from '../company/companyService';
-import publicPointPlanService from '../plan/publicPointPlanService';
-import userService from '../user/userService';
-import ChangePublicPointStatusDialog from "./ChangePublicPointStatusDialog";
-import publicPointService from './publicPointService';
-import PublicPointStatusLabel from "./PublicPointStatusLabel";
-import ChoosePlanDialog from '../plan/ChoosePlanDialog';
+import { useCallback, useEffect, useState } from "react"
+import * as Icon from 'react-feather'
+import { FormattedDate, useIntl } from 'react-intl'
+import { connect } from 'react-redux'
+import { Link, Redirect, useParams } from "react-router-dom"
+import BackButton from "../common/BackButton"
+import { hasRole, ROLE } from "../common/security"
+import { onError, onSuccess } from '../common/toastNotification'
+import { getErrorMessage } from "../common/utils"
+import companyService from '../company/companyService'
+import publicPointPlanService from '../plan/publicPointPlanService'
+import userService from '../user/userService'
+import ChangePublicPointStatusDialog from "./ChangePublicPointStatusDialog"
+import publicPointService from './publicPointService'
+import PublicPointStatusLabel from "./PublicPointStatusLabel"
+import ChoosePlanDialog from '../plan/ChoosePlanDialog'
 
 function PublicPointViewer({ auth, onSuccess, onError }) {
-    const params = useParams();
-    const isAdmin = hasRole(auth, ROLE.ADMIN);
-    const id = params.id;
-    const intl = useIntl();
-    const [publicPoint, setPublicPoint] = useState();
-    const [company, setCompany] = useState();
-    const [managers, setManagers] = useState([]);
-    const [plan, setPlan] = useState();
-    const [planHistory, setPlanHistory] = useState([]);
-    const [expandGI, setExpandGI] = useState(false);
-    const [expandPlan, setExpandPlan] = useState(false);
-    const [showPlanDialog, setShowPlanDialog] = useState(false);
-    const [showStatusChangeDialog, setShowStatusChangeDialog] = useState(false);
+    const params = useParams()
+    const isAdmin = hasRole(auth, ROLE.ADMIN)
+    const id = params.id
+    const intl = useIntl()
+    const [publicPoint, setPublicPoint] = useState()
+    const [company, setCompany] = useState()
+    const [managers, setManagers] = useState([])
+    const [plan, setPlan] = useState()
+    const [planHistory, setPlanHistory] = useState([])
+    const [expandGI, setExpandGI] = useState(false)
+    const [expandPlan, setExpandPlan] = useState(false)
+    const [showPlanDialog, setShowPlanDialog] = useState(false)
+    const [showStatusChangeDialog, setShowStatusChangeDialog] = useState(false)
 
     const loadPublicPoint = useCallback(() => {
         publicPointService.findByIdFullDetails(id)
             .then(response => setPublicPoint(response.data))
-    }, [id]);
+    }, [id])
 
     useEffect(() => {
-        loadPublicPoint();
-    }, [id, loadPublicPoint]);
+        loadPublicPoint()
+    }, [id, loadPublicPoint])
 
     useEffect(() => {
         if (publicPoint) {
             companyService.findByIdFullDetails(publicPoint.companyId)
                 .then(response => setCompany(response.data))
         }
-    }, [publicPoint]);
+    }, [publicPoint])
 
     function loadManagers() {
         if (publicPoint) {
@@ -52,20 +52,20 @@ function PublicPointViewer({ auth, onSuccess, onError }) {
                 companyId: publicPoint.companyId,
                 publicPointId: publicPoint.id,
                 role: ROLE.PP_MANAGER
-            };
+            }
             userService.findNames(request)
-                .then(response => setManagers(response.data || []));
+                .then(response => setManagers(response.data || []))
         }
     }
 
     const loadActivePlan = useCallback(() => {
         publicPointPlanService.findActivePlan(id)
-            .then(response => setPlan(response.data));
-    }, [id]);
+            .then(response => setPlan(response.data))
+    }, [id])
 
     useEffect(() => {
-        loadActivePlan();
-    }, [id, loadActivePlan]);
+        loadActivePlan()
+    }, [id, loadActivePlan])
 
     function loadPlanHistory() {
         publicPointPlanService.getHistory(id)
@@ -75,16 +75,16 @@ function PublicPointViewer({ auth, onSuccess, onError }) {
                 startDate: new Date(item.startDate),
                 endDate: item.endDate && new Date(item.endDate)
             })))
-            .then(setPlanHistory);
+            .then(setPlanHistory)
     }
 
     function onPlanClick(e) {
-        e.preventDefault();
-        setShowPlanDialog(true);
+        e.preventDefault()
+        setShowPlanDialog(true)
     }
 
     function onPlanChange(planId) {
-        setShowPlanDialog(false);
+        setShowPlanDialog(false)
         if (planId && planId !== (plan && plan.id)) {
             let request = {
                 planId,
@@ -93,65 +93,65 @@ function PublicPointViewer({ auth, onSuccess, onError }) {
             }
             publicPointPlanService.assignPlan(request)
                 .then(() => {
-                    loadActivePlan();
+                    loadActivePlan()
                     if (expandPlan) {
-                        loadPlanHistory();
+                        loadPlanHistory()
                     }
-                    onSuccess("Plan was assigned successfully");
+                    onSuccess("Plan was assigned successfully")
                 }, error => {
-                    onError(getErrorMessage(error.response.data));
-                });
+                    onError(getErrorMessage(error.response.data))
+                })
         }
     }
 
     function onPublicPointStatusClick(e) {
-        e.preventDefault();
-        setShowStatusChangeDialog(true);
+        e.preventDefault()
+        setShowStatusChangeDialog(true)
     }
 
     function onStatusChange(newStatus) {
-        setShowStatusChangeDialog(false);
+        setShowStatusChangeDialog(false)
         if (newStatus) {
             publicPointService.changeStatus(publicPoint.id, { status: newStatus })
                 .then(() => {
-                    onSuccess("Public point status was changed successfully");
-                    loadPublicPoint();
+                    onSuccess("Public point status was changed successfully")
+                    loadPublicPoint()
                     if (newStatus === 'STOPPED') {
-                        loadActivePlan();
+                        loadActivePlan()
                         if (expandPlan) {
                             loadPlanHistory()
                         }
                     }
                 }, error => {
-                    onError(getErrorMessage(error.response.data));
-                });
+                    onError(getErrorMessage(error.response.data))
+                })
         }
     }
 
     function planLabel(plan) {
         return plan ?
             `${plan.name} (${plan.maxTableCount} tables, ${plan.monthPrice} ${plan.currency})` :
-            'Not assigned';
+            'Not assigned'
     }
 
     function onExpandGI() {
-        let newExpandGI = !expandGI;
+        let newExpandGI = !expandGI
         if (newExpandGI && !managers.length) {
-            loadManagers();
+            loadManagers()
         }
-        setExpandGI(newExpandGI);
+        setExpandGI(newExpandGI)
     }
 
     function onExpandPlan() {
-        let newExpandPlan = !expandPlan;
+        let newExpandPlan = !expandPlan
         if (newExpandPlan && !planHistory.length) {
-            loadPlanHistory();
+            loadPlanHistory()
         }
-        setExpandPlan(newExpandPlan);
+        setExpandPlan(newExpandPlan)
     }
 
     function wrapValue(value) {
-        return value || '-';
+        return value || '-'
     }
 
     function langLabel(lang) {
@@ -163,17 +163,17 @@ function PublicPointViewer({ auth, onSuccess, onError }) {
     }
 
     function addLangLabels() {
-        return wrapValue(publicPoint.langs.map(langLabel).join(", "));
+        return wrapValue(publicPoint.langs.map(langLabel).join(", "))
     }
 
     function currencyLabel() {
-        let crName = intl.formatMessage({ id: `currency.name.${publicPoint.currency}` });
-        let crSymbol = intl.formatMessage({ id: `currency.symbol.${publicPoint.currency}` });
-        return `${crName}, ${crSymbol}`;
+        let crName = intl.formatMessage({ id: `currency.name.${publicPoint.currency}` })
+        let crSymbol = intl.formatMessage({ id: `currency.symbol.${publicPoint.currency}` })
+        return `${crName}, ${crSymbol}`
     }
 
-    const labelClass = "col-sm-4 col-md-2 col-form-label text-sm-right font-italic";
-    const controlClass = "col-sm-8 col-md-4";
+    const labelClass = "col-sm-4 col-md-2 col-form-label text-sm-right font-italic"
+    const controlClass = "col-sm-8 col-md-4"
 
     if (!id) {
         return <Redirect to="/" />
@@ -336,9 +336,9 @@ function PublicPointViewer({ auth, onSuccess, onError }) {
 }
 
 const mapStateToProps = ({ auth }) => {
-    return { auth };
-};
+    return { auth }
+}
 
 export default connect(mapStateToProps, {
     onSuccess, onError
-})(PublicPointViewer);
+})(PublicPointViewer)

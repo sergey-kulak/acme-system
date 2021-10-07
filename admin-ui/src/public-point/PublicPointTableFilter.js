@@ -1,21 +1,21 @@
-import { hasRole, ROLE } from '../common/security';
-import CompanySelect from '../company/CompanySelect';
-import PublicPointSelect from './PublicPointSelect';
+import { hasRole, ROLE } from '../common/security'
+import CompanySelect from '../company/CompanySelect'
+import PublicPointSelect from './PublicPointSelect'
 
 function PublicPointTableFilter({ auth, filter, plan, onChange }) {
 
     function onCompanyChange(companyId) {
-        onChange(filter.withNewValue('companyId', companyId));
+        onChange(filter.withNewValue('companyId', companyId))
     }
 
     function onPublicPointChange(publicPointId) {
-        onChange(filter.withNewValue('publicPointId', publicPointId));
+        onChange(filter.withNewValue('publicPointId', publicPointId))
     }
 
     function planLabel(plan) {
         return plan ?
             `${plan.name} (${plan.maxTableCount} tables, ${plan.monthPrice} ${plan.currency})` :
-            'Not assigned';
+            'Not assigned'
     }
 
     return (
@@ -43,4 +43,4 @@ function PublicPointTableFilter({ auth, filter, plan, onChange }) {
     )
 }
 
-export default PublicPointTableFilter;
+export default PublicPointTableFilter

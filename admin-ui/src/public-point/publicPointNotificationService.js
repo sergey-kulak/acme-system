@@ -1,5 +1,5 @@
-import { RSocketClient, JsonSerializers } from 'rsocket-core';
-import RSocketWebSocketClient from 'rsocket-websocket-client';
+import { RSocketClient, JsonSerializers } from 'rsocket-core'
+import RSocketWebSocketClient from 'rsocket-websocket-client'
 
 const client = new RSocketClient({
     serializers: JsonSerializers,
@@ -10,10 +10,10 @@ const client = new RSocketClient({
         metadataMimeType: 'application/json',
     },
     transport: new RSocketWebSocketClient({ url: `ws://${window.location.hostname}:7004/pp-service-rsocket` }),
-});
+})
 
-let subscriptionPromise;
-let currentConnection;
+let subscriptionPromise
+let currentConnection
 
 const connect = (token, companyId, publicPointId) => {
     if (!subscriptionPromise) {
@@ -33,19 +33,19 @@ const connect = (token, companyId, publicPointId) => {
                     resolve(subscription)
                 },
                 onError: error => {
-                    console.error(error);
-                    reject(error);
+                    console.error(error)
+                    reject(error)
                 }
-            });
-        });
+            })
+        })
     }
 
-    return subscriptionPromise;
+    return subscriptionPromise
 }
 
 const subscribe = (subscriber) => {
     subscriptionPromise
-        .then(subscription => subscription.subscribe(subscriber));
+        .then(subscription => subscription.subscribe(subscriber))
 }
 
 const isConnected = (companyId, publicPointId) => {
@@ -68,4 +68,4 @@ const publicPointNotificationService = {
     close
 }
 
-export default publicPointNotificationService;
+export default publicPointNotificationService

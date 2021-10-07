@@ -1,74 +1,74 @@
-import { useCallback, useEffect, useState } from 'react';
-import * as Icon from 'react-feather';
-import { FormattedMessage } from 'react-intl';
-import { connect } from "react-redux";
-import { Link, useHistory, useLocation } from "react-router-dom";
-import { GLOBAL_CACHE } from '../common/cache';
-import Pagination from '../common/Pagination';
-import { combineAsUrlParams, Pageable, Sort } from '../common/paginationUtils';
-import { hasExactRole, hasRole, ROLE } from "../common/security";
-import ShowFilterButton from '../common/ShowFilterButton';
-import SortColumn from '../common/SortColumn';
-import { onError, onSuccess } from '../common/toastNotification';
-import companyService from '../company/companyService';
-import publicPointService from '../public-point/publicPointService';
-import UserFilter from './UserFilter';
-import userService from './userService';
-import UserStatusLabel from './UserStatusLabel';
+import { useCallback, useEffect, useState } from 'react'
+import * as Icon from 'react-feather'
+import { FormattedMessage } from 'react-intl'
+import { connect } from "react-redux"
+import { Link, useHistory, useLocation } from "react-router-dom"
+import { GLOBAL_CACHE } from '../common/cache'
+import Pagination from '../common/Pagination'
+import { combineAsUrlParams, Pageable, Sort } from '../common/paginationUtils'
+import { hasExactRole, hasRole, ROLE } from "../common/security"
+import ShowFilterButton from '../common/ShowFilterButton'
+import SortColumn from '../common/SortColumn'
+import { onError, onSuccess } from '../common/toastNotification'
+import companyService from '../company/companyService'
+import publicPointService from '../public-point/publicPointService'
+import UserFilter from './UserFilter'
+import userService from './userService'
+import UserStatusLabel from './UserStatusLabel'
 
-const cache = GLOBAL_CACHE;
-const PP_REGION = 'usr-dash-pp-region';
+const cache = GLOBAL_CACHE
+const PP_REGION = 'usr-dash-pp-region'
 
 function UserDashboard({ auth }) {
-    const history = useHistory();
-    const query = new URLSearchParams(useLocation().search);
-    const isAdmin = hasRole(auth, ROLE.ADMIN);
+    const history = useHistory()
+    const query = new URLSearchParams(useLocation().search)
+    const isAdmin = hasRole(auth, ROLE.ADMIN)
 
-    const [page, setPage] = useState({ content: [] });
-    const [pageable, setPageable] = useState(Pageable.fromUrlParams(query));
-    const [sort, setSort] = useState(Sort.fromUrlParams(query, 'last_name'));
-    const [filter, setFilter] = useState(Filter.fromUrlParams(query, auth));
-    const [showFilter, setShowFilter] = useState(false);
-    const [companyNames, setCompanyNames] = useState({});
+    const [page, setPage] = useState({ content: [] })
+    const [pageable, setPageable] = useState(Pageable.fromUrlParams(query))
+    const [sort, setSort] = useState(Sort.fromUrlParams(query, 'last_name'))
+    const [filter, setFilter] = useState(Filter.fromUrlParams(query, auth))
+    const [showFilter, setShowFilter] = useState(false)
+    const [companyNames, setCompanyNames] = useState({})
 
     const loadPublicPoints = useCallback((newPage) => {
         let promises = newPage.content
             .filter(user => !!user.publicPointId)
             .map(user => getPublicPointInCache(user.publicPointId)
                 .then(pp => user.publicPoint = pp)
-            );
+            )
 
         return Promise.all(promises)
-            .then(() => newPage);
-    }, []);
+            .then(() => newPage)
+    }, [])
 
     const loadData = useCallback(() => {
         return userService.find(filter, pageable, sort)
             .then(response => response.data)
             .then(loadPublicPoints)
-            .then(setPage);
-    }, [filter, pageable, sort, loadPublicPoints]);
+            .then(setPage)
+    }, [filter, pageable, sort, loadPublicPoints])
 
     useEffect(() => {
         loadData()
             .then(() => {
-                let filterUrlParams = filter.toUrlParams(auth);
-                history.replace(combineAsUrlParams(filterUrlParams, pageable, sort));
-            });
-    }, [pageable, sort, filter, history, auth, loadData]);
+                let filterUrlParams = filter.toUrlParams(auth)
+                history.replace(combineAsUrlParams(filterUrlParams, pageable, sort))
+            })
+    }, [pageable, sort, filter, history, auth, loadData])
 
     useEffect(() => {
         if (isAdmin) {
             companyService.findNames()
                 .then(response => {
                     let data = response.data.reduce((acc, item) => {
-                        acc[item.id] = item.fullName;
-                        return acc;
+                        acc[item.id] = item.fullName
+                        return acc
                     }, {})
-                    setCompanyNames(data);
-                });
+                    setCompanyNames(data)
+                })
         }
-    }, [isAdmin]);
+    }, [isAdmin])
 
     function getPublicPointInCache(ppId) {
         return cache.retriveIfAbsent(PP_REGION, ppId,
@@ -77,15 +77,15 @@ function UserDashboard({ auth }) {
     }
 
     function onPageableChange(page) {
-        setPageable(page);
+        setPageable(page)
     }
 
     function onSortChange(sort) {
-        setSort(sort);
+        setSort(sort)
     }
 
     function onFilterChange(filter) {
-        setFilter(filter);
+        setFilter(filter)
     }
 
     return (
@@ -150,24 +150,24 @@ function UserDashboard({ auth }) {
 }
 
 class Filter {
-    static URL_PARAM_COMPANY_ID = 'cmp';
-    static URL_PARAM_EMAIL = 'em';
-    static URL_PARAM_ROLE = 'rl';
-    static URL_PARAM_STATUS = 'st';
+    static URL_PARAM_COMPANY_ID = 'cmp'
+    static URL_PARAM_EMAIL = 'em'
+    static URL_PARAM_ROLE = 'rl'
+    static URL_PARAM_STATUS = 'st'
 
     constructor(companyId, email, role, status, publicPointId) {
-        this.companyId = companyId;
-        this.email = email;
-        this.role = role;
-        this.status = status;
-        this.publicPointId = publicPointId;
+        this.companyId = companyId
+        this.email = email
+        this.role = role
+        this.status = status
+        this.publicPointId = publicPointId
     }
 
     withNewValue(field, value) {
         let newFilter = new Filter(this.companyId, this.email, this.role,
-            this.status, this.publicPointId);
-        newFilter[field] = value;
-        return newFilter;
+            this.status, this.publicPointId)
+        newFilter[field] = value
+        return newFilter
     }
 
     toUrlParams(auth) {
@@ -176,19 +176,19 @@ class Filter {
             [Filter.URL_PARAM_EMAIL]: this.email,
             [Filter.URL_PARAM_ROLE]: this.role,
             [Filter.URL_PARAM_STATUS]: this.status,
-        };
+        }
 
         if (!hasRole(auth, ROLE.ADMIN)) {
-            delete urlData[Filter.URL_PARAM_COMPANY_ID];
+            delete urlData[Filter.URL_PARAM_COMPANY_ID]
         }
-        return { toUrlParams: () => urlData };
+        return { toUrlParams: () => urlData }
     }
 
     static fromUrlParams(urlSearchParams, auth) {
         let companyId = hasRole(auth, ROLE.ADMIN) ?
             urlSearchParams.get(Filter.URL_PARAM_COMPANY_ID) || '' :
-            auth.user.cmpid;
-        let ppId = hasRole(auth, ROLE.COMPANY_OWNER) ? undefined : auth.user.ppid;
+            auth.user.cmpid
+        let ppId = hasRole(auth, ROLE.COMPANY_OWNER) ? undefined : auth.user.ppid
 
         return new Filter(
             companyId,
@@ -196,14 +196,14 @@ class Filter {
             urlSearchParams.getAll(Filter.URL_PARAM_ROLE),
             urlSearchParams.getAll(Filter.URL_PARAM_STATUS),
             ppId
-        );
+        )
     }
 }
 
 const mapStateToProps = ({ auth }) => {
-    return { auth };
-};
+    return { auth }
+}
 
 export default connect(mapStateToProps, {
     onSuccess, onError
-})(UserDashboard);
+})(UserDashboard)

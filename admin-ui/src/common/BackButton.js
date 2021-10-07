@@ -1,9 +1,9 @@
-import useHistoryBack from './useHistoryBack';
+import useHistoryBack from './useHistoryBack'
 
 function BackButton({ defaultPath,
     className = "btn btn-secondary",
     children, ...props }) {
-    const historyBack = useHistoryBack(defaultPath);
+    const historyBack = useHistoryBack(defaultPath)
 
     return (
         <button type="button" className={className}
@@ -11,7 +11,7 @@ function BackButton({ defaultPath,
             onClick={historyBack}>
             {children ? children : 'Cancel'}
         </button>
-    );
+    )
 }
 
-export default BackButton;
+export default BackButton

@@ -1,55 +1,55 @@
 
-import restApi from '../restApi';
-import jwtDecode from "jwt-decode";
+import restApi from '../restApi'
+import jwtDecode from "jwt-decode"
 
 export const ACTIONS = {
     LOGIN_SUCCESS: 'LOGIN_SUCCESS',
     LOGOUT: 'LOGOUT'
 }
 const buildState = () => {
-    let accessToken = localStorage.getItem("accessToken");
-    let state = { isAuthenticated: false };
+    let accessToken = localStorage.getItem("accessToken")
+    let state = { isAuthenticated: false }
     if (accessToken) {
-        let decodedToken = jwtDecode(accessToken);
+        let decodedToken = jwtDecode(accessToken)
         if (decodedToken.exp < (new Date().getTime() / 1000)) {
-            console.warn("Token is expired");
-            localStorage.removeItem("accessToken");
+            console.warn("Token is expired")
+            localStorage.removeItem("accessToken")
         } else {
-            state.accessToken = accessToken;
-            state.isAuthenticated = true;
-            state.user = decodedToken;
-            restApi.defaults.headers.common["Authorization"] = "Bearer " + accessToken;
+            state.accessToken = accessToken
+            state.isAuthenticated = true
+            state.user = decodedToken
+            restApi.defaults.headers.common["Authorization"] = "Bearer " + accessToken
         }
     }
-    return state;
+    return state
 }
 
-const INIT_STATE = buildState();
+const INIT_STATE = buildState()
 
 export const onLogin = (data) => {
     return dispatch => dispatch({ type: ACTIONS.LOGIN_SUCCESS, payload: data })
 }
 
 export const onLogout = () => {
-    return dispatch => dispatch({ type: ACTIONS.LOGOUT, payload: {} });
+    return dispatch => dispatch({ type: ACTIONS.LOGOUT, payload: {} })
 }
 
 const reducer = (state = INIT_STATE, action) => {
     switch (action.type) {
         case ACTIONS.LOGIN_SUCCESS: {
-            const accessToken = action.payload.accessToken;
-            localStorage.setItem("accessToken", accessToken);
+            const accessToken = action.payload.accessToken
+            localStorage.setItem("accessToken", accessToken)
 
-            return buildState();
+            return buildState()
         }
         case ACTIONS.LOGOUT: {
-            localStorage.removeItem("accessToken");
-            restApi.defaults.headers.common["Authorization"] = null;
+            localStorage.removeItem("accessToken")
+            restApi.defaults.headers.common["Authorization"] = null
 
-            return buildState();
+            return buildState()
         }
         default:
-            return state;
+            return state
     }
 }
-export default reducer;
+export default reducer

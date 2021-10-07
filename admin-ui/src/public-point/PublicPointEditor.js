@@ -1,24 +1,24 @@
-import { Field, Form, Formik } from 'formik';
-import { useEffect, useRef, useState } from "react";
-import { connect } from 'react-redux';
-import { useParams } from "react-router-dom";
-import * as Yup from 'yup';
-import BackButton from "../common/BackButton";
-import publicPointService from './publicPointService';
-import HighlightInput from '../common/HighlightInput';
-import useHistoryBack from '../common/useHistoryBack';
-import { onError, onSuccess } from '../common/toastNotification';
-import CompanySelect from '../company/CompanySelect';
-import { hasRole, ROLE } from "../common/security";
-import { getErrorMessage } from "../common/utils";
-import LangSelect from '../common/rf-data/LangSelect';
-import CurrencySelect from '../common/rf-data/CurrencySelect';
+import { Field, Form, Formik } from 'formik'
+import { useEffect, useRef, useState } from "react"
+import { connect } from 'react-redux'
+import { useParams } from "react-router-dom"
+import * as Yup from 'yup'
+import BackButton from "../common/BackButton"
+import publicPointService from './publicPointService'
+import HighlightInput from '../common/HighlightInput'
+import useHistoryBack from '../common/useHistoryBack'
+import { onError, onSuccess } from '../common/toastNotification'
+import CompanySelect from '../company/CompanySelect'
+import { hasRole, ROLE } from "../common/security"
+import { getErrorMessage } from "../common/utils"
+import LangSelect from '../common/rf-data/LangSelect'
+import CurrencySelect from '../common/rf-data/CurrencySelect'
 
 function PublicPointEditor({ auth, onSuccess, onError }) {
-    const { id } = useParams();
-    const isCreate = id === 'new';
-    const [publicPoint, setPublicPoint] = useState();
-    const formikRef = useRef(null);
+    const { id } = useParams()
+    const isCreate = id === 'new'
+    const [publicPoint, setPublicPoint] = useState()
+    const formikRef = useRef(null)
     const [formData, setFormData] = useState({
         name: '',
         description: '',
@@ -28,8 +28,8 @@ function PublicPointEditor({ auth, onSuccess, onError }) {
         langs: [],
         currency: '',
         companyId: hasRole(auth, ROLE.ADMIN) ? '' : auth.user.cmpid
-    });
-    const historyBack = useHistoryBack("/public-points");
+    })
+    const historyBack = useHistoryBack("/public-points")
 
     const validationSchema = Yup.object({
         name: Yup.string().required('Required'),
@@ -40,17 +40,17 @@ function PublicPointEditor({ auth, onSuccess, onError }) {
         langs: Yup.array().of(Yup.string()),
         currency: Yup.string().required('Required'),
         companyId: Yup.string().required('Required')
-    });
+    })
 
     useEffect(() => {
         if (!isCreate) {
             publicPointService.findByIdFullDetails(id)
                 .then(response => {
-                    setPublicPoint(response.data);
-                    toFormData(response.data);
-                });
+                    setPublicPoint(response.data)
+                    toFormData(response.data)
+                })
         }
-    }, [id, isCreate]);
+    }, [id, isCreate])
 
     function toFormData(publicPoint) {
         setFormData({
@@ -63,54 +63,54 @@ function PublicPointEditor({ auth, onSuccess, onError }) {
             companyId: publicPoint.companyId,
             currency: publicPoint.currency
         })
-    };
+    }
 
     function onSubmit(formData) {
-        let request = { ...formData };
+        let request = { ...formData }
         if (isCreate) {
             publicPointService.create(request)
                 .then(() => {
-                    onSuccess(`${request.name} public point was created successfuly`);
-                    historyBack();
+                    onSuccess(`${request.name} public point was created successfuly`)
+                    historyBack()
                 }, error => onError(getErrorMessage(error.response.data)))
         } else {
             publicPointService.update(publicPoint.id, request)
                 .then(() => {
-                    onSuccess(`${request.name} public point was updated successfuly`);
-                    historyBack();
+                    onSuccess(`${request.name} public point was updated successfuly`)
+                    historyBack()
                 }, error => onError(getErrorMessage(error.response.data)))
         }
     }
 
     function langFilter(options) {
-        let formikValues = getFormikValues();
-        let primaryLang = formikValues && formikValues.primaryLang;
-        return options.filter(opt => opt.value !== primaryLang);
+        let formikValues = getFormikValues()
+        let primaryLang = formikValues && formikValues.primaryLang
+        return options.filter(opt => opt.value !== primaryLang)
     }
 
     function getFormikValues() {
-        return formikRef.current && formikRef.current.values;
+        return formikRef.current && formikRef.current.values
     }
 
     function onPrimaryLangChange(newLang) {
-        let formikValues = getFormikValues();
-        let langs = formikValues.langs.filter(lang => lang !== newLang);
+        let formikValues = getFormikValues()
+        let langs = formikValues.langs.filter(lang => lang !== newLang)
 
         setFormData({
             ...formikValues,
             primaryLang: newLang,
             langs: langs,
-        });
+        })
     }
 
     function onCompanyChange(cmpId) {
         setFormData({
             ...getFormikValues(),
             companyId: cmpId
-        });
+        })
     }
 
-    const canSetCompany = hasRole(auth, ROLE.ADMIN);
+    const canSetCompany = hasRole(auth, ROLE.ADMIN)
 
     return (
         <div className="main-content">
@@ -181,13 +181,13 @@ function PublicPointEditor({ auth, onSuccess, onError }) {
                 </div>
             </div>
         </div>
-    );
+    )
 }
 
 const mapStateToProps = ({ auth }) => {
-    return { auth };
-};
+    return { auth }
+}
 
 export default connect(mapStateToProps, {
     onSuccess, onError
-})(PublicPointEditor);
+})(PublicPointEditor)

@@ -1,50 +1,50 @@
-import { Field, Form, Formik } from 'formik';
-import { useEffect, useState } from "react";
-import { connect } from 'react-redux';
-import { useParams, Link } from "react-router-dom";
-import * as Yup from 'yup';
-import BackButton from "../common/BackButton";
-import companyService from './companyService';
-import userService from '../user/userService';
-import HighlightInput from '../common/HighlightInput';
-import useHistoryBack from '../common/useHistoryBack';
-import { onError, onSuccess } from '../common/toastNotification';
-import CountrySelect from '../common/rf-data/CountrySelect';
-import './CompanyEditor.css';
-import { getErrorMessage } from '../common/utils';
+import { Field, Form, Formik } from 'formik'
+import { useEffect, useState } from "react"
+import { connect } from 'react-redux'
+import { useParams, Link } from "react-router-dom"
+import * as Yup from 'yup'
+import BackButton from "../common/BackButton"
+import companyService from './companyService'
+import userService from '../user/userService'
+import HighlightInput from '../common/HighlightInput'
+import useHistoryBack from '../common/useHistoryBack'
+import { onError, onSuccess } from '../common/toastNotification'
+import CountrySelect from '../common/rf-data/CountrySelect'
+import './CompanyEditor.css'
+import { getErrorMessage } from '../common/utils'
 
 function CompanyEditor({ onSuccess, onError }) {
-    const { id } = useParams();
-    const [company, setCompany] = useState();
+    const { id } = useParams()
+    const [company, setCompany] = useState()
     const [formData, setFormData] = useState({
         city: '',
         address: '',
         site: '',
         email: '',
         phone: ''
-    });
-    const [owners, setOwners] = useState([]);
-    const historyBack = useHistoryBack("/companies");
+    })
+    const [owners, setOwners] = useState([])
+    const historyBack = useHistoryBack("/companies")
 
     const validationSchema = Yup.object({
         city: Yup.string().required('Required'),
         address: Yup.string().required('Required'),
         email: Yup.string().email('Invalid email address'),
         phone: Yup.string().required('Required')
-    });
+    })
 
     useEffect(() => {
         companyService.findByIdFullDetails(id)
             .then(response => {
-                setCompany(response.data);
-                toFormData(response.data);
+                setCompany(response.data)
+                toFormData(response.data)
             })
-    }, [id]);
+    }, [id])
 
     useEffect(() => {
         userService.findNames(id)
-            .then(response => setOwners(response.data.content));
-    }, [id]);
+            .then(response => setOwners(response.data.content))
+    }, [id])
 
     function toFormData(company) {
         setFormData({
@@ -53,14 +53,14 @@ function CompanyEditor({ onSuccess, onError }) {
             site: company.site || '',
             email: company.email,
             phone: company.phone || ''
-        });
+        })
     }
 
     function onSubmit(formData) {
         companyService.update(company.id, formData)
             .then(() => {
-                onSuccess(`${company.fullName} was updated successfuly`);
-                historyBack();
+                onSuccess(`${company.fullName} was updated successfuly`)
+                historyBack()
             }, error => onError(getErrorMessage(error.response.data)))
     }
 
@@ -143,13 +143,13 @@ function CompanyEditor({ onSuccess, onError }) {
                 </div>
             </div>}
         </div>
-    );
+    )
 }
 
 const mapStateToProps = () => {
-    return {};
-};
+    return {}
+}
 
 export default connect(mapStateToProps, {
     onSuccess, onError
-})(CompanyEditor);
+})(CompanyEditor)

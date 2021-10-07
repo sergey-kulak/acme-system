@@ -1,20 +1,20 @@
-import React, { useCallback, useEffect, useReducer, useState } from "react";
-import * as Icon from 'react-feather';
-import { FormattedMessage, useIntl } from 'react-intl';
-import { connect } from "react-redux";
-import { useHistory, useLocation } from "react-router";
-import { Link } from "react-router-dom";
-import { combineAsUrlParams } from "../common/paginationUtils";
-import { setOnline } from '../common/rsocket';
-import { hasRole, ROLE } from "../common/security";
-import ShowFilterButton from "../common/ShowFilterButton";
-import { onError, onSuccess } from '../common/toastNotification';
-import { getErrorMessage, isEmptyObject } from "../common/utils";
-import publicPointNotificationService from "../public-point/publicPointNotificationService";
-import publicPointTableService from "../public-point/publicPointTableService";
-import LiveOrdersFilter from "./LiveOrdersFilter";
-import { reducer } from './liveOrdersReducer';
-import orderService from "./orderService";
+import React, { useCallback, useEffect, useReducer, useState } from "react"
+import * as Icon from 'react-feather'
+import { FormattedMessage, useIntl } from 'react-intl'
+import { connect } from "react-redux"
+import { useHistory, useLocation } from "react-router"
+import { Link } from "react-router-dom"
+import { combineAsUrlParams } from "../common/paginationUtils"
+import { setOnline } from '../common/rsocket'
+import { hasRole, ROLE } from "../common/security"
+import ShowFilterButton from "../common/ShowFilterButton"
+import { onError, onSuccess } from '../common/toastNotification'
+import { getErrorMessage, isEmptyObject } from "../common/utils"
+import publicPointNotificationService from "../public-point/publicPointNotificationService"
+import publicPointTableService from "../public-point/publicPointTableService"
+import LiveOrdersFilter from "./LiveOrdersFilter"
+import { reducer } from './liveOrdersReducer'
+import orderService from "./orderService"
 
 const initialState = {
     tableOrders: [],
@@ -22,13 +22,13 @@ const initialState = {
 }
 
 function LiveOrdersDashboard({ auth, onSuccess, onError, setOnline }) {
-    const history = useHistory();
-    const intl = useIntl();
-    const query = new URLSearchParams(useLocation().search);
+    const history = useHistory()
+    const intl = useIntl()
+    const query = new URLSearchParams(useLocation().search)
 
-    const [state, dispatch] = useReducer(reducer, initialState);
-    const [filter, setFilter] = useState(Filter.fromUrlParams(query, auth));
-    const [showFilter, setShowFilter] = useState(true);
+    const [state, dispatch] = useReducer(reducer, initialState)
+    const [filter, setFilter] = useState(Filter.fromUrlParams(query, auth))
+    const [showFilter, setShowFilter] = useState(true)
 
     const loadData = useCallback(() => {
         return orderService.findLive(filter)
@@ -41,12 +41,12 @@ function LiveOrdersDashboard({ auth, onSuccess, onError, setOnline }) {
             && !isEmptyObject(state.tableNames)) {
             loadData()
                 .then(() => {
-                    history.replace(combineAsUrlParams(filter.toUrlParams(auth)));
-                });
+                    history.replace(combineAsUrlParams(filter.toUrlParams(auth)))
+                })
         } else {
-            dispatch({ type: 'set-orders', payload: [] });
+            dispatch({ type: 'set-orders', payload: [] })
         }
-    }, [filter, history, auth, state.tableNames, loadData]);
+    }, [filter, history, auth, state.tableNames, loadData])
 
     useEffect(() => {
         if (filter.companyId && filter.publicPointId) {
@@ -56,45 +56,45 @@ function LiveOrdersDashboard({ auth, onSuccess, onError, setOnline }) {
         } else {
             dispatch({ type: 'set-table-names', payload: [] })
         }
-    }, [filter]);
+    }, [filter])
 
     const processEvent = useCallback((response) => {
         let event = response.data
-        console.log(response.data);
+        console.log(response.data)
         switch (event.type) {
             case 'OrderItemStatusChangedEvent':
                 switch (event.data.toStatus) {
                     case 'IN_PROGRESS':
                     case 'DONE':
                     case 'DECLINED':
-                        updateItemStatus(event.data.itemId, event.data.toStatus);
-                        break;
+                        updateItemStatus(event.data.itemId, event.data.toStatus)
+                        break
                     default:
                 }
-                break;
+                break
             case 'OrderStatusChangedEvent':
                 switch (event.data.toStatus) {
                     case 'CONFIRMED':
                     case 'DELIVERED':
                     case 'IN_PROGRESS':
                     case 'READY':
-                        updateOrderStatus(event.data.orderId, event.data.toStatus);
-                        break;
+                        updateOrderStatus(event.data.orderId, event.data.toStatus)
+                        break
                     case 'DECLINED':
                     case 'PAID':
-                        removeOrder(event.data.orderId);
-                        break;
+                        removeOrder(event.data.orderId)
+                        break
                     default:
                 }
-                break;
+                break
             case 'OrderCreatedEvent':
-                const orderId = event.data.orderId;
+                const orderId = event.data.orderId
                 orderService.findById(orderId)
                     .then(response =>
                         dispatch({ type: 'add-order', payload: response.data }))
-                break;
+                break
             default:
-                console.log(`Unknown type: ${event.type}`);
+                console.log(`Unknown type: ${event.type}`)
         }
     }, [])
 
@@ -107,7 +107,7 @@ function LiveOrdersDashboard({ auth, onSuccess, onError, setOnline }) {
                 }
             },
             onError: error => {
-                console.error(error);
+                console.error(error)
                 if (notPpUser) {
                     setOnline(false)
                 }
@@ -117,9 +117,9 @@ function LiveOrdersDashboard({ auth, onSuccess, onError, setOnline }) {
                 if (notPpUser) {
                     setOnline(true)
                 }
-                sub.request(2147483647);
+                sub.request(2147483647)
             }
-        });
+        })
     }, [auth, processEvent, setOnline])
 
     useEffect(() => {
@@ -131,75 +131,75 @@ function LiveOrdersDashboard({ auth, onSuccess, onError, setOnline }) {
             }
             publicPointNotificationService
                 .connect(auth.accessToken, cmpId, ppId)
-                .then(subscribe);
+                .then(subscribe)
         } else {
             publicPointNotificationService.close()
         }
-    }, [filter, subscribe, auth]);
+    }, [filter, subscribe, auth])
 
     function updateOrderStatus(orderId, status) {
-        dispatch({ type: 'update-order-status', payload: { orderId, status } });
+        dispatch({ type: 'update-order-status', payload: { orderId, status } })
     }
 
     function removeOrder(orderId) {
-        dispatch({ type: 'remove-order', payload: orderId });
+        dispatch({ type: 'remove-order', payload: orderId })
     }
 
     function updateItemStatus(itemId, status) {
-        dispatch({ type: 'update-item-status', payload: { itemId, status } });
+        dispatch({ type: 'update-item-status', payload: { itemId, status } })
     }
 
     function onFilterChange(filter) {
-        setFilter(filter);
+        setFilter(filter)
     }
 
     function confirmOrder(order) {
         changeOrderStatus(order, 'CONFIRMED', `${order.number} was confirmed successfully`,
-            () => updateOrderStatus(order.id, 'CONFIRMED'));
+            () => updateOrderStatus(order.id, 'CONFIRMED'))
     }
 
     function declineOrder(order) {
         changeOrderStatus(order, 'DECLINED', `${order.number} was declined successfully`,
-            () => removeOrder(order.id));
+            () => removeOrder(order.id))
     }
 
     function deliverOrder(order) {
         changeOrderStatus(order, 'DELIVERED', `${order.number} was delivered successfully`,
-            () => updateOrderStatus(order.id, 'DELIVERED'));
+            () => updateOrderStatus(order.id, 'DELIVERED'))
     }
 
     function payOrder(order) {
         changeOrderStatus(order, 'PAID', `${order.number} was paid successfully`,
-            () => removeOrder(order.id));
+            () => removeOrder(order.id))
     }
 
     function changeOrderStatus(order, status, successMessage, callback) {
         orderService.changeOrderStatus(order.id, status)
             .then(() => {
-                onSuccess(successMessage);
+                onSuccess(successMessage)
                 if (callback) {
                     callback()
                 }
             }, error => {
-                onError(getErrorMessage(error.response.data));
-            });
+                onError(getErrorMessage(error.response.data))
+            })
     }
 
     function inProgressItem(item) {
         changeItemStatus(item, 'IN_PROGRESS', 'Item was set in progress',
-            () => updateItemStatus(item.id, 'IN_PROGRESS'));
+            () => updateItemStatus(item.id, 'IN_PROGRESS'))
     }
 
     function changeItemStatus(item, status, successMessage, callback) {
         orderService.changeItemStatus(item.id, status)
             .then(() => {
-                onSuccess(successMessage);
+                onSuccess(successMessage)
                 if (callback) {
                     callback()
                 }
             }, error => {
-                onError(getErrorMessage(error.response.data));
-            });
+                onError(getErrorMessage(error.response.data))
+            })
     }
 
     function declineItem(item) {
@@ -238,12 +238,12 @@ function LiveOrdersDashboard({ auth, onSuccess, onError, setOnline }) {
                 onClick={e => payOrder(order)}>
                 <Icon.DollarSign className="filter-icon" />
             </button>}
-        </div>;
+        </div>
     }
 
     function buttonsCell(order, item) {
         let inWorkOrder = order.status === 'CONFIRMED'
-            || order.status === 'IN_PROGRESS';
+            || order.status === 'IN_PROGRESS'
         return inWorkOrder && <div>
             {item.status === 'CREATED' && <>
                 <button type="button" className="btn btn-light cmt-small-btn"
@@ -324,58 +324,58 @@ function LiveOrdersDashboard({ auth, onSuccess, onError, setOnline }) {
                 </table>
             </div>}
         </div>
-    );
+    )
 }
 
 class Filter {
-    static URL_PARAM_COMPANY_ID = 'cmp';
-    static URL_PARAM_PP_ID = 'pp';
+    static URL_PARAM_COMPANY_ID = 'cmp'
+    static URL_PARAM_PP_ID = 'pp'
 
     constructor(companyId, publicPointId) {
-        this.publicPointId = publicPointId;
-        this.companyId = companyId;
+        this.publicPointId = publicPointId
+        this.companyId = companyId
     }
 
     withNewValue(field, value) {
-        let newFilter = new Filter(this.companyId, this.publicPointId);
-        newFilter[field] = value;
+        let newFilter = new Filter(this.companyId, this.publicPointId)
+        newFilter[field] = value
         if (field === 'companyId') {
-            newFilter.publicPointId = '';
+            newFilter.publicPointId = ''
         }
 
-        return newFilter;
+        return newFilter
     }
 
     toUrlParams(auth) {
         let urlData = {
             [Filter.URL_PARAM_COMPANY_ID]: this.companyId,
             [Filter.URL_PARAM_PP_ID]: this.publicPointId
-        };
+        }
 
         if (!hasRole(auth, ROLE.ADMIN)) {
-            delete urlData[Filter.URL_PARAM_COMPANY_ID];
+            delete urlData[Filter.URL_PARAM_COMPANY_ID]
         }
         if (!hasRole(auth, ROLE.COMPANY_OWNER)) {
-            delete urlData[Filter.URL_PARAM_PP_ID];
+            delete urlData[Filter.URL_PARAM_PP_ID]
         }
-        return { toUrlParams: () => urlData };
+        return { toUrlParams: () => urlData }
     }
 
     static fromUrlParams(urlSearchParams, auth) {
         let companyId = hasRole(auth, ROLE.ADMIN) ?
             urlSearchParams.get(Filter.URL_PARAM_COMPANY_ID) || '' :
-            auth.user.cmpid;
+            auth.user.cmpid
         let ppId = hasRole(auth, ROLE.COMPANY_OWNER) ?
             urlSearchParams.get(Filter.URL_PARAM_PP_ID) || '' :
-            auth.user.ppid;
-        return new Filter(companyId, ppId);
+            auth.user.ppid
+        return new Filter(companyId, ppId)
     }
 }
 
 const mapStateToProps = ({ auth }) => {
-    return { auth };
-};
+    return { auth }
+}
 
 export default connect(mapStateToProps, {
     onSuccess, onError, setOnline
-})(LiveOrdersDashboard);
+})(LiveOrdersDashboard)

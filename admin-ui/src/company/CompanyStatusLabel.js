@@ -1,6 +1,6 @@
-import { memo } from 'react';
-import { FormattedMessage } from 'react-intl';
-import './CompanyStatusLabel.css';
+import { memo } from 'react'
+import { FormattedMessage } from 'react-intl'
+import './CompanyStatusLabel.css'
 
 function CompanyStatusLabel({ status, showText }) {
 
@@ -11,7 +11,7 @@ function CompanyStatusLabel({ status, showText }) {
                 <FormattedMessage id={`company.status.${status.toLowerCase()}`} />
             </div>}
         </div>
-    );
+    )
 }
 
-export default memo(CompanyStatusLabel);
+export default memo(CompanyStatusLabel)

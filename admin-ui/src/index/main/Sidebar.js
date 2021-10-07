@@ -1,20 +1,20 @@
-import { useCallback, useEffect, useState } from 'react';
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import * as Icon from 'react-feather';
-import { connect } from "react-redux";
-import { Link, useHistory } from "react-router-dom";
-import { hasRole, ROLE } from '../../common/security';
-import { onSuccess } from '../../common/toastNotification';
-import { setOnline } from '../../common/rsocket';
-import { onLogout } from '../../common/security/authReducer';
-import publicPointNotificationService from '../../public-point/publicPointNotificationService';
-import './Sidebar.css';
+import { useCallback, useEffect, useState } from 'react'
+import Button from 'react-bootstrap/Button'
+import Form from 'react-bootstrap/Form'
+import * as Icon from 'react-feather'
+import { connect } from "react-redux"
+import { Link, useHistory } from "react-router-dom"
+import { hasRole, ROLE } from '../../common/security'
+import { onSuccess } from '../../common/toastNotification'
+import { setOnline } from '../../common/rsocket'
+import { onLogout } from '../../common/security/authReducer'
+import publicPointNotificationService from '../../public-point/publicPointNotificationService'
+import './Sidebar.css'
 
 function Sidebar({ auth, onLogout, rsocket, setOnline, onSuccess }) {
-    const [isFixed, setFixed] = useState(true);
-    const [isHovered, setHovered] = useState(false);
-    let history = useHistory();
+    const [isFixed, setFixed] = useState(true)
+    const [isHovered, setHovered] = useState(false)
+    let history = useHistory()
 
     const processEvent = useCallback((response) => {
         let event = response.data
@@ -27,39 +27,39 @@ function Sidebar({ auth, onLogout, rsocket, setOnline, onSuccess }) {
         subscription.subscribe({
             onComplete: () => setOnline(false),
             onError: error => {
-                console.error(error);
-                setOnline(false);
+                console.error(error)
+                setOnline(false)
             },
             onNext: processEvent,
             onSubscribe: sub => {
-                setOnline(true);
-                sub.request(2147483647);
+                setOnline(true)
+                sub.request(2147483647)
             }
-        });
+        })
     }, [processEvent, setOnline])
 
     useEffect(() => {
         if (auth.user.cmpid && auth.user.ppid) {
             publicPointNotificationService
                 .connect(auth.accessToken, auth.user.cmpid, auth.user.ppid)
-                .then(subscribe);
+                .then(subscribe)
         }
-    }, [auth, subscribe]);
+    }, [auth, subscribe])
 
     function handleMobileMenuToggle() {
-        setFixed(false);
+        setFixed(false)
         setHovered(!isHovered)
     }
 
     function logout(e) {
-        e.preventDefault();
-        onLogout();
-        history.push("/signin");
+        e.preventDefault()
+        onLogout()
+        history.push("/signin")
     }
 
-    const sbClass = isFixed ? '' : isHovered ? 'hovered' : 'collapsed';
-    const isCompanyUser = hasRole(auth, ROLE.ADMIN) || !!auth.user.cmpid;
-    const rsocketClass = rsocket.isOnline ? 'badge-success online' : 'badge-danger offline';
+    const sbClass = isFixed ? '' : isHovered ? 'hovered' : 'collapsed'
+    const isCompanyUser = hasRole(auth, ROLE.ADMIN) || !!auth.user.cmpid
+    const rsocketClass = rsocket.isOnline ? 'badge-success online' : 'badge-danger offline'
 
     return (
         <div className="px-0">
@@ -193,8 +193,8 @@ function Sidebar({ auth, onLogout, rsocket, setOnline, onSuccess }) {
     )
 }
 
-const mapStateToProps = ({ auth, rsocket }) => ({ auth, rsocket });
+const mapStateToProps = ({ auth, rsocket }) => ({ auth, rsocket })
 
 export default connect(mapStateToProps, {
     onLogout, setOnline, onSuccess
-})(Sidebar);
+})(Sidebar)

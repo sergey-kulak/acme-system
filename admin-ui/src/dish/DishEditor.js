@@ -1,28 +1,28 @@
-import { Field, Form, Formik } from 'formik';
-import { useCallback, useEffect, useRef, useState } from "react";
-import { connect } from 'react-redux';
-import { Redirect, useLocation, useParams } from "react-router-dom";
-import { v4 as uuidv4 } from 'uuid';
-import * as Yup from 'yup';
-import BackButton from "../common/BackButton";
-import fileService from '../common/fileService';
-import HighlightInput from '../common/HighlightInput';
-import ImageUpload from '../common/ImageUpload';
-import { hasRole, ROLE } from '../common/security';
-import { onError, onSuccess } from '../common/toastNotification';
-import useHistoryBack from '../common/useHistoryBack';
-import { getErrorMessage } from "../common/utils";
-import CompanySelect from '../company/CompanySelect';
-import PublicPointSelect from '../public-point/PublicPointSelect';
-import dishService from './dishService';
-import publicPointService from '../public-point/publicPointService';
-import TagSelect from './TagSelect';
+import { Field, Form, Formik } from 'formik'
+import { useCallback, useEffect, useRef, useState } from "react"
+import { connect } from 'react-redux'
+import { Redirect, useLocation, useParams } from "react-router-dom"
+import { v4 as uuidv4 } from 'uuid'
+import * as Yup from 'yup'
+import BackButton from "../common/BackButton"
+import fileService from '../common/fileService'
+import HighlightInput from '../common/HighlightInput'
+import ImageUpload from '../common/ImageUpload'
+import { hasRole, ROLE } from '../common/security'
+import { onError, onSuccess } from '../common/toastNotification'
+import useHistoryBack from '../common/useHistoryBack'
+import { getErrorMessage } from "../common/utils"
+import CompanySelect from '../company/CompanySelect'
+import PublicPointSelect from '../public-point/PublicPointSelect'
+import dishService from './dishService'
+import publicPointService from '../public-point/publicPointService'
+import TagSelect from './TagSelect'
 
 function DishEditor({ auth, onSuccess, onError }) {
-    const { id } = useParams();
-    const { state } = useLocation();
-    const isCreate = id === 'new';
-    const [dish, setDish] = useState();
+    const { id } = useParams()
+    const { state } = useLocation()
+    const isCreate = id === 'new'
+    const [dish, setDish] = useState()
     const [formData, setFormData] = useState({
         name: '',
         description: '',
@@ -31,12 +31,12 @@ function DishEditor({ auth, onSuccess, onError }) {
         companyId: state && state.companyId,
         publicPointId: state && state.publicPointId,
         price: ''
-    });
-    const [image, setImage] = useState();
-    const [imageUrl, setImageUrl] = useState();
-    const formikRef = useRef(null);
-    const [publicPoint, setPublicPoint] = useState();
-    const historyBack = useHistoryBack("/dishes");
+    })
+    const [image, setImage] = useState()
+    const [imageUrl, setImageUrl] = useState()
+    const formikRef = useRef(null)
+    const [publicPoint, setPublicPoint] = useState()
+    const historyBack = useHistoryBack("/dishes")
 
     const validationSchema = Yup.object({
         name: Yup.string().required('Required'),
@@ -45,10 +45,10 @@ function DishEditor({ auth, onSuccess, onError }) {
         companyId: Yup.string().required('Required'),
         publicPointId: Yup.string().required('Required'),
         price: Yup.number().typeError('Must be a number').required('Required'),
-    });
+    })
 
     const loadImage = useCallback((data) => {
-        let imageKey = data.primaryImage;
+        let imageKey = data.primaryImage
         let request = {
             companyId: data.companyId,
             publicPointId: data.publicPointId,
@@ -59,8 +59,8 @@ function DishEditor({ auth, onSuccess, onError }) {
         return fileService.getDishImageUrls(request)
             .then(response => response.data[imageKey])
             .then(url => {
-                setImageUrl(url);
-                return data;
+                setImageUrl(url)
+                return data
             })
     }, [])
 
@@ -70,11 +70,11 @@ function DishEditor({ auth, onSuccess, onError }) {
                 .then(response => response.data)
                 .then(loadImage)
                 .then(data => {
-                    setDish(data);
-                    toFormData(data);
-                });
+                    setDish(data)
+                    toFormData(data)
+                })
         }
-    }, [id, isCreate, loadImage]);
+    }, [id, isCreate, loadImage])
 
     function toFormData(dish) {
         setFormData({
@@ -85,19 +85,19 @@ function DishEditor({ auth, onSuccess, onError }) {
             companyId: dish.companyId,
             publicPointId: dish.publicPointId,
             price: dish.price
-        });
+        })
     }
 
     useEffect(() => {
         if (formData.publicPointId) {
             publicPointService.findByIdFullDetails(formData.publicPointId)
                 .then(response => response.data)
-                .then(setPublicPoint);
+                .then(setPublicPoint)
         }
-    }, [formData.publicPointId]);
+    }, [formData.publicPointId])
 
     function uploadImage() {
-        let imageKey = `${dish && dish.id ? dish.id : uuidv4()}/${uuidv4()}.jpg`;
+        let imageKey = `${dish && dish.id ? dish.id : uuidv4()}/${uuidv4()}.jpg`
 
         let request = {
             companyId: formData.companyId,
@@ -112,36 +112,36 @@ function DishEditor({ auth, onSuccess, onError }) {
     }
 
     function save(request, primaryImage) {
-        request.primaryImage = primaryImage;
+        request.primaryImage = primaryImage
         if (isCreate) {
             return dishService.create(request)
                 .then(() => {
-                    onSuccess(`${request.name} dish was created successfuly`);
-                    historyBack();
+                    onSuccess(`${request.name} dish was created successfuly`)
+                    historyBack()
                 }, error => {
-                    let errorMessage = error.response.data.error;
-                    onError(errorMessage || 'Error');
+                    let errorMessage = error.response.data.error
+                    onError(errorMessage || 'Error')
                 })
         } else {
-            delete request.companyId;
-            delete request.publicPointId;
+            delete request.companyId
+            delete request.publicPointId
 
             return dishService.update(dish.id, request)
                 .then(() => {
-                    onSuccess(`${request.name} dish was updated successfuly`);
-                    historyBack();
+                    onSuccess(`${request.name} dish was updated successfuly`)
+                    historyBack()
                 }, error => onError(getErrorMessage(error.response.data)))
         }
     }
 
     function onSubmit(formData) {
-        let request = { ...formData };
+        let request = { ...formData }
         let imagePromise = image ? uploadImage() : Promise.resolve(dish.primaryImage)
-        imagePromise.then(imageKey => save(request, imageKey));
+        imagePromise.then(imageKey => save(request, imageKey))
     }
 
     function onFileChange(file) {
-        setImage(file);
+        setImage(file)
         setImageUrl(URL.createObjectURL(file))
     }
 
@@ -149,7 +149,7 @@ function DishEditor({ auth, onSuccess, onError }) {
         return <Redirect to="/dishes" />
     }
 
-    const canEdit = hasRole(auth, ROLE.PP_MANAGER);
+    const canEdit = hasRole(auth, ROLE.PP_MANAGER)
 
     return (
         <div className="main-content">
@@ -237,13 +237,13 @@ function DishEditor({ auth, onSuccess, onError }) {
                     </div>}
             </div>
         </div>
-    );
+    )
 }
 
 const mapStateToProps = ({ auth }) => {
-    return { auth };
-};
+    return { auth }
+}
 
 export default connect(mapStateToProps, {
     onSuccess, onError
-})(DishEditor);
+})(DishEditor)

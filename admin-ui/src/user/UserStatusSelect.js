@@ -1,16 +1,16 @@
-import { useIntl } from 'react-intl';
-import Select from '../common/Select';
-import { toOptions } from '../common/utils';
+import { useIntl } from 'react-intl'
+import Select from '../common/Select'
+import { toOptions } from '../common/utils'
 
-const STATUSES = ['INACTIVE', 'ACTIVE'];
+const STATUSES = ['INACTIVE', 'ACTIVE']
 
 function UserStatusSelect(props) {
-    const intl = useIntl();
-    const options = toOptions(intl, STATUSES, 'user.status');
+    const intl = useIntl()
+    const options = toOptions(intl, STATUSES, 'user.status')
 
     return (
         <Select options={options} {...props} />
-    );
+    )
 }
 
-export default UserStatusSelect;
+export default UserStatusSelect

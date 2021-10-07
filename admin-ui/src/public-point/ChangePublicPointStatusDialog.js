@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
-import PublicPointStatusSelect from './PublicPointStatusSelect';
+import { useState } from 'react'
+import Button from 'react-bootstrap/Button'
+import Modal from 'react-bootstrap/Modal'
+import PublicPointStatusSelect from './PublicPointStatusSelect'
 
 const ALLOWED_NEXT_STATUSES = {
     'INACTIVE': ['ACTIVE', 'STOPPED'],
@@ -14,23 +14,23 @@ const ALLOWED_ADMIN_NEXT_STATUSES = {
 }
 
 function ChangePublicPointStatusDialog({ show, status, isAdmin, onClose }) {
-    const [newStatus, setNewStatus] = useState(status);
+    const [newStatus, setNewStatus] = useState(status)
 
     function handleStatusChange(selectedStatus) {
-        setNewStatus(selectedStatus);
+        setNewStatus(selectedStatus)
     }
 
     function onSave() {
-        onClose(newStatus !== status ? newStatus : null);
+        onClose(newStatus !== status ? newStatus : null)
     }
 
     function optionFilter(options) {
-        let allowedStatuses = ALLOWED_NEXT_STATUSES[status] || [];
+        let allowedStatuses = ALLOWED_NEXT_STATUSES[status] || []
         if (isAdmin) {
-            let adminAllowedStatuses = ALLOWED_ADMIN_NEXT_STATUSES[status] || [];
-            allowedStatuses = allowedStatuses.concat(adminAllowedStatuses);
+            let adminAllowedStatuses = ALLOWED_ADMIN_NEXT_STATUSES[status] || []
+            allowedStatuses = allowedStatuses.concat(adminAllowedStatuses)
         }
-        return options.filter(option => allowedStatuses.includes(option.value));
+        return options.filter(option => allowedStatuses.includes(option.value))
     }
 
     return (
@@ -58,7 +58,7 @@ function ChangePublicPointStatusDialog({ show, status, isAdmin, onClose }) {
                 </Button>
             </Modal.Footer>
         </Modal>
-    );
+    )
 }
 
-export default ChangePublicPointStatusDialog;
+export default ChangePublicPointStatusDialog

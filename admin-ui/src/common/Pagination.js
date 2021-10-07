@@ -1,46 +1,46 @@
-import BsPagination from 'react-bootstrap/Pagination';
-import './Pagination.css';
-import { Pageable } from './paginationUtils';
+import BsPagination from 'react-bootstrap/Pagination'
+import './Pagination.css'
+import { Pageable } from './paginationUtils'
 
-const VISIBLE_PAGES = 5;
+const VISIBLE_PAGES = 5
 
 const calculatePages = (currentPage, totalPages) => {
-    let pos = currentPage - Math.floor(VISIBLE_PAGES / 2);
+    let pos = currentPage - Math.floor(VISIBLE_PAGES / 2)
     if (pos < 1) {
-        pos = 1;
+        pos = 1
     }
-    let pages = [];
+    let pages = []
     while (pages.length < VISIBLE_PAGES && pos <= totalPages) {
-        pages.push(pos++);
+        pages.push(pos++)
     }
     if (pages.length < VISIBLE_PAGES) {
-        pos = pages[0] - 1;
+        pos = pages[0] - 1
         while (pages.length < VISIBLE_PAGES && pos >= 1) {
-            pages.unshift(pos--);
+            pages.unshift(pos--)
         }
     }
-    return pages;
+    return pages
 }
 
 function Pagination({ page, onPageableChange, className }) {
 
     function onPageClick(pageIndex) {
-        onPageableChange(new Pageable(pageIndex, page.size));
+        onPageableChange(new Pageable(pageIndex, page.size))
     }
 
     function onSizeClick(event) {
-        onPageableChange(new Pageable(page.number, event.target.value));
+        onPageableChange(new Pageable(page.number, event.target.value))
     }
 
 
     if (!page || typeof page.number !== 'number') {
-        return "";
+        return ""
     }
-    const currentPage = page.number + 1;
-    const totalPages = page.totalPages;
+    const currentPage = page.number + 1
+    const totalPages = page.totalPages
     const pageIndexes = calculatePages(currentPage, totalPages)
-    const totalElements = page.totalElements;
-    const size = page.size;
+    const totalElements = page.totalElements
+    const size = page.size
 
     return (
         <div className={`pagination-wrapper row ${className}`}>
@@ -78,7 +78,7 @@ function Pagination({ page, onPageableChange, className }) {
                 </select>
             </div>
         </div>
-    );
+    )
 }
 
-export default Pagination;
+export default Pagination

@@ -6,7 +6,7 @@ function ErrorSpan({ children }) {
                 {children}
             </span >
         </small >
-    );
+    )
 }
 
-export default ErrorSpan;
+export default ErrorSpan

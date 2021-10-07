@@ -1,5 +1,5 @@
-import { Route, Redirect } from "react-router-dom";
-import { hasRole } from './index';
+import { Route, Redirect } from "react-router-dom"
+import { hasRole } from './index'
 
 
 
@@ -9,7 +9,7 @@ function SecuredRoute({ auth, role, children, ...props }) {
             {hasRole(auth, role) ? children : <Redirect to="/" />}
         </Route >
 
-    );
+    )
 }
 
-export default SecuredRoute;
+export default SecuredRoute

@@ -1,11 +1,11 @@
-import './ImageUpload.css';
+import './ImageUpload.css'
 
 function ImageUpload({ src, onChange, isDisabled }) {
 
     function onFileChange(event) {
-        let file = event.target.files[0];
+        let file = event.target.files[0]
         if (onChange) {
-            onChange(file);
+            onChange(file)
         }
     }
 
@@ -18,7 +18,7 @@ function ImageUpload({ src, onChange, isDisabled }) {
 
             {!isDisabled && <input id="file-input" type="file" onChange={onFileChange} />}
         </div>
-    );
+    )
 }
 
-export default ImageUpload;
+export default ImageUpload

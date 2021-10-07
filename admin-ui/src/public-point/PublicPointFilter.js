@@ -1,21 +1,21 @@
-import { DebounceInput } from 'react-debounce-input';
-import { useState } from 'react';
-import CompanySelect from "../company/CompanySelect";
-import PublicPointStatusSelect from './PublicPointStatusSelect';
+import { DebounceInput } from 'react-debounce-input'
+import { useState } from 'react'
+import CompanySelect from "../company/CompanySelect"
+import PublicPointStatusSelect from './PublicPointStatusSelect'
 
 function PublicPointFilter({ isAdmin, filter, onChange }) {
-    const [statuses, setStatuses] = useState(filter.status);
+    const [statuses, setStatuses] = useState(filter.status)
 
     function handleChange(e) {
-        onChange(filter.withNewValue(e.target.name, e.target.value));
+        onChange(filter.withNewValue(e.target.name, e.target.value))
     }
 
     function handleCompanyChange(companyId) {
-        onChange(filter.withNewValue('companyId', companyId));
+        onChange(filter.withNewValue('companyId', companyId))
     }
 
     function onStatusBlur() {
-        onChange(filter.withNewValue('status', statuses));
+        onChange(filter.withNewValue('status', statuses))
     }
     return (
         <div className="form-row">
@@ -40,7 +40,7 @@ function PublicPointFilter({ isAdmin, filter, onChange }) {
                 </PublicPointStatusSelect>
             </div>
         </div>
-    );
+    )
 }
 
-export default PublicPointFilter;
+export default PublicPointFilter

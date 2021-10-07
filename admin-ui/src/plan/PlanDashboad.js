@@ -1,86 +1,86 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import * as Icon from 'react-feather';
-import { useIntl } from 'react-intl';
-import { connect } from "react-redux";
-import { Link, useHistory, useLocation } from "react-router-dom";
-import Pagination from '../common/Pagination';
-import { combineAsUrlParams, Pageable, Sort } from '../common/paginationUtils';
-import ShowFilterButton from '../common/ShowFilterButton';
-import SortColumn from '../common/SortColumn';
-import { onError, onSuccess } from '../common/toastNotification';
-import companyService from '../company/companyService';
-import ChangePlanStatusDialog from './ChangePlanStatusDialog';
-import './PlanDashboard.css';
-import PlanFilter from './PlanFilter';
-import planService from './planService';
-import PlanStatusLabel from './PlanStatusLabel';
+import React, { useCallback, useEffect, useState } from 'react'
+import * as Icon from 'react-feather'
+import { useIntl } from 'react-intl'
+import { connect } from "react-redux"
+import { Link, useHistory, useLocation } from "react-router-dom"
+import Pagination from '../common/Pagination'
+import { combineAsUrlParams, Pageable, Sort } from '../common/paginationUtils'
+import ShowFilterButton from '../common/ShowFilterButton'
+import SortColumn from '../common/SortColumn'
+import { onError, onSuccess } from '../common/toastNotification'
+import companyService from '../company/companyService'
+import ChangePlanStatusDialog from './ChangePlanStatusDialog'
+import './PlanDashboard.css'
+import PlanFilter from './PlanFilter'
+import planService from './planService'
+import PlanStatusLabel from './PlanStatusLabel'
 
 function PlanDashboard({ onSuccess, onError }) {
-    const history = useHistory();
-    const intl = useIntl();
-    const query = new URLSearchParams(useLocation().search);
+    const history = useHistory()
+    const intl = useIntl()
+    const query = new URLSearchParams(useLocation().search)
 
-    const [page, setPage] = useState({ content: [] });
-    const [pageable, setPageable] = useState(Pageable.fromUrlParams(query));
-    const [sort, setSort] = useState(Sort.fromUrlParams(query, 'name'));
-    const [filter, setFilter] = useState(Filter.fromUrlParams(query));
-    const [showFilter, setShowFilter] = useState(false);
-    const [showStatusChangeDialog, setShowStatusChangeDialog] = useState(false);
-    const [modifiedPlan, setModifiedPlan] = useState();
-    const [openedPlans, setOpenedPlans] = useState({});
-    const [companyNames, setCompanyNames] = useState({});
+    const [page, setPage] = useState({ content: [] })
+    const [pageable, setPageable] = useState(Pageable.fromUrlParams(query))
+    const [sort, setSort] = useState(Sort.fromUrlParams(query, 'name'))
+    const [filter, setFilter] = useState(Filter.fromUrlParams(query))
+    const [showFilter, setShowFilter] = useState(false)
+    const [showStatusChangeDialog, setShowStatusChangeDialog] = useState(false)
+    const [modifiedPlan, setModifiedPlan] = useState()
+    const [openedPlans, setOpenedPlans] = useState({})
+    const [companyNames, setCompanyNames] = useState({})
 
     const loadData = useCallback(() => {
         return planService.find(filter, pageable, sort)
             .then(response => setPage(response.data))
-    }, [filter, pageable, sort]);
+    }, [filter, pageable, sort])
 
     useEffect(() => {
         loadData()
             .then(() => {
-                history.replace(combineAsUrlParams(filter, pageable, sort));
-            });
-    }, [pageable, sort, filter, history, loadData]);
+                history.replace(combineAsUrlParams(filter, pageable, sort))
+            })
+    }, [pageable, sort, filter, history, loadData])
 
     useEffect(() => {
         companyService.findNames()
             .then(response => {
                 let data = response.data.reduce((acc, item) => {
-                    acc[item.id] = item.fullName;
-                    return acc;
+                    acc[item.id] = item.fullName
+                    return acc
                 }, {})
-                setCompanyNames(data);
-            });
-    }, []);
+                setCompanyNames(data)
+            })
+    }, [])
 
     function onPageableChange(page) {
-        setPageable(page);
+        setPageable(page)
     }
 
     function onSortChange(sort) {
-        setSort(sort);
+        setSort(sort)
     }
 
     function onFilterChange(filter) {
-        setFilter(filter);
+        setFilter(filter)
     }
 
     function onStatusClick(e, modifiedPlan) {
-        e.preventDefault();
-        setModifiedPlan(modifiedPlan);
-        setShowStatusChangeDialog(true);
+        e.preventDefault()
+        setModifiedPlan(modifiedPlan)
+        setShowStatusChangeDialog(true)
     }
 
     function onStatusChange(newStatus) {
-        setShowStatusChangeDialog(false);
+        setShowStatusChangeDialog(false)
         if (newStatus) {
             planService.changeStatus(modifiedPlan.id, { status: newStatus })
                 .then(() => {
-                    onSuccess("Plan status was changed successfully");
-                    loadData();
+                    onSuccess("Plan status was changed successfully")
+                    loadData()
                 }, error => {
-                    onError(error.response.data);
-                });
+                    onError(error.response.data)
+                })
         }
     }
 
@@ -88,14 +88,14 @@ function PlanDashboard({ onSuccess, onError }) {
         setOpenedPlans(prev => ({
             ...prev,
             [planId]: { isOpen, stats: stats }
-        }));
+        }))
     }
 
     function onExpandClick(plan) {
-        let planId = plan.id;
-        let planData = openedPlans[planId];
+        let planId = plan.id
+        let planData = openedPlans[planId]
         if (planData && planData.stats) {
-            setPlanData(planId, !planData.isOpen, planData.stats);
+            setPlanData(planId, !planData.isOpen, planData.stats)
         } else {
             planService.findStatistics(planId)
                 .then(response => response.data)
@@ -104,8 +104,8 @@ function PlanDashboard({ onSuccess, onError }) {
                     for (let cmpId in data) {
                         cmpItems.push(`${companyNames[cmpId]} (${data[cmpId]})`)
                     }
-                    setPlanData(planId, true, cmpItems.join(", "));
-                });
+                    setPlanData(planId, true, cmpItems.join(", "))
+                })
         }
     }
 
@@ -200,31 +200,31 @@ function PlanDashboard({ onSuccess, onError }) {
                 }
             </div>
         </div>
-    );
+    )
 }
 
 class Filter {
-    static URL_PARAM_NAME_PATTERN = 'pn';
-    static URL_PARAM_TABLE_COUNT = 'tc';
-    static URL_PARAM_COUNTRY = 'cn';
-    static URL_PARAM_ONLY_GLOBAL = 'og';
-    static URL_PARAM_STATUS = 'st';
-    static URL_PARAM_COMPANY_ID = 'cm';
+    static URL_PARAM_NAME_PATTERN = 'pn'
+    static URL_PARAM_TABLE_COUNT = 'tc'
+    static URL_PARAM_COUNTRY = 'cn'
+    static URL_PARAM_ONLY_GLOBAL = 'og'
+    static URL_PARAM_STATUS = 'st'
+    static URL_PARAM_COMPANY_ID = 'cm'
 
     constructor(namePattern, tableCount, country, onlyGlobal, status, companyId) {
-        this.namePattern = namePattern;
-        this.tableCount = tableCount;
-        this.country = country;
-        this.onlyGlobal = onlyGlobal;
-        this.status = status;
-        this.companyId = companyId;
+        this.namePattern = namePattern
+        this.tableCount = tableCount
+        this.country = country
+        this.onlyGlobal = onlyGlobal
+        this.status = status
+        this.companyId = companyId
     }
 
     withNewValue(field, value) {
         let newFilter = new Filter(this.namePattern, this.tableCount,
-            this.country, this.onlyGlobal, this.status, this.companyId);
-        newFilter[field] = value;
-        return newFilter;
+            this.country, this.onlyGlobal, this.status, this.companyId)
+        newFilter[field] = value
+        return newFilter
     }
 
     toUrlParams() {
@@ -239,8 +239,8 @@ class Filter {
     }
 
     static fromUrlParams(urlSearchParams) {
-        let urlStatuses = urlSearchParams.getAll(Filter.URL_PARAM_STATUS);
-        let isGlobal = urlSearchParams.get(Filter.URL_PARAM_ONLY_GLOBAL);
+        let urlStatuses = urlSearchParams.getAll(Filter.URL_PARAM_STATUS)
+        let isGlobal = urlSearchParams.get(Filter.URL_PARAM_ONLY_GLOBAL)
         return new Filter(
             urlSearchParams.get(Filter.URL_PARAM_NAME_PATTERN) || '',
             urlSearchParams.get(Filter.URL_PARAM_TABLE_COUNT) || '',
@@ -248,14 +248,14 @@ class Filter {
             isGlobal === 'true',
             urlStatuses && urlStatuses.length ? urlStatuses : ['ACTIVE', 'INACTIVE'],
             urlSearchParams.get(Filter.URL_PARAM_COMPANY_ID) || ''
-        );
+        )
     }
 }
 
 const mapStateToProps = ({ auth }) => {
-    return { auth };
-};
+    return { auth }
+}
 
 export default connect(mapStateToProps, {
     onSuccess, onError
-})(PlanDashboard);
+})(PlanDashboard)

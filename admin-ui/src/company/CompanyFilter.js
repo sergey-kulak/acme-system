@@ -1,21 +1,21 @@
-import { DebounceInput } from 'react-debounce-input';
-import { useState } from 'react';
-import CompanyStatusSelect from './CompanyStatusSelect';
-import CountrySelect from '../common/rf-data/CountrySelect';
+import { DebounceInput } from 'react-debounce-input'
+import { useState } from 'react'
+import CompanyStatusSelect from './CompanyStatusSelect'
+import CountrySelect from '../common/rf-data/CountrySelect'
 
 function CompanyFilter({ filter, onChange }) {
-    const [statuses, setStatuses] = useState(filter.status);
+    const [statuses, setStatuses] = useState(filter.status)
 
     function handleChange(e) {
-        onChange(filter.withNewValue(e.target.name, e.target.value));
+        onChange(filter.withNewValue(e.target.name, e.target.value))
     }
 
     function onBlur() {
-        onChange(filter.withNewValue('status', statuses));
+        onChange(filter.withNewValue('status', statuses))
     }
 
     function onCountryChange(country) {
-        onChange(filter.withNewValue('country', country));
+        onChange(filter.withNewValue('country', country))
     }
 
     return (
@@ -47,7 +47,7 @@ function CompanyFilter({ filter, onChange }) {
                 </CompanyStatusSelect>
             </div>
         </div>
-    );
+    )
 }
 
-export default CompanyFilter;
+export default CompanyFilter

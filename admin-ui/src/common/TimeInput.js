@@ -1,20 +1,20 @@
-import './TimeInput.css';
+import './TimeInput.css'
 
 function TimeInput({ value, onChange, field, readOnly, form }) {
-    value = field && field.value ? field.value : value;
+    value = field && field.value ? field.value : value
 
     function onHourChange(e) {
-        let hour = e.target.value;
-        let min = value ? value.substring(getColonPos()) : ':00';
-        fireChange(addLeadZero(hour) + min);
+        let hour = e.target.value
+        let min = value ? value.substring(getColonPos()) : ':00'
+        fireChange(addLeadZero(hour) + min)
     }
 
     function addLeadZero(value) {
-        return value.length === 1 ? '0' + value : value;
+        return value.length === 1 ? '0' + value : value
     }
 
     function removeLeadZero(value) {
-        return value && value.startsWith('0') ? value.substring(1) : value;
+        return value && value.startsWith('0') ? value.substring(1) : value
     }
 
     function getColonPos() {
@@ -28,23 +28,23 @@ function TimeInput({ value, onChange, field, readOnly, form }) {
                     name: field.name,
                     value: newValue
                 }
-            };
-            field.onChange(event);
+            }
+            field.onChange(event)
         }
         if (onChange) {
-            onChange(newValue);
+            onChange(newValue)
         }
     }
 
     function onMinChange(e) {
-        let min = e.target.value;
+        let min = e.target.value
         let hour = value ? value.substring(0, getColonPos() + 1) : '00:'
-        fireChange(hour + addLeadZero(min));
+        fireChange(hour + addLeadZero(min))
     }
 
     function onBlur(e) {
         if (!e.target.value) {
-            fireChange('');
+            fireChange('')
         }
     }
 
@@ -62,4 +62,4 @@ function TimeInput({ value, onChange, field, readOnly, form }) {
     )
 }
 
-export default TimeInput;
+export default TimeInput

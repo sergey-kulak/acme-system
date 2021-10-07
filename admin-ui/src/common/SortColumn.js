@@ -1,22 +1,22 @@
-import { useState } from 'react';
-import * as Icon from 'react-feather';
-import { Sort } from './paginationUtils';
-import './SortColumn.css';
+import { useState } from 'react'
+import * as Icon from 'react-feather'
+import { Sort } from './paginationUtils'
+import './SortColumn.css'
 
 function SortColumn({ field, name, sort, onClick }) {
-    const [isAsc, setAsk] = useState(sort.field !== field || sort.direction === 'asc');
+    const [isAsc, setAsk] = useState(sort.field !== field || sort.direction === 'asc')
 
     function onSortClick(e) {
-        e.preventDefault();
-        let sortResult = isAsc;
+        e.preventDefault()
+        let sortResult = isAsc
         if (sort.field === field) {
             sortResult = !sortResult
-            setAsk(sortResult);
+            setAsk(sortResult)
         }
-        onClick(new Sort(field, sortResult ? 'asc' : 'desc'));
+        onClick(new Sort(field, sortResult ? 'asc' : 'desc'))
     }
 
-    const icon = isAsc ? <Icon.ChevronsUp className="sort-icon" /> : <Icon.ChevronsDown className="sort-icon" />;
+    const icon = isAsc ? <Icon.ChevronsUp className="sort-icon" /> : <Icon.ChevronsDown className="sort-icon" />
 
     return (
         <th>
@@ -27,7 +27,7 @@ function SortColumn({ field, name, sort, onClick }) {
                 }
             </div>
         </th >
-    );
+    )
 }
 
-export default SortColumn;
+export default SortColumn

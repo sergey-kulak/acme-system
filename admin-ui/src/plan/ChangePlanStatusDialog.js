@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
-import PlanStatusSelect from './PlanStatusSelect';
+import { useState } from 'react'
+import Button from 'react-bootstrap/Button'
+import Modal from 'react-bootstrap/Modal'
+import PlanStatusSelect from './PlanStatusSelect'
 
 const ALLOWED_NEXT_STATUSES = {
     'INACTIVE': ['ACTIVE', 'STOPPED'],
@@ -9,19 +9,19 @@ const ALLOWED_NEXT_STATUSES = {
 }
 
 function ChangePlanStatusDialog({ show, status, onClose }) {
-    const [newStatus, setNewStatus] = useState(status);
+    const [newStatus, setNewStatus] = useState(status)
 
     function handleStatusChange(selectedStatus) {
-        setNewStatus(selectedStatus);
+        setNewStatus(selectedStatus)
     }
 
     function onSave() {
-        onClose(newStatus !== status ? newStatus : null);
+        onClose(newStatus !== status ? newStatus : null)
     }
 
     function optionFilter(options) {
-        let allowedStatuses = ALLOWED_NEXT_STATUSES[status];
-        return options.filter(option => allowedStatuses.includes(option.value));
+        let allowedStatuses = ALLOWED_NEXT_STATUSES[status]
+        return options.filter(option => allowedStatuses.includes(option.value))
     }
 
     return (
@@ -49,7 +49,7 @@ function ChangePlanStatusDialog({ show, status, onClose }) {
                 </Button>
             </Modal.Footer>
         </Modal>
-    );
+    )
 }
 
-export default ChangePlanStatusDialog;
+export default ChangePlanStatusDialog

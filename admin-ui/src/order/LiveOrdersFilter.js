@@ -1,15 +1,15 @@
-import { hasRole, ROLE } from "../common/security";
-import CompanySelect from "../company/CompanySelect";
-import PublicPointSelect from "../public-point/PublicPointSelect";
+import { hasRole, ROLE } from "../common/security"
+import CompanySelect from "../company/CompanySelect"
+import PublicPointSelect from "../public-point/PublicPointSelect"
 
 function LiveOrdersFilter({ auth, filter, onChange }) {
 
     function onCompanyChange(companyId) {
-        onChange(filter.withNewValue('companyId', companyId));
+        onChange(filter.withNewValue('companyId', companyId))
     }
 
     function onPublicPointChange(publicPointId) {
-        onChange(filter.withNewValue('publicPointId', publicPointId));
+        onChange(filter.withNewValue('publicPointId', publicPointId))
     }
 
     return (
@@ -31,4 +31,4 @@ function LiveOrdersFilter({ auth, filter, onChange }) {
     )
 }
 
-export default LiveOrdersFilter;
+export default LiveOrdersFilter

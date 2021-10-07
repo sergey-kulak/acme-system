@@ -1,60 +1,60 @@
-import { useCallback, useEffect, useState } from "react";
-import * as Icon from 'react-feather';
-import { useIntl } from 'react-intl';
-import { connect } from 'react-redux';
-import { Link, Redirect, useParams } from "react-router-dom";
-import BackButton from "../common/BackButton";
-import { hasRole, ROLE } from "../common/security";
-import { onError, onSuccess } from '../common/toastNotification';
-import { getErrorMessage } from "../common/utils";
-import userService from '../user/userService';
-import ChangeCompanyStatusDialog from "./ChangeCompanyStatusDialog";
-import companyService from './companyService';
-import CompanyStatusLabel from "./CompanyStatusLabel";
+import { useCallback, useEffect, useState } from "react"
+import * as Icon from 'react-feather'
+import { useIntl } from 'react-intl'
+import { connect } from 'react-redux'
+import { Link, Redirect, useParams } from "react-router-dom"
+import BackButton from "../common/BackButton"
+import { hasRole, ROLE } from "../common/security"
+import { onError, onSuccess } from '../common/toastNotification'
+import { getErrorMessage } from "../common/utils"
+import userService from '../user/userService'
+import ChangeCompanyStatusDialog from "./ChangeCompanyStatusDialog"
+import companyService from './companyService'
+import CompanyStatusLabel from "./CompanyStatusLabel"
 
 function CompanyViewer({ auth, onSuccess, onError }) {
-    const params = useParams();
-    const isAdmin = hasRole(auth, ROLE.ADMIN);
-    const id = isAdmin ? params.id : auth.user.cmpid;
-    const intl = useIntl();
-    const [company, setCompany] = useState();
-    const [owners, setOwners] = useState([]);
-    const [expandGI, setExpandGI] = useState(false);
-    const [showStatusChangeDialog, setShowStatusChangeDialog] = useState(false);
+    const params = useParams()
+    const isAdmin = hasRole(auth, ROLE.ADMIN)
+    const id = isAdmin ? params.id : auth.user.cmpid
+    const intl = useIntl()
+    const [company, setCompany] = useState()
+    const [owners, setOwners] = useState([])
+    const [expandGI, setExpandGI] = useState(false)
+    const [showStatusChangeDialog, setShowStatusChangeDialog] = useState(false)
 
     const loadCompany = useCallback(() => {
         companyService.findByIdFullDetails(id)
             .then(response => setCompany(response.data))
-    }, [id]);
+    }, [id])
 
     useEffect(() => {
-        loadCompany();
-    }, [id, loadCompany]);
+        loadCompany()
+    }, [id, loadCompany])
 
     function loadOwners() {
         let request = {
             companyId: id,
             role: ROLE.COMPANY_OWNER
-        };
+        }
         userService.findNames(request)
-            .then(response => setOwners(response.data || []));
+            .then(response => setOwners(response.data || []))
     }
 
     function onCompanyStatusClick(e) {
-        e.preventDefault();
-        setShowStatusChangeDialog(true);
+        e.preventDefault()
+        setShowStatusChangeDialog(true)
     }
 
     function onStatusChange(newStatus) {
-        setShowStatusChangeDialog(false);
+        setShowStatusChangeDialog(false)
         if (newStatus) {
             companyService.changeStatus(company.id, { status: newStatus })
                 .then(() => {
-                    onSuccess("Company status was changed successfully");
-                    loadCompany();
+                    onSuccess("Company status was changed successfully")
+                    loadCompany()
                 }, error => {
-                    onError(getErrorMessage(error.response.data));
-                });
+                    onError(getErrorMessage(error.response.data))
+                })
         }
     }
 
@@ -63,19 +63,19 @@ function CompanyViewer({ auth, onSuccess, onError }) {
     }
 
     function onExpandGI() {
-        let newExpandGI = !expandGI;
+        let newExpandGI = !expandGI
         if (newExpandGI && !owners.length) {
-            loadOwners();
+            loadOwners()
         }
-        setExpandGI(newExpandGI);
+        setExpandGI(newExpandGI)
     }
 
     function wrapValue(value) {
-        return value || '-';
+        return value || '-'
     }
 
-    const labelClass = "col-sm-4 col-md-2 col-form-label text-sm-right font-italic";
-    const controlClass = "col-sm-8 col-md-4";
+    const labelClass = "col-sm-4 col-md-2 col-form-label text-sm-right font-italic"
+    const controlClass = "col-sm-8 col-md-4"
 
     if (!id) {
         return <Redirect to="/" />
@@ -191,9 +191,9 @@ function CompanyViewer({ auth, onSuccess, onError }) {
 }
 
 const mapStateToProps = ({ auth }) => {
-    return { auth };
-};
+    return { auth }
+}
 
 export default connect(mapStateToProps, {
     onSuccess, onError
-})(CompanyViewer);
+})(CompanyViewer)

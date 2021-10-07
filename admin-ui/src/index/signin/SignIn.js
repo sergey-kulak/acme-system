@@ -1,31 +1,31 @@
-import { Field, Form, Formik } from 'formik';
-import * as Yup from 'yup';
-import { connect } from "react-redux";
-import { Link, useHistory } from "react-router-dom";
-import authService from '../../common/security/authService';
-import HighlightInput from '../../common/HighlightInput';
-import './SignIn.css';
-import { onLogin } from '../../common/security/authReducer';
+import { Field, Form, Formik } from 'formik'
+import * as Yup from 'yup'
+import { connect } from "react-redux"
+import { Link, useHistory } from "react-router-dom"
+import authService from '../../common/security/authService'
+import HighlightInput from '../../common/HighlightInput'
+import './SignIn.css'
+import { onLogin } from '../../common/security/authReducer'
 
 function SignIn({ onLogin }) {
-    const history = useHistory();
+    const history = useHistory()
 
     const intialValues = {
         username: 'admin@acme.com',
         //username: 'petrov@company111.com',
         password: 'qwe123'
-    };
+    }
 
     const validationSchema = Yup.object({
         username: Yup.string().email('Invalid email address').required('Required'),
         password: Yup.string().required('Required')
-    });
+    })
 
     function onSubmit(values) {
         authService.login(values)
             .then(response => {
-                onLogin(response.data);
-                history.push("/");
+                onLogin(response.data)
+                history.push("/")
             })
 
     }
@@ -52,7 +52,7 @@ function SignIn({ onLogin }) {
                     </div>
 
                     <button className="w-100 btn btn-primary mt-4" type="submit">Sign in</button>
-                    <p className="mt-5 mb-3 text-muted">&copy; {new Date().getFullYear()}</p>
+                    <p className="mt-5 mb-3 text-muted">&copy {new Date().getFullYear()}</p>
                 </Form>
             </div>
         </Formik>
@@ -62,4 +62,4 @@ function SignIn({ onLogin }) {
 
 export default connect(() => ({}), {
     onLogin
-})(SignIn);
+})(SignIn)

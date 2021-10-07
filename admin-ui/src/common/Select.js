@@ -1,5 +1,5 @@
-import ReactSelect from 'react-select';
-import { hasValidationError, getValidationClass } from './utils';
+import ReactSelect from 'react-select'
+import { hasValidationError, getValidationClass } from './utils'
 
 function Select({ options, value, optionFilter, onChange, field, form, ...props }) {
 
@@ -7,7 +7,7 @@ function Select({ options, value, optionFilter, onChange, field, form, ...props 
         let selectedValues
         if (selectedOptions) {
             selectedValues = props.isMulti ?
-                selectedOptions.map(option => option.value) : selectedOptions.value;
+                selectedOptions.map(option => option.value) : selectedOptions.value
         }
         if (field && field.onChange) {
             let event = {
@@ -15,21 +15,21 @@ function Select({ options, value, optionFilter, onChange, field, form, ...props 
                     name: field.name,
                     value: selectedValues
                 }
-            };
-            field.onChange(event);
+            }
+            field.onChange(event)
         }
         if (onChange) {
-            onChange(selectedValues);
+            onChange(selectedValues)
         }
     }
 
-    value = field && field.value ? field.value : value;
+    value = field && field.value ? field.value : value
     const selectedOptions = props.isMulti ?
         options.filter(option => value.includes(option.value)) :
-        options.filter(option => value === option.value);
+        options.filter(option => value === option.value)
 
     const className = `${props.className || ''} ${getValidationClass(form, field)}`
-    const allowedOptions = optionFilter ? optionFilter(options) : options;
+    const allowedOptions = optionFilter ? optionFilter(options) : options
 
     return (
         <div className="cmt-select">
@@ -47,7 +47,7 @@ function Select({ options, value, optionFilter, onChange, field, form, ...props 
                 </small >
             }
         </div>
-    );
+    )
 }
 
-export default Select;
+export default Select

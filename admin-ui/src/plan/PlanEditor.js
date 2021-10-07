@@ -1,21 +1,21 @@
-import { Field, Form, Formik } from 'formik';
-import { useEffect, useState } from "react";
-import { connect } from 'react-redux';
-import { useParams } from "react-router-dom";
-import * as Yup from 'yup';
-import BackButton from "../common/BackButton";
-import planService from './planService';
-import HighlightInput from '../common/HighlightInput';
-import useHistoryBack from '../common/useHistoryBack';
-import { onError, onSuccess } from '../common/toastNotification';
-import CountrySelect from '../common/rf-data/CountrySelect';
-import CurrencySelect from '../common/rf-data/CurrencySelect';
-import PlanStatusSelect from './PlanStatusSelect';
+import { Field, Form, Formik } from 'formik'
+import { useEffect, useState } from "react"
+import { connect } from 'react-redux'
+import { useParams } from "react-router-dom"
+import * as Yup from 'yup'
+import BackButton from "../common/BackButton"
+import planService from './planService'
+import HighlightInput from '../common/HighlightInput'
+import useHistoryBack from '../common/useHistoryBack'
+import { onError, onSuccess } from '../common/toastNotification'
+import CountrySelect from '../common/rf-data/CountrySelect'
+import CurrencySelect from '../common/rf-data/CurrencySelect'
+import PlanStatusSelect from './PlanStatusSelect'
 
 function PlanEditor({ auth, onSuccess, onError }) {
-    const { id } = useParams();
-    const isCreate = id === 'new';
-    const [plan, setPlan] = useState();
+    const { id } = useParams()
+    const isCreate = id === 'new'
+    const [plan, setPlan] = useState()
     const [formData, setFormData] = useState({
         name: '',
         description: '',
@@ -25,8 +25,8 @@ function PlanEditor({ auth, onSuccess, onError }) {
         upfrontDiscount6m: '',
         upfrontDiscount1y: '',
         countries: []
-    });
-    const historyBack = useHistoryBack("/plans");
+    })
+    const historyBack = useHistoryBack("/plans")
 
     const validationSchema = Yup.object({
         name: Yup.string().required('Required'),
@@ -36,23 +36,23 @@ function PlanEditor({ auth, onSuccess, onError }) {
         countries: Yup.array().of(Yup.string()),
         upfrontDiscount6m: percentSchema(),
         upfrontDiscount1y: percentSchema(),
-    });
+    })
 
     function percentSchema() {
         return Yup.number()
             .typeError('Must be a number')
-            .max(100, 'Not greater than 100');
+            .max(100, 'Not greater than 100')
     }
 
     useEffect(() => {
         if (!isCreate) {
             planService.findById(id)
                 .then(response => {
-                    setPlan(response.data);
-                    toFormData(response.data);
-                });
+                    setPlan(response.data)
+                    toFormData(response.data)
+                })
         }
-    }, [id, isCreate]);
+    }, [id, isCreate])
 
     function toFormData(plan) {
         setFormData({
@@ -64,33 +64,33 @@ function PlanEditor({ auth, onSuccess, onError }) {
             upfrontDiscount6m: plan.upfrontDiscount6m || '',
             upfrontDiscount1y: plan.upfrontDiscount1y || '',
             countries: plan.countries || []
-        });
+        })
     }
 
     function onSubmit(formData) {
-        let request = { ...formData };
+        let request = { ...formData }
         if (isCreate) {
             planService.create(request)
                 .then(() => {
-                    onSuccess(`${request.name} plan was created successfuly`);
-                    historyBack();
+                    onSuccess(`${request.name} plan was created successfuly`)
+                    historyBack()
                 }, error => {
-                    let errorMessage = error.response.data.error;
-                    onError(errorMessage || 'Error');
+                    let errorMessage = error.response.data.error
+                    onError(errorMessage || 'Error')
                 })
         } else {
             planService.update(plan.id, request)
                 .then(() => {
-                    onSuccess(`${request.name} plan was updated successfuly`);
-                    historyBack();
+                    onSuccess(`${request.name} plan was updated successfuly`)
+                    historyBack()
                 }, error => {
-                    let errorMessage = error.response.data.error;
-                    onError(errorMessage || 'Error');
+                    let errorMessage = error.response.data.error
+                    onError(errorMessage || 'Error')
                 })
         }
     }
 
-    const isEditable = !plan || plan.status === 'INACTIVE';
+    const isEditable = !plan || plan.status === 'INACTIVE'
 
     return (
         <div className="main-content">
@@ -166,13 +166,13 @@ function PlanEditor({ auth, onSuccess, onError }) {
                 </div>
             </div>
         </div>
-    );
+    )
 }
 
 const mapStateToProps = ({ auth }) => {
-    return { auth };
-};
+    return { auth }
+}
 
 export default connect(mapStateToProps, {
     onSuccess, onError
-})(PlanEditor);
+})(PlanEditor)

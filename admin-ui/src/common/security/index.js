@@ -16,15 +16,15 @@ const ROLE_HIERARHY = {
 }
 
 export const getAllAccessibleRoles = (auth) => {
-    let userRole = auth.user.role;
-    return [userRole].concat(ROLE_HIERARHY[userRole] || []);
+    let userRole = auth.user.role
+    return [userRole].concat(ROLE_HIERARHY[userRole] || [])
 }
 
 export const hasRole = (auth, ...roles) => {
     return auth.isAuthenticated
-        && getAllAccessibleRoles(auth).some(userRole => roles.includes(userRole));
+        && getAllAccessibleRoles(auth).some(userRole => roles.includes(userRole))
 }
 
 export const hasExactRole = (auth, ...roles) => {
-    return auth.isAuthenticated && roles.includes(auth.user.role);
+    return auth.isAuthenticated && roles.includes(auth.user.role)
 }

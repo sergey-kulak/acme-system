@@ -1,17 +1,17 @@
-import { useEffect, useState } from 'react';
-import ReactCreatableSelect from 'react-select/creatable';
-import dishService from './dishService';
+import { useEffect, useState } from 'react'
+import ReactCreatableSelect from 'react-select/creatable'
+import dishService from './dishService'
 
 function TagSelect({ companyId, publicPointId, value, onChange, field, form, ...props }) {
-    const [tags, setTags] = useState([]);
+    const [tags, setTags] = useState([])
 
     useEffect(() => {
         if (companyId && publicPointId) {
             dishService.findTags(companyId, publicPointId)
                 .then(response => response.data)
-                .then(setTags);
+                .then(setTags)
         }
-    }, [companyId, publicPointId]);
+    }, [companyId, publicPointId])
 
     function handleChange(selectedOptions) {
         let selectedValues = selectedOptions.map(option => option.value)
@@ -21,11 +21,11 @@ function TagSelect({ companyId, publicPointId, value, onChange, field, form, ...
                     name: field.name,
                     value: selectedValues
                 }
-            };
-            field.onChange(event);
+            }
+            field.onChange(event)
         }
         if (onChange) {
-            onChange(selectedValues);
+            onChange(selectedValues)
         }
     }
 
@@ -33,12 +33,12 @@ function TagSelect({ companyId, publicPointId, value, onChange, field, form, ...
         return items && items.length ? items.map(item => ({
             value: item,
             label: item
-        })) : [];
+        })) : []
     }
 
-    value = field && field.value ? field.value : value;
-    let options = toOptions(tags);
-    let values = toOptions(value || []);
+    value = field && field.value ? field.value : value
+    let options = toOptions(tags)
+    let values = toOptions(value || [])
 
     return (
         <ReactCreatableSelect options={options}
@@ -46,7 +46,7 @@ function TagSelect({ companyId, publicPointId, value, onChange, field, form, ...
             {...props}
             value={values}>
         </ReactCreatableSelect>
-    );
+    )
 }
 
-export default TagSelect;
+export default TagSelect

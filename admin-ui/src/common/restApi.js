@@ -1,67 +1,67 @@
-import axios from "axios";
+import axios from "axios"
 
 const restApi = axios.create({
   baseURL: '/',
   headers: {
     "Content-Type": "application/json"
   }
-});
+})
 
 restApi.interceptors.response.use(
   response => {
-    return response;
+    return response
   },
   error => {
     if (error.response.status === 401) {
       if (localStorage.getItem("token")) {
-        localStorage.removeItem("token");
+        localStorage.removeItem("token")
       } else {
-        error.message = "Bad credentials";
-        return Promise.reject(error);
+        error.message = "Bad credentials"
+        return Promise.reject(error)
       }
     } else if (error.response.status === 400) {
-      error.message = "Bad request";
-      return Promise.reject(error);
+      error.message = "Bad request"
+      return Promise.reject(error)
     } else if (error.response.status === 500) {
-      error.message = "Server error";
-      return Promise.reject(error);
+      error.message = "Server error"
+      return Promise.reject(error)
     } else {
-      return Promise.reject(error);
+      return Promise.reject(error)
     }
   }
-);
+)
 
 export const buildGetFilterParams = (filter, pageable, sort) => {
-  let params = { ...clean(filter) };
+  let params = { ...clean(filter) }
   if (pageable) {
-    params = { ...params, ...pageable };
-    params.page -= 1;
+    params = { ...params, ...pageable }
+    params.page -= 1
   }
   if (sort) {
-    params.sort = `${sort.field},${sort.direction}`;
+    params.sort = `${sort.field},${sort.direction}`
   }
 
-  let urlSearchParams = new URLSearchParams();
+  let urlSearchParams = new URLSearchParams()
   for (var paramName in params) {
-    let paramValue = params[paramName];
+    let paramValue = params[paramName]
     if (!Array.isArray(paramValue)) {
-      paramValue = [paramValue];
+      paramValue = [paramValue]
     }
     for (let singleValue of paramValue) {
-      urlSearchParams.append(paramName, singleValue);
+      urlSearchParams.append(paramName, singleValue)
     }
   }
 
-  return urlSearchParams;
+  return urlSearchParams
 }
 
 function clean(obj) {
   for (var propName in obj) {
     if (obj[propName] === null || obj[propName] === undefined || obj[propName] === '') {
-      delete obj[propName];
+      delete obj[propName]
     }
   }
   return obj
 }
 
-export default restApi;
+export default restApi

@@ -17,7 +17,7 @@ function PlanCard({ plan, ...props }) {
                 <p className="card-text">{plan.description}</p>
             </div>
         </div>
-    );
+    )
 }
 
-export default PlanCard;
+export default PlanCard

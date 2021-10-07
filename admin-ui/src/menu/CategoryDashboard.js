@@ -1,25 +1,25 @@
-import { useCallback, useEffect, useState } from 'react';
-import * as Icon from 'react-feather';
-import { connect } from "react-redux";
-import { useIntl } from 'react-intl';
-import { Link, useHistory, useLocation } from "react-router-dom";
-import { combineAsUrlParams } from '../common/paginationUtils';
-import { hasRole, ROLE } from "../common/security";
-import ShowFilterButton from '../common/ShowFilterButton';
-import { onError, onSuccess } from '../common/toastNotification';
-import CategoryFilter from './CategoryFilter';
-import categoryService from './categoryService';
+import { useCallback, useEffect, useState } from 'react'
+import * as Icon from 'react-feather'
+import { connect } from "react-redux"
+import { useIntl } from 'react-intl'
+import { Link, useHistory, useLocation } from "react-router-dom"
+import { combineAsUrlParams } from '../common/paginationUtils'
+import { hasRole, ROLE } from "../common/security"
+import ShowFilterButton from '../common/ShowFilterButton'
+import { onError, onSuccess } from '../common/toastNotification'
+import CategoryFilter from './CategoryFilter'
+import categoryService from './categoryService'
 
 function CategoryDashboard({ auth, onError, onSuccess }) {
-    const history = useHistory();
-    const intl = useIntl();
-    const query = new URLSearchParams(useLocation().search);
+    const history = useHistory()
+    const intl = useIntl()
+    const query = new URLSearchParams(useLocation().search)
 
-    const [categories, setCategories] = useState([]);
-    const [editCategories, setEditCategories] = useState([]);
-    const [filter, setFilter] = useState(Filter.fromUrlParams(query, auth));
-    const [showFilter, setShowFilter] = useState(true);
-    const [isEdit, setIsEdit] = useState(false);
+    const [categories, setCategories] = useState([])
+    const [editCategories, setEditCategories] = useState([])
+    const [filter, setFilter] = useState(Filter.fromUrlParams(query, auth))
+    const [showFilter, setShowFilter] = useState(true)
+    const [isEdit, setIsEdit] = useState(false)
 
     const loadData = useCallback(() => {
         return categoryService.find(filter)
@@ -31,25 +31,25 @@ function CategoryDashboard({ auth, onError, onSuccess }) {
         if (filter.companyId && filter.publicPointId) {
             loadData()
                 .then(() => {
-                    let filterUrlParams = filter.toUrlParams(auth);
-                    history.replace(combineAsUrlParams(filterUrlParams));
-                });;
+                    let filterUrlParams = filter.toUrlParams(auth)
+                    history.replace(combineAsUrlParams(filterUrlParams))
+                })
         } else {
-            setCategories([]);
+            setCategories([])
         }
-    }, [filter, history, auth, loadData]);
+    }, [filter, history, auth, loadData])
 
     function onFilterChange(filter) {
-        setFilter(filter);
+        setFilter(filter)
     }
 
     function onEdit() {
-        setIsEdit(true);
-        setEditCategories(categories.map(ctg => ({ ...ctg })));
+        setIsEdit(true)
+        setEditCategories(categories.map(ctg => ({ ...ctg })))
     }
 
     function onCancel() {
-        setIsEdit(false);
+        setIsEdit(false)
     }
 
     function onSave() {
@@ -60,50 +60,50 @@ function CategoryDashboard({ auth, onError, onSuccess }) {
         }
         categoryService.updateOrder(request)
             .then(() => {
-                onSuccess(`Menu category order was changed successfuly`);
+                onSuccess(`Menu category order was changed successfuly`)
                 loadData()
-                    .then(() => setIsEdit(false));
+                    .then(() => setIsEdit(false))
             }, error => {
-                let errorMessage = error.response.data.error;
-                onError(errorMessage || 'Error');
+                let errorMessage = error.response.data.error
+                onError(errorMessage || 'Error')
             })
 
     }
 
     function deleteCategory(e, category) {
-        e.preventDefault();
+        e.preventDefault()
         setEditCategories(prev => prev.filter(prevItem => prevItem !== category))
     }
 
     function onUp(e, ctg, index) {
-        e.preventDefault();
-        ctg.position = index - 1;
-        editCategories[index - 1].position = index;
-        setEditCategories(sort([...editCategories]));
+        e.preventDefault()
+        ctg.position = index - 1
+        editCategories[index - 1].position = index
+        setEditCategories(sort([...editCategories]))
     }
 
     function onDown(e, ctg, index) {
-        e.preventDefault();
-        ctg.position = index + 1;
-        editCategories[index + 1].position = index;
-        setEditCategories(sort([...editCategories]));
+        e.preventDefault()
+        ctg.position = index + 1
+        editCategories[index + 1].position = index
+        setEditCategories(sort([...editCategories]))
     }
 
     function sort(items) {
         items.sort((a, b) => {
             let fa = a.position,
-                fb = b.position;
+                fb = b.position
 
             if (fa < fb) {
-                return -1;
+                return -1
             }
             if (fa > fb) {
-                return 1;
+                return 1
             }
-            return 0;
-        });
+            return 0
+        })
 
-        return items;
+        return items
     }
 
     function days(category) {
@@ -111,8 +111,8 @@ function CategoryDashboard({ auth, onError, onSuccess }) {
             category.days.map(day => intl.formatMessage({ id: `day.${day.toLowerCase()}` })).join(', ')
     }
 
-    let displayCategories = isEdit ? editCategories : categories;
-    const canEdit = hasRole(auth, ROLE.PP_MANAGER);
+    let displayCategories = isEdit ? editCategories : categories
+    const canEdit = hasRole(auth, ROLE.PP_MANAGER)
 
     return (
         <div className="main-content">
@@ -192,54 +192,54 @@ function CategoryDashboard({ auth, onError, onSuccess }) {
 }
 
 class Filter {
-    static URL_PARAM_COMPANY_ID = 'cmp';
-    static URL_PARAM_PP_ID = 'pp';
+    static URL_PARAM_COMPANY_ID = 'cmp'
+    static URL_PARAM_PP_ID = 'pp'
 
     constructor(companyId, publicPointId) {
-        this.publicPointId = publicPointId;
-        this.companyId = companyId;
+        this.publicPointId = publicPointId
+        this.companyId = companyId
     }
 
     withNewValue(field, value) {
-        let newFilter = new Filter(this.companyId, this.publicPointId);
-        newFilter[field] = value;
+        let newFilter = new Filter(this.companyId, this.publicPointId)
+        newFilter[field] = value
         if (field === 'companyId') {
-            newFilter.publicPointId = undefined;
+            newFilter.publicPointId = undefined
         }
-        return newFilter;
+        return newFilter
     }
 
     toUrlParams(auth) {
         let urlData = {
             [Filter.URL_PARAM_COMPANY_ID]: this.companyId,
             [Filter.URL_PARAM_PP_ID]: this.publicPointId
-        };
+        }
 
         if (!hasRole(auth, ROLE.ADMIN)) {
-            delete urlData[Filter.URL_PARAM_COMPANY_ID];
+            delete urlData[Filter.URL_PARAM_COMPANY_ID]
         }
         if (!hasRole(auth, ROLE.COMPANY_OWNER)) {
-            delete urlData[Filter.URL_PARAM_PP_ID];
+            delete urlData[Filter.URL_PARAM_PP_ID]
         }
-        return { toUrlParams: () => urlData };
+        return { toUrlParams: () => urlData }
     }
 
     static fromUrlParams(urlSearchParams, auth) {
         let companyId = hasRole(auth, ROLE.ADMIN) ?
             urlSearchParams.get(Filter.URL_PARAM_COMPANY_ID) || '' :
-            auth.user.cmpid;
+            auth.user.cmpid
         let ppId = hasRole(auth, ROLE.COMPANY_OWNER) ?
             urlSearchParams.get(Filter.URL_PARAM_PP_ID) || '' :
-            auth.user.ppid;
+            auth.user.ppid
         return new Filter(companyId, ppId
-        );
+        )
     }
 }
 
 const mapStateToProps = ({ auth }) => {
-    return { auth };
-};
+    return { auth }
+}
 
 export default connect(mapStateToProps, {
     onSuccess, onError
-})(CategoryDashboard);
+})(CategoryDashboard)

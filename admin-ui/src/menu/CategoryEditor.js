@@ -1,26 +1,26 @@
-import { Field, Form, Formik } from 'formik';
-import { useEffect, useRef, useState } from "react";
-import { connect } from 'react-redux';
-import { Redirect, useLocation, useParams } from "react-router-dom";
-import * as Yup from 'yup';
-import BackButton from "../common/BackButton";
-import HighlightInput from '../common/HighlightInput';
-import TimeInput from '../common/TimeInput';
-import { onError, onSuccess } from '../common/toastNotification';
-import useHistoryBack from '../common/useHistoryBack';
-import DaySelect from '../common/DaySelect';
-import { deleteIfEmpty, getErrorMessage } from "../common/utils";
-import CompanySelect from '../company/CompanySelect';
-import PublicPointSelect from '../public-point/PublicPointSelect';
-import categoryService from './categoryService';
-import DishSelector from './DishSelector';
-import { hasRole, ROLE } from '../common/security';
+import { Field, Form, Formik } from 'formik'
+import { useEffect, useRef, useState } from "react"
+import { connect } from 'react-redux'
+import { Redirect, useLocation, useParams } from "react-router-dom"
+import * as Yup from 'yup'
+import BackButton from "../common/BackButton"
+import HighlightInput from '../common/HighlightInput'
+import TimeInput from '../common/TimeInput'
+import { onError, onSuccess } from '../common/toastNotification'
+import useHistoryBack from '../common/useHistoryBack'
+import DaySelect from '../common/DaySelect'
+import { deleteIfEmpty, getErrorMessage } from "../common/utils"
+import CompanySelect from '../company/CompanySelect'
+import PublicPointSelect from '../public-point/PublicPointSelect'
+import categoryService from './categoryService'
+import DishSelector from './DishSelector'
+import { hasRole, ROLE } from '../common/security'
 
 function CategoryEditor({ auth, onSuccess, onError }) {
-    const { id } = useParams();
-    const { state } = useLocation();
-    const isCreate = id === 'new';
-    const [category, setCategory] = useState();
+    const { id } = useParams()
+    const { state } = useLocation()
+    const isCreate = id === 'new'
+    const [category, setCategory] = useState()
     const [formData, setFormData] = useState({
         name: '',
         startTime: '',
@@ -29,26 +29,26 @@ function CategoryEditor({ auth, onSuccess, onError }) {
         dishIds: [],
         companyId: state && state.companyId,
         publicPointId: state && state.publicPointId,
-    });
-    const formikRef = useRef(null);
-    const historyBack = useHistoryBack("/menu");
+    })
+    const formikRef = useRef(null)
+    const historyBack = useHistoryBack("/menu")
 
     const validationSchema = Yup.object({
         name: Yup.string().required('Required'),
         dishIds: Yup.array().of(Yup.string()).min(1, 'Required'),
         publicPointId: Yup.string().required('Required')
-    });
+    })
 
     useEffect(() => {
         if (!isCreate) {
             categoryService.findById(id)
                 .then(response => response.data)
                 .then(data => {
-                    setCategory(data);
-                    toFormData(data);
-                });
+                    setCategory(data)
+                    toFormData(data)
+                })
         }
-    }, [id, isCreate]);
+    }, [id, isCreate])
 
     function toFormData(category) {
         setFormData({
@@ -59,30 +59,30 @@ function CategoryEditor({ auth, onSuccess, onError }) {
             dishIds: category.dishIds,
             companyId: category.companyId,
             publicPointId: category.publicPointId
-        });
+        })
     }
 
     function onSubmit(formData) {
-        let request = { ...formData };
-        deleteIfEmpty(request, 'startTime');
-        deleteIfEmpty(request, 'endTime');
+        let request = { ...formData }
+        deleteIfEmpty(request, 'startTime')
+        deleteIfEmpty(request, 'endTime')
         if (isCreate) {
             return categoryService.create(request)
                 .then(() => {
-                    onSuccess(`${request.name} category was created successfuly`);
-                    historyBack();
+                    onSuccess(`${request.name} category was created successfuly`)
+                    historyBack()
                 }, error => {
-                    let errorMessage = error.response.data.error;
-                    onError(errorMessage || 'Error');
+                    let errorMessage = error.response.data.error
+                    onError(errorMessage || 'Error')
                 })
         } else {
-            delete request.companyId;
-            delete request.publicPointId;
+            delete request.companyId
+            delete request.publicPointId
 
             return categoryService.update(category.id, request)
                 .then(() => {
-                    onSuccess(`${request.name} category was updated successfuly`);
-                    historyBack();
+                    onSuccess(`${request.name} category was updated successfuly`)
+                    historyBack()
                 }, error => onError(getErrorMessage(error.response.data)))
         }
     }
@@ -91,7 +91,7 @@ function CategoryEditor({ auth, onSuccess, onError }) {
         return <Redirect to="/menu" />
     }
 
-    const canEdit = hasRole(auth, ROLE.PP_MANAGER);
+    const canEdit = hasRole(auth, ROLE.PP_MANAGER)
 
     return (
         <div className="main-content">
@@ -163,13 +163,13 @@ function CategoryEditor({ auth, onSuccess, onError }) {
                     </div>}
             </div>
         </div>
-    );
+    )
 }
 
 const mapStateToProps = ({ auth }) => {
-    return { auth };
-};
+    return { auth }
+}
 
 export default connect(mapStateToProps, {
     onSuccess, onError
-})(CategoryEditor);
+})(CategoryEditor)

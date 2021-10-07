@@ -1,40 +1,40 @@
-import { useCallback, useEffect, useState } from 'react';
-import * as Icon from 'react-feather';
-import { FormattedMessage } from 'react-intl';
-import { connect } from "react-redux";
-import { Link, useHistory, useLocation } from "react-router-dom";
-import { GLOBAL_CACHE } from '../common/cache';
-import Pagination from '../common/Pagination';
-import { combineAsUrlParams, Pageable, Sort } from '../common/paginationUtils';
-import { hasRole, ROLE } from "../common/security";
-import ShowFilterButton from '../common/ShowFilterButton';
-import SortColumn from '../common/SortColumn';
-import { onError, onSuccess } from '../common/toastNotification';
-import { getErrorMessage } from '../common/utils';
-import companyService from '../company/companyService';
-import planService from '../plan/planService';
-import publicPointPlanService from '../plan/publicPointPlanService';
-import ChangePublicPointStatusDialog from './ChangePublicPointStatusDialog';
-import PublicPointFilter from './PublicPointFilter';
-import publicPointService from './publicPointService';
-import PublicPointStatusLabel from './PublicPointStatusLabel';
+import { useCallback, useEffect, useState } from 'react'
+import * as Icon from 'react-feather'
+import { FormattedMessage } from 'react-intl'
+import { connect } from "react-redux"
+import { Link, useHistory, useLocation } from "react-router-dom"
+import { GLOBAL_CACHE } from '../common/cache'
+import Pagination from '../common/Pagination'
+import { combineAsUrlParams, Pageable, Sort } from '../common/paginationUtils'
+import { hasRole, ROLE } from "../common/security"
+import ShowFilterButton from '../common/ShowFilterButton'
+import SortColumn from '../common/SortColumn'
+import { onError, onSuccess } from '../common/toastNotification'
+import { getErrorMessage } from '../common/utils'
+import companyService from '../company/companyService'
+import planService from '../plan/planService'
+import publicPointPlanService from '../plan/publicPointPlanService'
+import ChangePublicPointStatusDialog from './ChangePublicPointStatusDialog'
+import PublicPointFilter from './PublicPointFilter'
+import publicPointService from './publicPointService'
+import PublicPointStatusLabel from './PublicPointStatusLabel'
 
-const cache = GLOBAL_CACHE;
-const PLAN_REGION = 'pp-dash-plan-region';
+const cache = GLOBAL_CACHE
+const PLAN_REGION = 'pp-dash-plan-region'
 
 function PublicPointDashboard({ auth }) {
-    const history = useHistory();
-    const query = new URLSearchParams(useLocation().search);
-    const isAdmin = hasRole(auth, ROLE.ADMIN);
+    const history = useHistory()
+    const query = new URLSearchParams(useLocation().search)
+    const isAdmin = hasRole(auth, ROLE.ADMIN)
 
-    const [page, setPage] = useState({ content: [] });
-    const [pageable, setPageable] = useState(Pageable.fromUrlParams(query));
-    const [sort, setSort] = useState(Sort.fromUrlParams(query, 'name'));
-    const [filter, setFilter] = useState(Filter.fromUrlParams(query, auth));
-    const [showFilter, setShowFilter] = useState(false);
-    const [companyNames, setCompanyNames] = useState({});
-    const [modifiedPublicPoint, setModifiedPublicPoint] = useState();
-    const [showStatusChangeDialog, setShowStatusChangeDialog] = useState(false);
+    const [page, setPage] = useState({ content: [] })
+    const [pageable, setPageable] = useState(Pageable.fromUrlParams(query))
+    const [sort, setSort] = useState(Sort.fromUrlParams(query, 'name'))
+    const [filter, setFilter] = useState(Filter.fromUrlParams(query, auth))
+    const [showFilter, setShowFilter] = useState(false)
+    const [companyNames, setCompanyNames] = useState({})
+    const [modifiedPublicPoint, setModifiedPublicPoint] = useState()
+    const [showStatusChangeDialog, setShowStatusChangeDialog] = useState(false)
 
     const loadPlans = useCallback((newPage) =>  {
         let promises = newPage.content
@@ -42,76 +42,76 @@ function PublicPointDashboard({ auth }) {
                 .then(response => response.data)
                 .then(getPlanInCache)
                 .then(plan => pp.plan = plan)
-            );
+            )
 
         return Promise.all(promises)
-            .then(() => newPage);
-    }, []);
+            .then(() => newPage)
+    }, [])
 
     const loadData = useCallback(() => {
         return publicPointService.find(filter, pageable, sort)
             .then(response => response.data)
             .then(loadPlans)
-            .then(setPage);
-    }, [filter, pageable, sort, loadPlans]);
+            .then(setPage)
+    }, [filter, pageable, sort, loadPlans])
 
     useEffect(() => {
         loadData()
             .then(() => {
-                let filterUrlParams = filter.toUrlParams(auth);
-                history.replace(combineAsUrlParams(filterUrlParams, pageable, sort));
-            });
-    }, [pageable, sort, filter, history, auth, loadData]);
+                let filterUrlParams = filter.toUrlParams(auth)
+                history.replace(combineAsUrlParams(filterUrlParams, pageable, sort))
+            })
+    }, [pageable, sort, filter, history, auth, loadData])
 
     useEffect(() => {
         if (isAdmin) {
             companyService.findNames()
                 .then(response => {
                     let data = response.data.reduce((acc, item) => {
-                        acc[item.id] = item.fullName;
-                        return acc;
+                        acc[item.id] = item.fullName
+                        return acc
                     }, {})
-                    setCompanyNames(data);
-                });
+                    setCompanyNames(data)
+                })
         }
-    }, [isAdmin]);
+    }, [isAdmin])
 
     function getPlanInCache(planId) {
         return planId ? cache.retriveIfAbsent(PLAN_REGION, planId,
             () => planService.findById(planId), 300)
-            .then(response => response.data) : undefined;
+            .then(response => response.data) : undefined
     }
 
     function onPublicPointStatusClick(e, pp) {
-        e.preventDefault();
-        setModifiedPublicPoint(pp);
-        setShowStatusChangeDialog(true);
+        e.preventDefault()
+        setModifiedPublicPoint(pp)
+        setShowStatusChangeDialog(true)
     }
 
     function onStatusChange(newStatus) {
-        setShowStatusChangeDialog(false);
+        setShowStatusChangeDialog(false)
         if (newStatus) {
             publicPointService.changeStatus(modifiedPublicPoint.id, { status: newStatus })
                 .then(() => {
-                    onSuccess("Public point status was changed successfully");
-                    loadData();
+                    onSuccess("Public point status was changed successfully")
+                    loadData()
                 }, error => {
-                    onError(getErrorMessage(error.response.data));
-                });
+                    onError(getErrorMessage(error.response.data))
+                })
         }
     }
 
 
     function onPageableChange(page) {
-        setPageable(page);
+        setPageable(page)
     }
 
     function onSortChange(sort) {
-        setSort(sort);
+        setSort(sort)
     }
 
     function onFilterChange(filter) {
-        setFilter(filter);
+        setFilter(filter)
     }
 
     function getPlan(pp) {
@@ -191,20 +191,20 @@ function PublicPointDashboard({ auth }) {
 }
 
 class Filter {
-    static URL_PARAM_COMPANY_ID = 'cmp';
-    static URL_PARAM_NAME_PATTERN = 'np';
-    static URL_PARAM_STATUS = 'st';
+    static URL_PARAM_COMPANY_ID = 'cmp'
+    static URL_PARAM_NAME_PATTERN = 'np'
+    static URL_PARAM_STATUS = 'st'
 
     constructor(namePattern, companyId, status) {
-        this.namePattern = namePattern;
-        this.companyId = companyId;
-        this.status = status;
+        this.namePattern = namePattern
+        this.companyId = companyId
+        this.status = status
     }
 
     withNewValue(field, value) {
-        let newFilter = new Filter(this.namePattern, this.companyId, this.status);
-        newFilter[field] = value;
-        return newFilter;
+        let newFilter = new Filter(this.namePattern, this.companyId, this.status)
+        newFilter[field] = value
+        return newFilter
     }
 
     toUrlParams(auth) {
@@ -212,32 +212,32 @@ class Filter {
             [Filter.URL_PARAM_COMPANY_ID]: this.companyId,
             [Filter.URL_PARAM_NAME_PATTERN]: this.namePattern,
             [Filter.URL_PARAM_STATUS]: this.status,
-        };
+        }
 
         if (!hasRole(auth, ROLE.ADMIN)) {
-            delete urlData[Filter.URL_PARAM_COMPANY_ID];
+            delete urlData[Filter.URL_PARAM_COMPANY_ID]
         }
-        return { toUrlParams: () => urlData };
+        return { toUrlParams: () => urlData }
     }
 
     static fromUrlParams(urlSearchParams, auth) {
         let companyId = hasRole(auth, ROLE.ADMIN) ?
             urlSearchParams.get(Filter.URL_PARAM_COMPANY_ID) || '' :
-            auth.user.cmpid;
+            auth.user.cmpid
 
-        let urlStatuses = urlSearchParams.getAll(Filter.URL_PARAM_STATUS);
+        let urlStatuses = urlSearchParams.getAll(Filter.URL_PARAM_STATUS)
         return new Filter(
             urlSearchParams.get(Filter.URL_PARAM_NAME_PATTERN) || '',
             companyId,
             urlStatuses && urlStatuses.length ? urlStatuses : ['INACTIVE', 'ACTIVE', 'SUSPENDED']
-        );
+        )
     }
 }
 
 const mapStateToProps = ({ auth }) => {
-    return { auth };
-};
+    return { auth }
+}
 
 export default connect(mapStateToProps, {
     onSuccess, onError
-})(PublicPointDashboard);
+})(PublicPointDashboard)

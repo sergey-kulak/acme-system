@@ -8,7 +8,7 @@ export const ACTIONS = {
 
 export const setOnline = (isOnline) => {
     return dispatch =>
-        dispatch({ type: ACTIONS.CHANGE, payload: isOnline });
+        dispatch({ type: ACTIONS.CHANGE, payload: isOnline })
 }
 
 const reducer = (state = INIT_STATE, action) => {
@@ -16,11 +16,11 @@ const reducer = (state = INIT_STATE, action) => {
         case ACTIONS.CHANGE: {
             return {
                 isOnline: action.payload
-            };
+            }
         }
         default:
-            return state;
+            return state
     }
 }
 
-export default reducer;
+export default reducer

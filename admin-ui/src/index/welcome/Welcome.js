@@ -1,6 +1,6 @@
-import { Col, Container, Row } from 'react-bootstrap';
-import { Link } from "react-router-dom";
-import './Welcome.css';
+import { Col, Container, Row } from 'react-bootstrap'
+import { Link } from "react-router-dom"
+import './Welcome.css'
 
 
 function Welcome() {
@@ -22,7 +22,7 @@ function Welcome() {
         </Row>
       </Container>
     </div>
-  );
+  )
 }
 
-export default Welcome;
+export default Welcome

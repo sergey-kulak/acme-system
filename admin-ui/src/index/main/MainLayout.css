@@ -36,6 +36,19 @@ body {
   }
 }
 
+.toast-conatiner {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .toast-conatiner {
+    bottom: 0px;
+    right: 0px;
+  }
+}
+
 .toast-message {
   font-size: 1.2rem;
 }

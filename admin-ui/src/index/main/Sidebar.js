@@ -23,28 +23,41 @@ function Sidebar({ auth, onLogout, rsocket, setOnline, onSuccess }) {
         }
     }, [onSuccess])
 
-    const subscribe = useCallback((subscription) => {
-        subscription.subscribe({
+    const getSubscriber = useCallback(() => {
+        return {
             onComplete: () => setOnline(false),
             onError: error => {
-                console.error(error)
+                if ('RSocket: The connection was closed.' !== error.message) {
+                    console.error(error)
+                }
                 setOnline(false)
             },
             onNext: processEvent,
-            onSubscribe: sub => {
+            onSubscribe: () => {
                 setOnline(true)
-                sub.request(2147483647)
             }
-        })
+        }
     }, [processEvent, setOnline])
 
     useEffect(() => {
+        let subscriber
         if (auth.user.cmpid && auth.user.ppid) {
+            subscriber = getSubscriber()
+            const request = {
+                token: auth.accessToken,
+                companyId: auth.user.cmpid,
+                publicPointId: auth.user.ppid
+            }
             publicPointNotificationService
-                .connect(auth.accessToken, auth.user.cmpid, auth.user.ppid)
-                .then(subscribe)
+                .subscribe(request, subscriber)
         }
-    }, [auth, subscribe])
+
+        return () => {
+            if (subscriber) {
+                publicPointNotificationService.unsubscribe(subscriber)
+            }
+        }
+    }, [auth, getSubscriber])
 
     function handleMobileMenuToggle() {
         setFixed(false)
@@ -57,14 +70,43 @@ function Sidebar({ auth, onLogout, rsocket, setOnline, onSuccess }) {
         history.push("/signin")
     }
 
+    function handleLinkClick(e) {
+        if (window.document.body.clientWidth <= 767) {
+            handleMobileMenuToggle()
+        }
+    }
+
+    function calcMenuHeight() {
+        const bodyHeight = window.document.body.scrollHeight
+        const topPos = window.document.body.clientWidth > 767 ? 0 : 3.5
+        const customHeight = `calc(${bodyHeight}px - ${topPos}rem`
+        if (window.document.body.clientWidth > 767) {
+            return isFixed || !isHovered ? '100%' : customHeight
+        } else {
+            return bodyHeight < 500 ? 'auto' : customHeight
+        }
+    }
+
     const sbClass = isFixed ? '' : isHovered ? 'hovered' : 'collapsed'
+    const cssHeight = calcMenuHeight()
+
     const isCompanyUser = hasRole(auth, ROLE.ADMIN) || !!auth.user.cmpid
     const rsocketClass = rsocket.isOnline ? 'badge-success online' : 'badge-danger offline'
 
     return (
-        <div className="px-0">
+        <div className="px-0 position-relative">
+            <div className="mobile-sidebar d-md-none bg-light">
+                <img className="logo-img" src="/acme-icon.png" alt="logo" />
+                <span className={`badge badge-pill rsocket-status ${rsocketClass} rsocket-status-mobile`}>.</span>
+                <span className="logo-text ml-2 w-100">Acme admin</span>
+                <Button variant="btn-light"
+                    onClick={handleMobileMenuToggle}>
+                    <Icon.AlignJustify className="feather" />
+                </Button>
+            </div>
             <nav id="sidebarMenu"
                 className={`d-none d-md-block bg-light sidebar ${sbClass}`}
+                style={{ height: cssHeight }}
                 onMouseEnter={() => setHovered(true)}
                 onMouseLeave={() => setHovered(false)}>
                 <div className="sidebar-logo">
@@ -77,13 +119,14 @@ function Sidebar({ auth, onLogout, rsocket, setOnline, onSuccess }) {
                 <div className="sidebar-content pt-1 pl-1">
                     <ul className="nav flex-column">
                         <li className="nav-item">
-                            <Link to="/" className="nav-link">
+                            <Link to="/" className="nav-link" onClick={handleLinkClick}>
                                 <Icon.Home className="feather" />
                                 <span className="nav-item-text">Home</span>
                             </Link>
                         </li>
                         <li className="nav-item">
-                            <Link to={`/users/${auth.user.id}`} className="nav-link">
+                            <Link to={`/users/${auth.user.id}`} className="nav-link"
+                                onClick={handleLinkClick}>
                                 <Icon.User className="feather" />
                                 <span className="nav-item-text">Profile</span>
                             </Link>
@@ -91,7 +134,8 @@ function Sidebar({ auth, onLogout, rsocket, setOnline, onSuccess }) {
                         {
                             auth.user.cmpid && hasRole(auth, ROLE.PP_MANAGER) &&
                             <li className="nav-item">
-                                <Link to={`/company-view/current`} className="nav-link">
+                                <Link to={`/company-view/current`} className="nav-link"
+                                    onClick={handleLinkClick}>
                                     <Icon.Box className="feather" />
                                     <span className="nav-item-text">Company</span>
                                 </Link>
@@ -99,7 +143,8 @@ function Sidebar({ auth, onLogout, rsocket, setOnline, onSuccess }) {
                         }
                         {
                             hasRole(auth, ROLE.ACCOUNTANT) && <li className="nav-item">
-                                <Link to="/plans" className="nav-link">
+                                <Link to="/plans" className="nav-link"
+                                    onClick={handleLinkClick}>
                                     <Icon.Pocket className="feather" />
                                     <span className="nav-item-text">Plans</span>
                                 </Link>
@@ -107,7 +152,8 @@ function Sidebar({ auth, onLogout, rsocket, setOnline, onSuccess }) {
                         }
                         {
                             hasRole(auth, ROLE.ADMIN) && <li className="nav-item">
-                                <Link to="/companies" className="nav-link">
+                                <Link to="/companies" className="nav-link"
+                                    onClick={handleLinkClick}>
                                     <Icon.Package className="feather" />
                                     <span className="nav-item-text">Companies</span>
                                 </Link>
@@ -115,7 +161,8 @@ function Sidebar({ auth, onLogout, rsocket, setOnline, onSuccess }) {
                         }
                         {
                             hasRole(auth, ROLE.COMPANY_OWNER) && <li className="nav-item">
-                                <Link to="/public-points" className="nav-link">
+                                <Link to="/public-points" className="nav-link"
+                                    onClick={handleLinkClick}>
                                     <Icon.MapPin className="feather" />
                                     <span className="nav-item-text">Public points</span>
                                 </Link>
@@ -123,7 +170,8 @@ function Sidebar({ auth, onLogout, rsocket, setOnline, onSuccess }) {
                         }
                         {
                             hasRole(auth, ROLE.PP_MANAGER) && <li className="nav-item">
-                                <Link to="/users" className="nav-link">
+                                <Link to="/users" className="nav-link"
+                                    onClick={handleLinkClick}>
                                     <Icon.Users className="feather" />
                                     <span className="nav-item-text">Users</span>
                                 </Link>
@@ -131,7 +179,8 @@ function Sidebar({ auth, onLogout, rsocket, setOnline, onSuccess }) {
                         }
                         {
                             isCompanyUser && <li className="nav-item">
-                                <Link to="/tables" className="nav-link">
+                                <Link to="/tables" className="nav-link"
+                                    onClick={handleLinkClick}>
                                     <Icon.Grid className="feather" />
                                     <span className="nav-item-text">Tables</span>
                                 </Link>
@@ -139,7 +188,8 @@ function Sidebar({ auth, onLogout, rsocket, setOnline, onSuccess }) {
                         }
                         {
                             isCompanyUser && <li className="nav-item">
-                                <Link to="/dishes" className="nav-link">
+                                <Link to="/dishes" className="nav-link"
+                                    onClick={handleLinkClick}>
                                     <Icon.Coffee className="feather" />
                                     <span className="nav-item-text">Dishes</span>
                                 </Link>
@@ -147,7 +197,8 @@ function Sidebar({ auth, onLogout, rsocket, setOnline, onSuccess }) {
                         }
                         {
                             isCompanyUser && <li className="nav-item">
-                                <Link to="/menu" className="nav-link">
+                                <Link to="/menu" className="nav-link"
+                                    onClick={handleLinkClick}>
                                     <Icon.BookOpen className="feather" />
                                     <span className="nav-item-text">Menu</span>
                                 </Link>
@@ -155,7 +206,8 @@ function Sidebar({ auth, onLogout, rsocket, setOnline, onSuccess }) {
                         }
                         {
                             isCompanyUser && <li className="nav-item">
-                                <Link to="/live-orders" className="nav-link">
+                                <Link to="/live-orders" className="nav-link"
+                                    onClick={handleLinkClick}>
                                     <Icon.Activity className="feather" />
                                     <span className="nav-item-text">Live orders</span>
                                 </Link>
@@ -163,7 +215,8 @@ function Sidebar({ auth, onLogout, rsocket, setOnline, onSuccess }) {
                         }
                         {
                             isCompanyUser && <li className="nav-item">
-                                <Link to="/orders" className="nav-link">
+                                <Link to="/orders" className="nav-link"
+                                    onClick={handleLinkClick}>
                                     <Icon.Archive className="feather" />
                                     <span className="nav-item-text">Orders</span>
                                 </Link>
@@ -179,16 +232,9 @@ function Sidebar({ auth, onLogout, rsocket, setOnline, onSuccess }) {
 
                 </div>
             </nav>
-            <div className={`spacer ${!isFixed && isHovered ? 'hovered' : ''}`}></div>
-            <div className="mobile-sidebar d-md-none bg-light">
-                <img className="logo-img" src="/acme-icon.png" alt="logo" />
-                <span className={`badge badge-pill rsocket-status ${rsocketClass} rsocket-status-mobile`}>.</span>
-                <span className="logo-text ml-2 w-100">Acme admin</span>
-                <Button variant="btn-light"
-                    onClick={handleMobileMenuToggle}>
-                    <Icon.AlignJustify className="feather" />
-                </Button>
-            </div>
+            <div className={`spacer ${!isFixed && isHovered ? 'hovered' : ''}`}
+                style={{ height: cssHeight }}
+            />
         </div >
     )
 }

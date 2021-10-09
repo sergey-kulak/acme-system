@@ -22,6 +22,8 @@ import java.lang.annotation.Target;
 @DataR2dbcTest(includeFilters = {
         @ComponentScan.Filter(Service.class),
         @ComponentScan.Filter(type = FilterType.REGEX, pattern = ".*MapperImpl")
+},excludeFilters = {
+        @ComponentScan.Filter(type = FilterType.REGEX, pattern = ".*PublicPointNotificationServiceImpl")
 })
 @Import({
         JooqConfig.class,

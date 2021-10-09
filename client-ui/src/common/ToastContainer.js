@@ -22,13 +22,8 @@ function ToastContainer({ toast, clearMessage }) {
     const options = { ...DEFAULT_OPTIONS, ...((toast && toast.options) || {}) }
 
     return (
-        hasMessage && <Toast onClose={clearMessage} show={true} className="rounded"
-            delay={options.delay} autohide={options.autohide}
-            style={{
-                position: 'fixed',
-                bottom: '1.5rem',
-                right: '1.5rem',
-            }}>
+        hasMessage && <Toast onClose={clearMessage} show={true} className="rounded toast-conatiner"
+            delay={options.delay} autohide={options.autohide}>
             <Toast.Body className={'rounded text-break ' + getToastStyle()} >
                 <div className="d-flex">
                     <div>

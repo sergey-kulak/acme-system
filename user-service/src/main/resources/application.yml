@@ -1,6 +1,3 @@
-server:
-  port: 7010
-
 logging:
   level:
     org.springframework: info
@@ -16,19 +13,6 @@ spring:
       discovery:
         enabled: true
         service-id: config-service
-  liquibase:
-    enabled: true
-    change-log: db/changelog/master.xml
-    url: jdbc:${user-srv.db.url}
-    user: ${user-srv.db.user}
-    password: ${user-srv.db.password}
-  r2dbc:
-    url: r2dbc:${user-srv.db.url}
-    username: ${user-srv.db.user}
-    password: ${user-srv.db.password}
-    pool:
-      initial-size: 5
-      max-size: 10
 
 eureka:
   instance:
@@ -39,13 +23,3 @@ eureka:
     instanceInfoReplicationIntervalSeconds: 5
     serviceUrl:
       defaultZone: http://localhost:7002/eureka/
-
-user-srv:
-  db:
-    url: postgresql://localhost:7011/userdb
-    user: usUser
-    password: usPass
-  security:
-    jwt:
-      private-key: MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCFRwImZIw5+qQol6ZaXb9nbmRZUw1+Kb0qgaM5H6WspOy+UQs2myXJm3A86ETU/hvY+lT2WZfxnnL4WwSXTGBSqqdi9Be6UDxbr/U3jV0G8dejNlQVe9j3+w7ptKXOhQ0P+25Tv4IYSapfRlUNJw9ugaB9fY7SqA5L1Ot0YbB9np3hSNzoczGAJUgGy4ZMp3ntmy3W6x4kH3lxrXg0jcZdo0bx95d/gxOdo1PvLEtnI02f19e+3mp2R9PWqM0PFrf1iJTyGVVn1c9JNqTCgV+Fltc3S6Y0q+hDgPWQjacUo6Ck8t2vHH1M0gnazaVSGrD8889rN7WceLfIypjYF27TAgMBAAECggEAOQZV5Cl3WkNkw72HPvkHsXCpXRLNHiMrvikztnhVAdabOR8iBh5B/84TKuxSrzN+pMsPWUyiV45tMNh40WerexNrhUpdcKlt+ekCqd9BY3xMwJe5SGvyPMBd9B8IJqIFIcZ5wTmap1u1mwhT0cnZr3WlPqxfVMD1RPr4N5ao1kZNBTwc9qD2pvbjOqNW2zMV1kct996z8FdZV6eXvSCTugxkeUrNCoL5Sm64JsJX9OCDt2m3W0Cju0jh8U8TRgWWLZwzNBWe4EegWQlcDpc/ZelKUs0juDhYgu97JiZ/vHuz93lkIfDia3nRlBve1m2XvlL3FLI8XvESAIRnrtjsiQKBgQDWRe2muMak2RYhzSnVY6fw2x0uGsMTU95zdPN42zBRM4ehgKfy/CMvS3MZSbUArnEBccELomhrBBAHjE2qUBaEIDvgBHHu/d1plnuyaZ4Ml0WPaeWXALq5w+hV/CKiPZeakPoSOfjSsMwbNsaeCwQbGx35mjkPE858ygYooBjePQKBgQCfOzsOSJkjN33svbY8rX4iO/6j7asru+kurWRSnyg5lr9xWkZfhyUZitGKtSVbeNmDL5UUGPSKtUS5KZS6dYTQy3IJ94ibTU7pZOUYvw2l+v34xHvrdSmfYcnZSmY8cFO7VVFFsHQVtp19huslv8tdtY0BblkDesQO6/miUa3iTwKBgFftOBk7J6CLyI40T19WVpr6fx3lM3mh592+9w33+/rGR3jZf5GxL4r/zgppeZH/AzZRhKMOkQShFSbTxycFWEf9pjRF/q7Qk+P5MWdD+ew2wv+Xt/PgA7+pCZUHMvsahTSTG1sRWO60R/0+3AAMizHITeOYCqQKP6hril1vXOUNAoGAHrQQHh/3j2fa2zR1mFunz7gb0MY6VFOGkh6TEq9n1TrxLU1H9pGboMI4x3NIgcvavUYGi/qH5NsxJjcTW6TfeFdSZQObDr8ocS6oUk48tn2gTUCt2GgeH4J+pmyHLC5Ipv27jyGIMMumsJa8bun9r9MbHmSFu3sHpQzxdNAlJFcCgYEAjNk4BaJojRpOgrF62eY+pqFkoG0ribkLrkGqWLMvO0TTMilROCSqnz+NdrrMla8zOq1TwIzGfDlrGwt0V7Q3i0pWGHtzmPfw8gbhdneYLiRvJlE8ohl70a2Ce3iFOoeCpiJE79TANvkypzGj/V7NLvklKDoYs9t2mSHvq1H52Hw=
-      public-key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhUcCJmSMOfqkKJemWl2/Z25kWVMNfim9KoGjOR+lrKTsvlELNpslyZtwPOhE1P4b2PpU9lmX8Z5y+FsEl0xgUqqnYvQXulA8W6/1N41dBvHXozZUFXvY9/sO6bSlzoUND/tuU7+CGEmqX0ZVDScPboGgfX2O0qgOS9TrdGGwfZ6d4Ujc6HMxgCVIBsuGTKd57Zst1useJB95ca14NI3GXaNG8feXf4MTnaNT7yxLZyNNn9fXvt5qdkfT1qjNDxa39YiU8hlVZ9XPSTakwoFfhZbXN0umNKvoQ4D1kI2nFKOgpPLdrxx9TNIJ2s2lUhqw/PPPaze1nHi3yMqY2Bdu0wIDAQAB

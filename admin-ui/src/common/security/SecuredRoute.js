@@ -4,9 +4,11 @@ import { hasRole } from './index'
 
 
 function SecuredRoute({ auth, role, children, ...props }) {
+    const roles = Array.isArray(role) ? role : [role]
+    const hasAcces = hasRole(auth, ...roles)
     return (
         <Route {...props}>
-            {hasRole(auth, role) ? children : <Redirect to="/" />}
+            {hasAcces ? children : <Redirect to="/" />}
         </Route >
 
     )

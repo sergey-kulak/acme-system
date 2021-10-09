@@ -11,8 +11,6 @@ spring:
           uri: https://github.com/sergey-kulak/acme-config-repo
 
 eureka:
-  ##instance:
-  ##  preferIpAddress: true
   client:
     serviceUrl:
       defaultZone: http://localhost:7002/eureka/

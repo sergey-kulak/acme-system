@@ -1,10 +1,3 @@
-server:
-  port: 7020
-
-logging:
-  level:
-    org.springframework: info
-
 spring:
   application:
     name: rf-data-service
@@ -15,17 +8,6 @@ spring:
       discovery:
         enabled: true
         service-id: config-service
-  liquibase:
-    enabled: true
-    change-log: db/changelog/master.xml
-    url: ${rf-data-srv.db.uri}
-  data:
-    mongodb:
-      host: ${rf-data-srv.db.host}
-      port: ${rf-data-srv.db.port}
-      database: ${rf-data-srv.db.database}
-      username: ${rf-data-srv.db.username}
-      password: ${rf-data-srv.db.password}
 
 eureka:
   instance:
@@ -36,15 +18,3 @@ eureka:
     instanceInfoReplicationIntervalSeconds: 5
     serviceUrl:
       defaultZone: http://localhost:7002/eureka/
-
-rf-data-srv:
-  db:
-    host: localhost
-    port: 7021
-    database: rfdata
-    username: rfUser
-    password: rfPass
-    uri: mongodb://${rf-data-srv.db.username}:${rf-data-srv.db.password}@${rf-data-srv.db.host}:${rf-data-srv.db.port}/${rf-data-srv.db.database}
-  security:
-    jwt:
-      public-key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhUcCJmSMOfqkKJemWl2/Z25kWVMNfim9KoGjOR+lrKTsvlELNpslyZtwPOhE1P4b2PpU9lmX8Z5y+FsEl0xgUqqnYvQXulA8W6/1N41dBvHXozZUFXvY9/sO6bSlzoUND/tuU7+CGEmqX0ZVDScPboGgfX2O0qgOS9TrdGGwfZ6d4Ujc6HMxgCVIBsuGTKd57Zst1useJB95ca14NI3GXaNG8feXf4MTnaNT7yxLZyNNn9fXvt5qdkfT1qjNDxa39YiU8hlVZ9XPSTakwoFfhZbXN0umNKvoQ4D1kI2nFKOgpPLdrxx9TNIJ2s2lUhqw/PPPaze1nHi3yMqY2Bdu0wIDAQAB

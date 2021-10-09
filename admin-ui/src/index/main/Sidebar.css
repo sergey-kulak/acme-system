@@ -11,6 +11,8 @@
   height: 100%;  
   padding: 0.5rem 0 0; 
   box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+  min-width: 14rem;
+  min-height: 100%;  
 }
 
 .sidebar.collapsed {
@@ -83,11 +85,17 @@
   height: 3.5rem;
 }
 
-.spacer{
+.spacer {
   display: none;
   min-width: 4.2rem;
   max-width: 4.2rem;
   height: 1rem;  
+}
+
+@media (min-width: 768px) {
+  .spacer.hovered {
+    display: block;
+  }
 }
 
 .rsocket-status {

@@ -45,6 +45,7 @@ public class TestEntityHelper {
         publicPoint.setCity(RandomTestUtils.randomString("City"));
         publicPoint.setAddress(RandomTestUtils.randomString("Address"));
         publicPoint.setPrimaryLang("ru");
+        publicPoint.setCurrency("USD");
 
         return ppRepository.save(publicPoint)
                 .flatMap(pp -> ppRepository.addLang(pp.getId(), "en")

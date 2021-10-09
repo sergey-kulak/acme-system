@@ -85,6 +85,7 @@ class PublicPointServiceIntegrationTest {
                 .address(RandomTestUtils.randomString("Address"))
                 .primaryLang("EN")
                 .langs(Set.of("RU", "BY"))
+                .currency("USD")
                 .build();
     }
 
@@ -96,6 +97,7 @@ class PublicPointServiceIntegrationTest {
                 .address(RandomTestUtils.randomString("Address"))
                 .primaryLang("EN")
                 .langs(Set.of("RU", "BY"))
+                .currency("EUR")
                 .build();
     }
 
@@ -119,7 +121,8 @@ class PublicPointServiceIntegrationTest {
                             hasProperty("status", is(PublicPointStatus.INACTIVE)),
                             hasProperty("city", is(saveDto.getCity())),
                             hasProperty("address", is(saveDto.getAddress())),
-                            hasProperty("primaryLang", is(saveDto.getPrimaryLang().toLowerCase()))
+                            hasProperty("primaryLang", is(saveDto.getPrimaryLang().toLowerCase())),
+                            hasProperty("currency", is(saveDto.getCurrency()))
                     ));
                     List<String> langs = data.getT2();
                     assertEquals(mapToList(saveDto.getLangs(), String::toLowerCase), langs);
@@ -203,7 +206,8 @@ class PublicPointServiceIntegrationTest {
                             hasProperty("status", is(publicPoint.getStatus())),
                             hasProperty("city", is(saveDto.getCity())),
                             hasProperty("address", is(saveDto.getAddress())),
-                            hasProperty("primaryLang", is(saveDto.getPrimaryLang().toLowerCase()))
+                            hasProperty("primaryLang", is(saveDto.getPrimaryLang().toLowerCase())),
+                            hasProperty("currency", is(saveDto.getCurrency()))
                     ));
                     List<String> langs = data.getT2().getT2();
                     assertEquals(mapToList(saveDto.getLangs(), String::toLowerCase), langs);

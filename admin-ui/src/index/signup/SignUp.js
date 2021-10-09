@@ -30,7 +30,7 @@ const TEST_DATA = {
 
 function SignUp({ onSuccess, onError }) {
     
-    const intialValues = true ? TEST_DATA : {
+    const intialValues = false ? TEST_DATA : {
         fullName: '',
         vatin: '',
         regNumber: '',

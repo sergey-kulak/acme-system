@@ -8,6 +8,7 @@ import com.acme.testcommons.RandomTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.core.publisher.Mono;
 
+import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.List;
@@ -31,6 +32,7 @@ public class TestEntityHelper {
         dish.setImages(List.of(RandomTestUtils.randomString("secondary")));
         dish.setComposition(RandomTestUtils.randomString("composition"));
         dish.setTags(List.of(RandomTestUtils.randomString("tag")));
+        dish.setPrice(new BigDecimal("5.55"));
 
         return dishRepository.save(dish);
     }

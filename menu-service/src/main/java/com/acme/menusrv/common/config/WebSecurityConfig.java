@@ -9,6 +9,6 @@ public class WebSecurityConfig extends WebResourceSecurityConfig {
 
     @Override
     protected String getPublicKeyProperty() {
-        return "catalog-srv.security.jwt.public-key";
+        return "menu-srv.security.jwt.public-key";
     }
 }

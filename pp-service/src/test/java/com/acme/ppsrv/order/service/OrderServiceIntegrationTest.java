@@ -419,7 +419,7 @@ class OrderServiceIntegrationTest {
     @WithMockCook
     void createdItemStatusToDeclined() {
         allowedStatusChange(OrderStatus.CONFIRMED, OrderItemStatus.CREATED,
-                OrderStatus.READY, OrderItemStatus.DECLINED);
+                OrderStatus.DECLINED, OrderItemStatus.DECLINED);
     }
 
     @Test

@@ -1,9 +1,9 @@
 import { useCallback, useEffect } from "react"
 import { connect } from "react-redux"
-import { Route, Switch, useHistory, Redirect } from "react-router-dom"
+import { Route, Switch, useHistory } from "react-router-dom"
 import SecuredRoute from '../../common/security/SecuredRoute'
 import AuthService from "../../common/security/authService"
-import { hasRole, ROLE } from "../../common/security"
+import { ROLE } from "../../common/security"
 import { onLogin, onLogout } from '../../common/security/authReducer'
 import CompanyDashboard from "../../company/CompanyDashboard"
 import CompanyEditor from '../../company/CompanyEditor'
@@ -60,7 +60,7 @@ function MainLayout({ auth, onLogin, onLogout }) {
         }
     }, [auth, refreshAccessToken])
 
-    const isTablesVisible = hasRole(auth, ROLE.ADMIN) || !!auth.user.cmpid
+    const allStuff = [ROLE.COOK, ROLE.WAITER]
 
     return (
         <div className="d-flex flex-column flex-md-row min-vh-100">
@@ -101,28 +101,28 @@ function MainLayout({ auth, onLogin, onLogout }) {
                         <SecuredRoute path="/public-point-view/:id" auth={auth} role={ROLE.PP_MANAGER}>
                             <PublicPointViewer />
                         </SecuredRoute>
-                        <Route exact path="/tables" auth={auth} role={ROLE.PP_MANAGER}>
-                            {isTablesVisible ? <PublicPointTableEditor /> : <Redirect to="/" />}
-                        </Route>
-                        <SecuredRoute exact path="/dishes" auth={auth} role={ROLE.COOK}>
+                        <SecuredRoute exact path="/tables" auth={auth} role={ROLE.WAITER}>
+                            <PublicPointTableEditor />
+                        </SecuredRoute>
+                        <SecuredRoute exact path="/dishes" auth={auth} role={allStuff}>
                             <DishDashboard />
                         </SecuredRoute>
-                        <SecuredRoute path="/dishes/:id" auth={auth} role={ROLE.COOK}>
+                        <SecuredRoute path="/dishes/:id" auth={auth} role={allStuff}>
                             <DishEditor />
                         </SecuredRoute>
-                        <SecuredRoute exact path="/menu" auth={auth} role={ROLE.COOK}>
+                        <SecuredRoute exact path="/menu" auth={auth} role={allStuff}>
                             <CategoryDashboard />
                         </SecuredRoute>
-                        <SecuredRoute path="/menu/categories/:id" auth={auth} role={ROLE.COOK}>
+                        <SecuredRoute path="/menu/categories/:id" auth={auth} role={allStuff}>
                             <CategoryEditor />
                         </SecuredRoute>
-                        <SecuredRoute path="/live-orders" auth={auth} role={ROLE.COOK}>
+                        <SecuredRoute path="/live-orders" auth={auth} role={allStuff}>
                             <LiveOrdersDashboard />
                         </SecuredRoute>
-                        <SecuredRoute exact path="/orders" auth={auth} role={ROLE.COOK}>
+                        <SecuredRoute exact path="/orders" auth={auth} role={allStuff}>
                             <OrderDashboard />
                         </SecuredRoute>
-                        <SecuredRoute path="/orders/:id" auth={auth} role={ROLE.COOK}>
+                        <SecuredRoute path="/orders/:id" auth={auth} role={[ROLE.COOK, ROLE.WAITER]}>
                             <OrderViewer />
                         </SecuredRoute>
                     </Switch>

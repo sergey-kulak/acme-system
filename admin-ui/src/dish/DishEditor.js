@@ -226,7 +226,7 @@ function DishEditor({ auth, onSuccess, onError }) {
                                         </label>
                                         <Field component={HighlightInput} name="price"
                                             type="text" className="form-control"
-                                            isDisabled={!canEdit} />
+                                            readOnly={!canEdit} />
 
                                     </div>
                                 </div>

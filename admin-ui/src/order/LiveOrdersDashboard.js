@@ -98,16 +98,18 @@ function LiveOrdersDashboard({ auth, onSuccess, onError, setOnline }) {
         }
     }, [])
 
-    const subscribe = useCallback((subscription) => {
+    const getSubscriber = useCallback(() => {
         const notPpUser = !auth.user.ppid
-        subscription.subscribe({
+        return {
             onComplete: () => {
                 if (notPpUser) {
                     setOnline(false)
                 }
             },
             onError: error => {
-                console.error(error)
+                if ('RSocket: The connection was closed.' !== error.message) {
+                    console.error(error)
+                }
                 if (notPpUser) {
                     setOnline(false)
                 }
@@ -119,23 +121,37 @@ function LiveOrdersDashboard({ auth, onSuccess, onError, setOnline }) {
                 }
                 sub.request(2147483647)
             }
-        })
+        }
     }, [auth, processEvent, setOnline])
 
     useEffect(() => {
         const cmpId = filter.companyId
         const ppId = filter.publicPointId
+        let subscriber
         if (cmpId && ppId) {
             if (!publicPointNotificationService.isConnected(cmpId, ppId)) {
                 publicPointNotificationService.close()
             }
+            subscriber = getSubscriber()
+            const request = {
+                token: auth.accessToken,
+                companyId: cmpId,
+                publicPointId: ppId
+            }
             publicPointNotificationService
-                .connect(auth.accessToken, cmpId, ppId)
-                .then(subscribe)
+                .subscribe(request, subscriber)
         } else {
             publicPointNotificationService.close()
         }
-    }, [filter, subscribe, auth])
+        return () => {
+            if (!auth.user.ppid) {
+                publicPointNotificationService.close()
+            }
+            if (subscriber) {
+                publicPointNotificationService.unsubscribe(subscriber)
+            }
+        }
+    }, [filter, getSubscriber, auth])
 
     function updateOrderStatus(orderId, status) {
         dispatch({ type: 'update-order-status', payload: { orderId, status } })

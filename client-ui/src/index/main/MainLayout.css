@@ -30,6 +30,20 @@ body {
   padding-bottom: 1rem;
 }
 
+.toast-conatiner {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .toast-conatiner {
+    bottom: 10px;
+    right: 10px;
+    margin-left: 10px;
+  }
+}
+
 .toast-message {
   font-size: 1.2rem;
 }

@@ -6,7 +6,7 @@ import { onSuccess } from "../common/toastNotification"
 import CartItem from "./CartItem"
 import menuService from "../menu/menuService"
 import fileService from "../common/fileService"
-import { isEmptyObject } from "../common/utils"
+import { byProperty, isEmptyObject } from "../common/utils"
 import CommentDialog from "./CommentDialog"
 import OrderItem from "./OrderItem"
 import { FormattedMessage } from "react-intl"
@@ -70,11 +70,26 @@ function MyOrder({ auth, cart, onRemove, onUpdate, onSetOrderId, onSuccess }) {
         if (cart.orderId) {
             menuService.findOrderById(cart.orderId)
                 .then(response => response.data)
-                .then(setOrder)
+                .then(data => {
+                    data.items.sort(byProperty('dishName'))
+                    setOrder(data)
+                })
         } else {
             setOrder()
         }
     }, [cart.orderId, cart.orderUpdateTime])
+
+    function sortCartItems(items) {
+        items = items.map(item => {
+            let dish = dishes[item.dishId]
+            if (dish) {
+                item.dishName = dish.name
+            }
+            return item
+        })
+        items.sort(byProperty('dishName'))
+        return items;
+    }
 
     function buildCartItem(item) {
         let dish = dishes[item.dishId]
@@ -168,7 +183,7 @@ function MyOrder({ auth, cart, onRemove, onUpdate, onSetOrderId, onSuccess }) {
                             <span className="font-weight-bold">In the cart:</span>
                         </div>}
                         {
-                            cart.items.map(buildCartItem)
+                            sortCartItems(cart.items).map(buildCartItem)
                         }
                         {cart.items.length > 0 && <div>
                             <button className="btn btn-primary" onClick={onPlaceOrderClick}>

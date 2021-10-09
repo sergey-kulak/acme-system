@@ -49,28 +49,38 @@ function MainLayout({ auth, onReload, onSuccess, setOnline }) {
         }
     }, [onReload, onSuccess])
 
-    const subscribe = useCallback((subscription) => {
-        subscription.subscribe({
-            onComplete: () => {
+    const getSubscriber = useCallback(() => {
+        return {
+            onComplete: () => setOnline(false),
+            onError: error => {
+                if ('RSocket: The connection was closed.' !== error.message) {
+                    console.error(error)
+                }
                 setOnline(false)
             },
-            onError: error => {
-                console.error(error)
-            },
-            onNext: response => processEvent(response),
-            onSubscribe: sub => {
+            onNext: processEvent,
+            onSubscribe: () => {
                 setOnline(true)
-                sub.request(2147483647)
             }
-        })
+        }
     }, [processEvent, setOnline])
 
     useEffect(() => {
+        let subscriber = getSubscriber()
+        const request = {
+            token: auth.accessToken,
+            companyId: auth.user.cmpid,
+            publicPointId: auth.user.ppid
+        }
         publicPointNotificationService
-            .connect(auth.accessToken, auth.user.cmpid, auth.user.ppid)
-            .then(socket => subscribe(socket))
+            .subscribe(request, subscriber)
 
-    }, [auth, subscribe])
+
+        return () => {
+            publicPointNotificationService.unsubscribe(subscriber)
+        }
+
+    }, [auth, getSubscriber])
 
     return (
         <div className="d-flex flex-column min-vh-100">

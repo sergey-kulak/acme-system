@@ -1,13 +1,15 @@
 import { Field, Form, Formik } from 'formik'
-import * as Yup from 'yup'
 import { connect } from "react-redux"
 import { Link, useHistory } from "react-router-dom"
-import authService from '../../common/security/authService'
+import * as Yup from 'yup'
 import HighlightInput from '../../common/HighlightInput'
-import './SignIn.css'
 import { onLogin } from '../../common/security/authReducer'
+import authService from '../../common/security/authService'
+import { onError } from '../../common/toastNotification'
+import ToastContainer from '../../common/ToastContainer'
+import './SignIn.css'
 
-function SignIn({ onLogin }) {
+function SignIn({ onLogin, onError }) {
     const history = useHistory()
 
     const intialValues = {
@@ -26,11 +28,13 @@ function SignIn({ onLogin }) {
             .then(response => {
                 onLogin(response.data)
                 history.push("/")
+            }, error => {
+                onError("Bad credentials")
             })
 
     }
 
-    return (
+    return (<>
         <Formik
             initialValues={intialValues}
             validationSchema={validationSchema}
@@ -56,10 +60,12 @@ function SignIn({ onLogin }) {
                 </Form>
             </div>
         </Formik>
-
-    )
+        <ToastContainer />
+    </>)
 }
 
-export default connect(() => ({}), {
-    onLogin
+const mapStateToProps = () => ({})
+
+export default connect(mapStateToProps, {
+    onLogin, onError
 })(SignIn)

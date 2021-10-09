@@ -16,7 +16,6 @@ import reactor.core.publisher.Flux;
 public class PublicPointNotificationController {
     private final PublicPointNotificationService notificationService;
 
-
     @MessageMapping("get.notifications")
     public Flux<NotificationDto> getNotifications(NotificationRequest request, @Header String token) {
         return notificationService.getNotifications(request, token);

@@ -1,5 +1,6 @@
 package com.acme.ppsrv.common.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -10,10 +11,13 @@ import org.springframework.messaging.rsocket.DefaultMetadataExtractor;
 import org.springframework.messaging.rsocket.MetadataExtractor;
 import org.springframework.messaging.rsocket.RSocketStrategies;
 import org.springframework.util.MimeType;
+import reactor.core.publisher.Hooks;
 
 import java.util.Map;
+import java.util.concurrent.CancellationException;
 
 @Configuration
+@Slf4j
 public class RSocketConfig implements InitializingBean {
     @Autowired
     private RSocketStrategies rSocketStrategies;
@@ -35,6 +39,12 @@ public class RSocketConfig implements InitializingBean {
                         outputMap.putAll(jsonMap);
                     });
         }
+
+        Hooks.onErrorDropped(error -> {
+            if (!(error.getCause() instanceof CancellationException)) {
+                log.error("Error: ", error);
+            }
+        });
     }
 
 }

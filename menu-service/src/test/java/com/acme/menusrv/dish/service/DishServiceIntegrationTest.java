@@ -24,6 +24,7 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import javax.validation.ConstraintViolationException;
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -79,6 +80,7 @@ class DishServiceIntegrationTest extends ServiceIntegrationTest {
                 .images(List.of("secondary"))
                 .composition("composition")
                 .tags(List.of("tag1", "tag2"))
+                .price(new BigDecimal("9.99"))
                 .build();
     }
 
@@ -103,7 +105,8 @@ class DishServiceIntegrationTest extends ServiceIntegrationTest {
                         hasProperty("primaryImage", is(dto.getPrimaryImage())),
                         hasProperty("images", is(dto.getImages())),
                         hasProperty("tags", is(dto.getTags())),
-                        hasProperty("deleted", is(false))
+                        hasProperty("deleted", is(false)),
+                        hasProperty("price", is(dto.getPrice()))
                 )))
                 .verifyComplete();
     }
@@ -170,7 +173,8 @@ class DishServiceIntegrationTest extends ServiceIntegrationTest {
                         hasProperty("primaryImage", is(dto.getPrimaryImage())),
                         hasProperty("images", is(dto.getImages())),
                         hasProperty("tags", is(dto.getTags())),
-                        hasProperty("deleted", is(false))
+                        hasProperty("deleted", is(false)),
+                        hasProperty("price", is(dto.getPrice()))
                 )))
                 .verifyComplete();
     }
@@ -183,6 +187,7 @@ class DishServiceIntegrationTest extends ServiceIntegrationTest {
                 .images(List.of("secondary"))
                 .composition("composition")
                 .tags(List.of("tag1", "tag2"))
+                .price(new BigDecimal("8.5"))
                 .build();
     }
 

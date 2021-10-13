@@ -1,11 +1,9 @@
-def pom = readMavenPom()
-
 pipeline {
   agent any
 
   environment {
-    imageName = pom.getVersion().getProperties().getProperty("docker.image.name")
-    appVersion = pom.getVersion()
+    imageName = readMavenPom().getVersion().getProperties().getProperty("docker.image.name")
+    appVersion = readMavenPom().getVersion()
   }
 
   stages {

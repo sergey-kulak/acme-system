@@ -4,7 +4,7 @@ pipeline {
   environment {
     subModule = "discovery-service"
     pomFile = "${subModule}/pom.xml"
-    pom = readMavenPom(pomFile)
+    pom = readMavenPom(file: pomFile)
     imageName = pom.getProperties().getProperty("docker.image.name")
     appVersion = pom.getVersion()
   }

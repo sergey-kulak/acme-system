@@ -3,8 +3,10 @@ pipeline {
 
   environment {
     subModule = "discovery-service"
-    imageName = readMavenPom(file = subModule + '/pom.xml').getProperties().getProperty("docker.image.name")
-    appVersion = readMavenPom(file = subModule + '/pom.xml').getVersion()
+    pomFile = subModule + '/pom.xml'
+    pom = readMavenPom(pomFile)
+    imageName = pom.getProperties().getProperty("docker.image.name")
+    appVersion = pom.getVersion()
   }
 
   stages {

@@ -2,8 +2,9 @@ pipeline {
   agent any
 
   environment {
-    imageName = readMavenPom().getVersion().getProperties().getProperty("docker.image.name")
-    appVersion = readMavenPom().getVersion()
+    subModule = "discovery-service"
+    imageName = readMavenPom(subModule + '/pom.xml').getProperties().getProperty("docker.image.name")
+    appVersion = readMavenPom(subModule + '/pom.xml').getVersion()
   }
 
   stages {

@@ -25,7 +25,7 @@ pipeline {
       steps {
         script {
           sh "echo ${imageName}:${appVersion}"
-          sh " docker build -t ${imageName}:${appVersion} ."
+          sh " docker build -t ${imageName}:${appVersion} ${subModule}"
         }
       }
     }

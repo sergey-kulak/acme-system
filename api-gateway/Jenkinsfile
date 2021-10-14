@@ -1,0 +1,33 @@
+pipeline {
+  agent any
+
+  environment {
+    subModule = "api-gateway"
+    pomFile = "${subModule}/pom.xml"
+    pom = readMavenPom(file: pomFile)
+    imageName = pom.getProperties().getProperty("docker.image.name")
+    appVersion = pom.getVersion()
+  }
+
+  stages {
+    // workaround to avoid git detached state otherwise maven git doesn't pull branch name
+    stage('Checkout') {
+      steps {
+        script {
+          sh "git fetch"
+          sh "git checkout ${env.branch}"
+          sh "git pull | exit 0"
+        }
+      }
+    }
+    
+    stage('Build App') {
+      steps {
+        script {
+          sh "echo ${imageName}:${appVersion}"
+          sh "docker build -t ${imageName}:${appVersion} ${subModule}"
+        }
+      }
+    }
+  }
+}

@@ -18,9 +18,7 @@
     <properties>
         <java.version>11</java.version>
 
-        <start-class>com.acme.apigw.Application</start-class>
-        <docker.image.name>acme/api-gateway</docker.image.name>
-        <docker.image.tag>${project.version}</docker.image.tag>
+        <docker.image.name>acme-system/api-gateway</docker.image.name>
         <spring.cloud.version>2020.0.3</spring.cloud.version>
     </properties>
 

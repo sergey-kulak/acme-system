@@ -1,0 +1,10 @@
+Local k8s deployment notes:
+ - before run minickube
+sudo sysctl net/netfilter/nf_conntrack_max=131072    
+
+To expose services (ClusterIP is enough)
+kubectl port-forward --address 0.0.0.0 service/jenkins 7100:8080 -n acme-dev
+
+Official docker image should be modified to be able to run docker command. Certs should be copied from minikube installation:
+ - docker build -f Dockerfile-jenkins -t acme-jenkins:2.303.2-lts-jdk11 .
+ - connect to jenkins pod and copy certs into /var/jenkins_home/minikube-certs

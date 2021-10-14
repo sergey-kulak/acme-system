@@ -2,7 +2,7 @@ pipeline {
   agent any
 
   environment {
-    subModule = "discovery-service"
+    subModule = "config-service"
     pomFile = "${subModule}/pom.xml"
     pom = readMavenPom(file: pomFile)
     imageName = pom.getProperties().getProperty("docker.image.name")

@@ -16,6 +16,9 @@ spec:
       containers:
       - name: discovery-service
         image: acme-system/discovery-service:1.0-SNAPSHOT
+        env:
+          - name: eureka.instance.hostname
+            value: "discovery-service"
         ports:
         - containerPort: 7002
           name: http

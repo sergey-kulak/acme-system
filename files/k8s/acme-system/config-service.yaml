@@ -18,7 +18,7 @@ spec:
         image: acme-system/config-service:1.0-SNAPSHOT
         env:
           - name: eureka.client.serviceUrl.defaultZone
-            value: "http://discovery-service:7002/eureka/"
+            value: "http://discovery-service.acme:7002/eureka/"
         ports:
         - containerPort: 7000
           name: http

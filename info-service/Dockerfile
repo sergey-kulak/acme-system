@@ -11,7 +11,7 @@ RUN mvn -o package
 
 FROM openjdk:11.0.12-jdk-slim
 
-EXPOSE 7004
-COPY --from=build /build/target/api-gateway-*.jar api-gateway.jar
+EXPOSE 7006
+COPY --from=build /build/target/info-service-*.jar info-service.jar
 
-ENTRYPOINT ["java", "-jar", "api-gateway.jar"]
+ENTRYPOINT ["java", "-jar", "info-service.jar"]

@@ -19,6 +19,8 @@ spec:
         env:
           - name: eureka.client.serviceUrl.defaultZone
             value: "http://discovery-service:7002/eureka/"
+          - name: eureka.instance.preferIpAddress
+            value: "true"
         ports:
         - containerPort: 7006
           name: http

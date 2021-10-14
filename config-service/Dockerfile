@@ -11,7 +11,7 @@ RUN mvn -o package
 
 FROM openjdk:11.0.12-jdk-slim
 
-EXPOSE 7002
-COPY --from=build /build/target/config-service-*.jar discovery-service.jar
+EXPOSE 7000
+COPY --from=build /build/target/config-service-*.jar config-service.jar
 
 ENTRYPOINT ["java", "-jar", "config-service.jar"]

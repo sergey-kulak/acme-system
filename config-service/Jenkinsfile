@@ -1,12 +1,18 @@
 pipeline {
   agent any
 
+  tools {
+     jdk "jdk-11"
+     maven "maven-3.8"
+  }
+
   environment {
     subModule = "config-service"
     pomFile = "${subModule}/pom.xml"
     pom = readMavenPom(file: pomFile)
     imageName = pom.getProperties().getProperty("docker.image.name")
     appVersion = pom.getVersion()
+    artifactId = pom.getArtifactId()
   }
 
   stages {

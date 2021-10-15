@@ -18,6 +18,7 @@ pipeline {
          jdk "jdk-11"
       }
       steps {
+        env.JAVA_HOME="${tool 'jdk-11'}"
         script {
           sh "java -version"
           withMaven(maven: "maven-3.8") {

@@ -25,6 +25,7 @@ pipeline {
       steps {
         script {
           sh "java -version"
+          sh "echo ${JAVA_HOME}=${env.JAVA_HOME}"
           withMaven(maven: "maven-3.8") {
             sh "mvn clean install"
           }

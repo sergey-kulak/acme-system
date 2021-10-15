@@ -18,6 +18,7 @@
     <properties>
         <java.version>11</java.version>
 
+        <docker.image.name>acme-test-commons</docker.image.name>
         <acme-commons.version>1.0-SNAPSHOT</acme-commons.version>
     </properties>
 

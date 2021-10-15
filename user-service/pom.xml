@@ -18,9 +18,7 @@
     <properties>
         <java.version>11</java.version>
 
-        <start-class>com.acme.usersrv.Application</start-class>
-        <docker.image.name>acme/user-service</docker.image.name>
-        <docker.image.tag>${project.version}</docker.image.tag>
+        <docker.image.name>acme-system/user-service</docker.image.name>
         <spring.cloud.version>2020.0.3</spring.cloud.version>
         <liquibase.version>4.4.0</liquibase.version>
         <r2dbc-pg.version>0.8.8.RELEASE</r2dbc-pg.version>

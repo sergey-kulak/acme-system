@@ -1,0 +1,28 @@
+pipeline {
+  agent any
+
+  stages {
+    // workaround to avoid git detached state otherwise maven git doesn't pull branch name
+    stage('Checkout') {
+      steps {
+        script {
+          sh "git fetch"
+          sh "git checkout ${env.branch}"
+          sh "git pull | exit 0"
+        }
+      }
+    }
+    
+    stage('Build App') {
+      tools {
+         jdk "jdk-11"
+         jdk "maven-3.8"
+      }
+      steps {
+        script {
+          sh "mnv clean install"
+        }
+      }
+    }
+  }
+}

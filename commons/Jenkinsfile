@@ -16,12 +16,13 @@ pipeline {
     stage('Build App') {
       tools {
          jdk "jdk-11"
-         maven "maven-3.8"
       }
       steps {
         script {
           sh "java -version"
-          sh "mvn clean install"
+          withMaven(maven: "maven-3.8") {
+            sh "mvn clean install"
+          }
         }
       }
     }

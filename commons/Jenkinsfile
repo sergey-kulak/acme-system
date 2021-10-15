@@ -16,7 +16,7 @@ pipeline {
       steps {
         script {
           sh 'git fetch'
-          sh 'git checkout ${env.branch}'
+          sh "git checkout ${env.branch}"
           sh 'git pull | exit 0'
         }
       }
@@ -24,11 +24,11 @@ pipeline {
     
     stage('Build App') {
       steps {
-        //dir('${env.subModule}') {
+        dir(env.subModule}) {
           script {
             sh 'mvn clean install'
           }
-        //}
+        }
       }
     }
   }

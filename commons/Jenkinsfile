@@ -2,32 +2,31 @@ pipeline {
   agent any
 
   tools {
-     jdk "jdk-11"
+     jdk 'jdk-11'
+     maven 'maven-3.8'
   }
 
-  //environment {
-    //JAVA_HOME = "${tool 'jdk-11'}"
-  //}
+  environment {
+    subModule = 'commons'
+  }
 
   stages {
     // workaround to avoid git detached state otherwise maven git doesn't pull branch name
     stage('Checkout') {
       steps {
         script {
-          sh "git fetch"
-          sh "git checkout ${env.branch}"
-          sh "git pull | exit 0"
+          sh 'git fetch'
+          sh 'git checkout ${env.branch}'
+          sh 'git pull | exit 0'
         }
       }
     }
     
     stage('Build App') {
       steps {
-        script {
-          sh "java -version"
-          sh "echo ${JAVA_HOME}=${env.JAVA_HOME}"
-          withMaven(maven: "maven-3.8") {
-            sh "mvn clean install"
+        dir(env.subModule) {
+          script {
+            sh 'mvn clean install'
           }
         }
       }

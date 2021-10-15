@@ -29,11 +29,10 @@ pipeline {
     stage('Build App') {
       steps {
         dir(env.subModule) {
-          sh 'mvn clean install'
-        }
-        script {
           sh "echo ${imageName}:${appVersion}"
-          sh "docker build -t ${imageName}:${appVersion} ${subModule}"
+          sh "mvn clean install -DskipTests=${env.skipTests}"
+          sh "files/make-docker-dist.sh ${subModule}"
+          sh "docker build -t ${imageName}:${appVersion} ${subModule}/target/dist"
         }
       }
     }

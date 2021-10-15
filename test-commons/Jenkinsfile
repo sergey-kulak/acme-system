@@ -25,7 +25,7 @@ pipeline {
     stage('Build App') {
       steps {
         dir(env.subModule) {
-          sh 'mvn clean install'
+          sh "mvn clean install -DskipTests=${env.skipTests}"
         }
       }
     }

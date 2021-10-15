@@ -10,8 +10,8 @@ pipeline {
   }
 
   stages {
-    // workaround to avoid git detached state otherwise maven git doesn't pull branch name
-    stage('Checkout') {
+    // workaround to avoid git detached state otherwise maven git doesn"t pull branch name
+    stage("Checkout") {
       steps {
         script {
           sh "git fetch"
@@ -21,11 +21,13 @@ pipeline {
       }
     }
     
-    stage('Build App') {
+    stage("Build App") {
       steps {
-        script {
+        dir(env.subModule) {
           sh "echo ${imageName}:${appVersion}"
-          sh "docker build -t ${imageName}:${appVersion} ${subModule}"
+          sh "mvn clean package -DskipTests=${env.skipTests}"
+          sh "../files/make-docker-dist.sh ${env.artifactId}"
+          sh "docker build -t ${imageName}:${appVersion} target/dist"
         }
       }
     }

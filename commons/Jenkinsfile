@@ -16,6 +16,7 @@ pipeline {
     stage('Build App') {
       tools {
          jdk "jdk-11"
+         jdk "maven-3.8"
       }
       steps {
         script {

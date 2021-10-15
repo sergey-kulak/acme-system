@@ -19,6 +19,7 @@ pipeline {
       }
       steps {
         script {
+          sh "java -v"
           sh "mvn clean install"
         }
       }

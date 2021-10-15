@@ -25,9 +25,7 @@ pipeline {
     stage('Build App') {
       steps {
         dir(env.subModule) {
-          script {
-            sh 'mvn clean install'
-          }
+          sh 'mvn clean install'
         }
       }
     }

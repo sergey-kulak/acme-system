@@ -1,6 +1,11 @@
 pipeline {
   agent any
 
+  tools {
+     jdk 'jdk-11'
+     maven 'maven-3.8'
+  }
+
   environment {
     subModule = "discovery-service"
     pomFile = "${subModule}/pom.xml"
@@ -23,6 +28,9 @@ pipeline {
     
     stage('Build App') {
       steps {
+        dir(env.subModule) {
+          sh 'mvn clean install'
+        }
         script {
           sh "echo ${imageName}:${appVersion}"
           sh "docker build -t ${imageName}:${appVersion} ${subModule}"

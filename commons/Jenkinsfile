@@ -5,9 +5,9 @@ pipeline {
      jdk "jdk-11"
   }
 
-  environment {
-    JAVA_HOME = "${tool 'jdk-11'}"
-  }
+  //environment {
+    //JAVA_HOME = "${tool 'jdk-11'}"
+  //}
 
   stages {
     // workaround to avoid git detached state otherwise maven git doesn't pull branch name

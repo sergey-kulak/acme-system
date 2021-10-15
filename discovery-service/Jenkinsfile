@@ -31,9 +31,7 @@ pipeline {
         dir(env.subModule) {
           sh "echo ${imageName}:${appVersion}"
           sh "mvn clean package -DskipTests=${env.skipTests}"
-          sh "pwd"
-          sh "ls -l"
-          sh "files/make-docker-dist.sh ${subModule}"
+          sh "../files/make-docker-dist.sh ${subModule}"
           sh "docker build -t ${imageName}:${appVersion} ${subModule}/target/dist"
         }
       }

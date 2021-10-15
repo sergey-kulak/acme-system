@@ -20,7 +20,7 @@ pipeline {
       }
       steps {
         script {
-          sh "java -v"
+          sh "java -version"
           sh "mvn clean install"
         }
       }

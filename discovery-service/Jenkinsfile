@@ -12,6 +12,7 @@ pipeline {
     pom = readMavenPom(file: pomFile)
     imageName = pom.getProperties().getProperty("docker.image.name")
     appVersion = pom.getVersion()
+    artifactId = pom.getArtifactId()
   }
 
   stages {
@@ -31,8 +32,8 @@ pipeline {
         dir(env.subModule) {
           sh "echo ${imageName}:${appVersion}"
           sh "mvn clean package -DskipTests=${env.skipTests}"
-          sh "../files/make-docker-dist.sh ${subModule}"
-          sh "docker build -t ${imageName}:${appVersion} ${subModule}/target/dist"
+          sh "../files/make-docker-dist.sh ${env.artifactId}"
+          sh "docker build -t ${imageName}:${appVersion} target/dist"
         }
       }
     }

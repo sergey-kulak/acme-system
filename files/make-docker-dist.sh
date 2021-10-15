@@ -1,6 +1,5 @@
-MODULE=$1
 DIST="target/dist"
-ARTIFACT=${2:-$MODULE}
+ARTIFACT=$1
 
 rm -f -r $DIST
 mkdir -p $DIST

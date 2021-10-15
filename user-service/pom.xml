@@ -238,6 +238,7 @@
                     <changeLogFile>src/main/resources/db/changelog/master.xml</changeLogFile>
                     <driver>org.testcontainers.jdbc.ContainerDatabaseDriver</driver>
                     <url>jdbc:tc:postgresql:13.3-alpine:///userdb?TC_DAEMON=true&amp;TC_REUSABLE=true</url>
+                    <promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
                 </configuration>
                 <dependencies>
                     <dependency>

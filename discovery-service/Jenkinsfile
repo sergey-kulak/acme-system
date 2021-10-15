@@ -2,8 +2,8 @@ pipeline {
   agent any
 
   tools {
-     jdk 'jdk-11'
-     maven 'maven-3.8'
+     jdk "jdk-11"
+     maven "maven-3.8"
   }
 
   environment {
@@ -15,8 +15,8 @@ pipeline {
   }
 
   stages {
-    // workaround to avoid git detached state otherwise maven git doesn't pull branch name
-    stage('Checkout') {
+    // workaround to avoid git detached state otherwise maven git doesn"t pull branch name
+    stage("Checkout") {
       steps {
         script {
           sh "git fetch"
@@ -26,7 +26,7 @@ pipeline {
       }
     }
     
-    stage('Build App') {
+    stage("Build App") {
       steps {
         dir(env.subModule) {
           sh "echo ${imageName}:${appVersion}"

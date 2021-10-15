@@ -2,27 +2,27 @@ pipeline {
   agent any
 
   tools {
-     jdk 'jdk-11'
-     maven 'maven-3.8'
+     jdk "jdk-11"
+     maven "maven-3.8"
   }
 
   environment {
-    subModule = 'test-commons'
+    subModule = "test-commons"
   }
 
   stages {
-    // workaround to avoid git detached state otherwise maven git doesn't pull branch name
-    stage('Checkout') {
+    // workaround to avoid git detached state otherwise maven git doesn"t pull branch name
+    stage("Checkout") {
       steps {
         script {
-          sh 'git fetch'
+          sh "git fetch"
           sh "git checkout ${env.branch}"
-          sh 'git pull | exit 0'
+          sh "git pull | exit 0"
         }
       }
     }
 
-    stage('Build App') {
+    stage("Build App") {
       steps {
         dir(env.subModule) {
           sh "mvn clean install -DskipTests=${env.skipTests}"

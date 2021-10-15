@@ -1,6 +1,14 @@
 pipeline {
   agent any
 
+  tools {
+     jdk "jdk-11"
+  }
+
+  environment {
+    JAVA_HOME = "${tool 'jdk-11'}"
+  }
+
   stages {
     // workaround to avoid git detached state otherwise maven git doesn't pull branch name
     stage('Checkout') {
@@ -14,13 +22,8 @@ pipeline {
     }
     
     stage('Build App') {
-      tools {
-         jdk "jdk-11"
-      }
       steps {
         script {
-          env.JAVA_HOME="${tool 'jdk-11'}"
-
           sh "java -version"
           withMaven(maven: "maven-3.8") {
             sh "mvn clean install"

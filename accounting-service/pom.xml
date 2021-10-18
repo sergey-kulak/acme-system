@@ -18,9 +18,7 @@
     <properties>
         <java.version>11</java.version>
 
-        <start-class>com.acme.accountingsrv.Application</start-class>
-        <docker.image.name>acme/accountingdb-service</docker.image.name>
-        <docker.image.tag>${project.version}</docker.image.tag>
+        <docker.image.name>acme/accounting-service</docker.image.name>
         <spring.cloud.version>2020.0.3</spring.cloud.version>
         <liquibase.version>4.4.0</liquibase.version>
         <r2dbc-pg.version>0.8.8.RELEASE</r2dbc-pg.version>
@@ -207,6 +205,19 @@
             <version>${feign-reactor.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <version>${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -352,6 +363,26 @@
 
                     </generator>
                 </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>exec-maven-plugin</artifactId>
+                <groupId>org.codehaus.mojo</groupId>
+                <executions>
+                    <execution>
+                        <id>clear-test-containers</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>../files/clear-test-containers.sh</executable>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

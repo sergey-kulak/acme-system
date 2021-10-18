@@ -10,21 +10,11 @@ spring:
   liquibase:
     enabled: true
     change-log: db/changelog/master.xml
-    url: jdbc:${user-srv.db.url}
-    user: ${user-srv.db.user}
-    password: ${user-srv.db.password}
   r2dbc:
-    url: r2dbc:${user-srv.db.url}
-    username: ${user-srv.db.user}
-    password: ${user-srv.db.password}
     pool:
       initial-size: 5
       max-size: 10
 
 user-srv:
-  db:
-    url: postgresql://localhost:7011/userdb
-    user: usUser
-    password: usPass
   security:
     hash-strength: 7

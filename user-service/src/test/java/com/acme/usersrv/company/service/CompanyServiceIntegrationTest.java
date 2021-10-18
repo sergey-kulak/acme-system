@@ -55,8 +55,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@ServiceIntegrationTest
-public class CompanyServiceIntegrationTest {
+public class CompanyServiceIntegrationTest extends ServiceIntegrationTest {
     @Autowired
     CompanyService companyService;
     @Autowired

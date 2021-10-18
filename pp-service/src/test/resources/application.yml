@@ -15,19 +15,7 @@ spring:
   liquibase:
     enabled: true
     change-log: db/changelog/master.xml
-    url: jdbc:${pp-srv.db.url}
-    user: ${pp-srv.db.user}
-    password: ${pp-srv.db.password}
   r2dbc:
-    url: r2dbc:${pp-srv.db.url}
-    username: ${pp-srv.db.user}
-    password: ${pp-srv.db.password}
     pool:
       initial-size: 5
       max-size: 10
-
-pp-srv:
-  db:
-    url: postgresql://localhost:7041/ppdb
-    user: ppUser
-    password: ppPass

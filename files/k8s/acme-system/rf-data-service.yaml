@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rf-data-service
+  namespace: acme
+spec:
+  selector:
+    matchLabels:
+      app: rf-data-service
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: rf-data-service
+    spec:
+      containers:
+      - name: rf-data-service
+        image: acme-system/rf-data-service:1.0-SNAPSHOT
+        env:
+          - name: eureka.client.serviceUrl.defaultZone
+            value: "http://discovery-service:7002/eureka/"
+          - name: eureka.instance.preferIpAddress
+            value: "true"
+          - name: spring.profiles.active
+            value: "lk8s"
+        ports:
+        - containerPort: 7020
+          name: http

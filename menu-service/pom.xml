@@ -18,7 +18,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>11</java.version>
 
-        <docker.image.name>acme-system/catalog-service</docker.image.name>
+        <docker.image.name>acme-system/menu-service</docker.image.name>
         <spring.cloud.version>2020.0.3</spring.cloud.version>
         <lombok.version>1.18.20</lombok.version>
         <openapi-ui.version>1.5.9</openapi-ui.version>

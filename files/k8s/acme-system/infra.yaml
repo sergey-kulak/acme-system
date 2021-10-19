@@ -67,7 +67,7 @@ spec:
     - ReadWriteMany
   resources:
     requests:
-      storage: 5Gi
+      storage: 1Gi
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -114,3 +114,68 @@ spec:
   ports:
     - port: 27017
       targetPort: 27017
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: rmq-pvc
+  namespace: acme
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rmq
+  namespace: acme
+spec:
+  selector:
+    matchLabels:
+      app: rmq
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: rmq
+    spec:
+      containers:
+        - name: rmq
+          image: rabbitmq:3.9.4-management-alpine
+          env:
+            - name: RABBITMQ_DEFAULT_USER
+              value: "acmRmqUser"
+            - name: RABBITMQ_DEFAULT_PASS
+              value: "@acmRmqPa2s"
+          ports:
+            - containerPort: 5672
+              name: tcp
+            - containerPort: 15672
+              name: mhttp
+          volumeMounts:
+            - name: rmq-storate
+              mountPath: /var/lib/rabbitmq
+      volumes:
+        - name: rmq-storate
+          persistentVolumeClaim:
+            claimName: rmq-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rmq
+  namespace: acme
+spec:
+  type: ClusterIP
+  selector:
+    app: rmq
+  ports:
+    - port: 5672
+      targetPort: 5672
+      name: tcp
+    - port: 15672
+      targetPort: 15672
+      name: mhttp

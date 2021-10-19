@@ -19,9 +19,6 @@ spec:
         env:
           - name: JAVA_OPTS
             value: "-Xmx300m"
-        resources:
-          limits:
-            memory: "300Mi"
         ports:
         - containerPort: 7002
           name: http

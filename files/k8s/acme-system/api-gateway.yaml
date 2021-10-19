@@ -19,9 +19,8 @@ spec:
         env:
           - name: eureka.client.serviceUrl.defaultZone
             value: "http://discovery-service:7002/eureka/"
-        resources:
-          limits:
-            memory: "700Mi"        
+          - name: JAVA_OPTS
+            value: "-Xmx300m"
         ports:
         - containerPort: 7004
           name: http

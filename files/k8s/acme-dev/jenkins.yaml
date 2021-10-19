@@ -46,9 +46,6 @@ spec:
           value: "minikube"
         - name: JAVA_OPTS
           value: "-Xmx3500m"
-        resources:
-          limits:
-            memory: "3500Mi"         
         ports:
         - containerPort: 8080
           name: jenkins-http

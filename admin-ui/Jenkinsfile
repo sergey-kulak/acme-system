@@ -4,7 +4,8 @@ pipeline {
   environment {
     subModule = "admin-ui"
     imageName = "acme-system/admin-ui"
-    appVersion = readJSON(file: "admin-ui/package.json").version
+    packageJson = readJSON(file: "admin-ui/package.json") 
+    appVersion = "${packageJson.version}"
   }
 
   stages {

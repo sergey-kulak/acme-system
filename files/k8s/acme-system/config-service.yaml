@@ -17,9 +17,9 @@ spec:
       - name: config-service
         image: acme-system/config-service:1.0-SNAPSHOT
         env:
-          - name: eureka.client.serviceUrl.defaultZone
+          - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
             value: "http://discovery-service:7002/eureka/"
-          - name: eureka.instance.preferIpAddress
+          - name: EUREKA_INSTANCE_PREFERIPADDRESS
             value: "true"
           - name: JAVA_OPTS
             value: "-Xmx300m"

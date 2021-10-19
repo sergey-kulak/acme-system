@@ -1,0 +1,50 @@
+apiVersion: v1
+data:
+  accessKey: QUtJQTI2N1JHNzcyQkpGWllRV00=
+  secret: b1JDSkdFMTZhbFpoM05zT1dWSTlnRlFpZlUrOWdsZkplb1JwY3M1UA==
+kind: Secret
+metadata:
+  name: aws-secrect
+  namespace: acme
+type: Opaque
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: file-service
+  namespace: acme
+spec:
+  selector:
+    matchLabels:
+      app: file-service
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: file-service
+    spec:
+      containers:
+      - name: file-service
+        image: acme-system/file-service:1.0-SNAPSHOT
+        env:
+          - name: eureka.client.serviceUrl.defaultZone
+            value: "http://discovery-service:7002/eureka/"
+          - name: eureka.instance.preferIpAddress
+            value: "true"
+          - name: spring.profiles.active
+            value: "lk8s"
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: aws-secrect
+                key: accessKey
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: aws-secrect
+                key: secret
+          - name: AWS_REGION
+            value: "us-east-1"
+        ports:
+        - containerPort: 7060
+          name: http

@@ -21,8 +21,6 @@ spec:
             value: "http://discovery-service:7002/eureka/"
           - name: eureka.instance.preferIpAddress
             value: "true"
-          - name: JAVA_OPTS
-            value: "-Xmx300m"
         ports:
         - containerPort: 7000
           name: http

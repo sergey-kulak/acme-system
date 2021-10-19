@@ -17,7 +17,7 @@ spec:
       - name: api-gateway
         image: acme-system/api-gateway:1.0-SNAPSHOT
         env:
-          - name: eureka.client.serviceUrl.defaultZone
+          - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
             value: "http://discovery-service:7002/eureka/"
           - name: JAVA_OPTS
             value: "-Xmx300m"

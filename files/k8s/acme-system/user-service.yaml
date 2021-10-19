@@ -17,11 +17,11 @@ spec:
       - name: user-service
         image: acme-system/user-service:1.0-SNAPSHOT
         env:
-          - name: eureka.client.serviceUrl.defaultZone
+          - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
             value: "http://discovery-service:7002/eureka/"
-          - name: eureka.instance.preferIpAddress
+          - name: EUREKA_INSTANCE_PREFERIPADDRESS
             value: "true"
-          - name: spring.profiles.active
+          - name: SPRING_PROFILES_ACTIVE
             value: "lk8s"
           - name: JAVA_OPTS
             value: "-Xmx400m"

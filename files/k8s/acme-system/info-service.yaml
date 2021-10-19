@@ -17,9 +17,9 @@ spec:
       - name: info-service
         image: acme-system/info-service:1.0-SNAPSHOT
         env:
-          - name: eureka.client.serviceUrl.defaultZone
+          - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
             value: "http://discovery-service:7002/eureka/"
-          - name: eureka.instance.preferIpAddress
+          - name: EUREKA_INSTANCE_PREFERIPADDRESS
             value: "true"
         ports:
         - containerPort: 7006

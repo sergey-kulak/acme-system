@@ -3,7 +3,7 @@ pipeline {
 
   environment {
     subModule = "client-ui"
-    imageName = "acme-system/admin-ui"
+    imageName = "acme-system/client-ui"
     packageJson = readJSON(file: "client-ui/package.json") 
     appVersion = "${packageJson.version}"
   }

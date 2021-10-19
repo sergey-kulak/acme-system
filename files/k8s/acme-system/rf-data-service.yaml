@@ -23,9 +23,8 @@ spec:
             value: "true"
           - name: spring.profiles.active
             value: "lk8s"
-        resources:
-          limits:
-            memory: "700Mi"
+          - name: JAVA_OPTS
+            value: "-Xmx300m"
         ports:
         - containerPort: 7020
           name: http

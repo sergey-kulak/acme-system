@@ -1,6 +1,6 @@
 {
   "name": "admin-ui",
-  "version": "1.0-SNAPSHOT",
+  "version": "1.0.0-SNAPSHOT",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.11.4",

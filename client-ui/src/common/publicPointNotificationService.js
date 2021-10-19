@@ -8,7 +8,8 @@ let currentConnection
 let subscribers = []
 
 function initClient() {
-    wsClient = new RSocketWebSocketClient({ url: `ws://${window.location.hostname}:7004/pp-service-rsocket` })
+    wsClient = new RSocketWebSocketClient({ url: 
+        `ws://${window.location.hostname}:${window.location.port}/pp-service-rsocket` })
     client = new RSocketClient({
         serializers: JsonSerializers,
         setup: {

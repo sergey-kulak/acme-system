@@ -9,7 +9,8 @@ Official docker image should be modified to be able to run docker command. Certs
  - docker build -f Dockerfile-jenkins -t acme-jenkins:2.303.2-lts-jdk11 .
  - connect to jenkins pod and copy certs into /var/jenkins_home/minikube-certs
 
-
 kubectl port-forward --address 0.0.0.0 service/discovery-service 7002:7002 -n acme
 kubectl port-forward --address 0.0.0.0 service/api-gateway 7004:7004 -n acme
 kubectl port-forward --address 0.0.0.0 service/rmq 15672:15672 -n acme
+kubectl port-forward --address 0.0.0.0 service/admin-ui 3500:80 -n acme
+kubectl port-forward --address 0.0.0.0 service/client-ui 3501:80 -n acme

@@ -44,6 +44,9 @@ spec:
           value: "/var/jenkins_home/minikube-certs"
         - name: MINIKUBE_ACTIVE_DOCKERD
           value: "minikube"                              
+        resources:
+          limits:
+            memory: "1500Mi"         
         ports:
         - containerPort: 8080
           name: jenkins-http

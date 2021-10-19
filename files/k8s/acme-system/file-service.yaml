@@ -45,6 +45,9 @@ spec:
                 key: secret
           - name: AWS_REGION
             value: "us-east-1"
+        resources:
+          limits:
+            memory: "600Mi"
         ports:
         - containerPort: 7060
           name: http

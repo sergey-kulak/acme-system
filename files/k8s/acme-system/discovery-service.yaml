@@ -16,6 +16,9 @@ spec:
       containers:
       - name: discovery-service
         image: acme-system/discovery-service:1.0-SNAPSHOT
+        resources:
+          limits:
+            memory: "600Mi"
         ports:
         - containerPort: 7002
           name: http

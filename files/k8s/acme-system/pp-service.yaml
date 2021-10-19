@@ -25,7 +25,7 @@ spec:
             value: "lk8s"
         resources:
           limits:
-            memory: "700Mi"
+            memory: "1000Mi"
         ports:
         - containerPort: 7040
           name: http

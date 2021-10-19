@@ -43,10 +43,12 @@ spec:
         - name: DOCKER_CERT_PATH
           value: "/var/jenkins_home/minikube-certs"
         - name: MINIKUBE_ACTIVE_DOCKERD
-          value: "minikube"                              
+          value: "minikube"
+        - name: JAVA_OPTS
+          value: "-Xmx3500m"
         resources:
           limits:
-            memory: "1500Mi"         
+            memory: "3500Mi"         
         ports:
         - containerPort: 8080
           name: jenkins-http

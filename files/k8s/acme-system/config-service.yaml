@@ -23,7 +23,7 @@ spec:
             value: "true"
         resources:
           limits:
-            memory: "500Mi"        
+            memory: "600Mi"        
         ports:
         - containerPort: 7000
           name: http

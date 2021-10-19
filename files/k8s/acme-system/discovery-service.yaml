@@ -16,9 +16,12 @@ spec:
       containers:
       - name: discovery-service
         image: acme-system/discovery-service:1.0-SNAPSHOT
+        env:
+          - name: JAVA_OPTS
+            value: "-Xmx300m"
         resources:
           limits:
-            memory: "600Mi"
+            memory: "300Mi"
         ports:
         - containerPort: 7002
           name: http

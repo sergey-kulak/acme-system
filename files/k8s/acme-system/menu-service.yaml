@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: menu-service
+  namespace: acme
+spec:
+  selector:
+    matchLabels:
+      app: menu-service
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: menu-service
+    spec:
+      containers:
+      - name: menu-service
+        image: acme-system/menu-service:1.0-SNAPSHOT
+        env:
+          - name: eureka.client.serviceUrl.defaultZone
+            value: "http://discovery-service:7002/eureka/"
+          - name: eureka.instance.preferIpAddress
+            value: "true"
+          - name: spring.profiles.active
+            value: "lk8s"
+        ports:
+        - containerPort: 7050
+          name: http

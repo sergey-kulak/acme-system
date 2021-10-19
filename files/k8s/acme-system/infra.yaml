@@ -149,7 +149,7 @@ spec:
             - name: RABBITMQ_DEFAULT_USER
               value: "acmRmqUser"
             - name: RABBITMQ_DEFAULT_PASS
-              value: "@acmRmqPa2s"
+              value: "acmRmqPa2s"
           ports:
             - containerPort: 5672
               name: tcp

@@ -12,3 +12,4 @@ Official docker image should be modified to be able to run docker command. Certs
 
 kubectl port-forward --address 0.0.0.0 service/discovery-service 7002:7002 -n acme
 kubectl port-forward --address 0.0.0.0 service/api-gateway 7004:7004 -n acme
+kubectl port-forward --address 0.0.0.0 service/rmq 15672:15672 -n acme

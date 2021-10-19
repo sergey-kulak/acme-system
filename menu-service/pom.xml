@@ -18,9 +18,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>11</java.version>
 
-        <start-class>com.acme.menusrv.Application</start-class>
-        <docker.image.name>acme/catalog-service</docker.image.name>
-        <docker.image.tag>${project.version}</docker.image.tag>
+        <docker.image.name>acme-system/catalog-service</docker.image.name>
         <spring.cloud.version>2020.0.3</spring.cloud.version>
         <lombok.version>1.18.20</lombok.version>
         <openapi-ui.version>1.5.9</openapi-ui.version>
@@ -186,6 +184,10 @@
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

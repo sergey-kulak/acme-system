@@ -46,7 +46,7 @@ spec:
           - name: AWS_REGION
             value: "us-east-1"
           - name: JAVA_OPTS
-            value: "-Xmx400m"
+            value: "-Xmx300m"
         ports:
         - containerPort: 7060
           name: http

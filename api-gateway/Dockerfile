@@ -1,8 +1,16 @@
-FROM openjdk:11.0.12-jdk-slim
+FROM openjdk:11.0.12-jdk-slim-bullseye
 
 EXPOSE 7004
-WORKDIR /app
 ENV JAVA_OPTS=""
-COPY api-gateway-*.jar api-gateway.jar
+ARG WORKDIR=/app
 
-ENTRYPOINT java ${JAVA_OPTS} -jar api-gateway.jar
+RUN addgroup acme && adduser --ingroup acme --shell /bin/false acme
+
+WORKDIR ${WORKDIR}
+COPY BOOT-INF/lib lib/
+COPY META-INF META-INF/
+COPY BOOT-INF/classes ./
+RUN chown -R acme:acme ${WORKDIR}
+
+USER acme
+ENTRYPOINT pwd && java ${JAVA_OPTS} -cp .:lib/* com.acme.apigw.Application

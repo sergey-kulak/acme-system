@@ -16,8 +16,8 @@ RUN addgroup acme && adduser --ingroup acme --shell /bin/false acme
 
 WORKDIR ${WORKDIR}
 COPY --from=builder ${WORKDIR}/dependencies/ ./
-COPY --from=builder ${WORKDIR}/snapshot-dependencies/ ./
 COPY --from=builder ${WORKDIR}/spring-boot-loader/ ./
+COPY --from=builder ${WORKDIR}/snapshot-dependencies/ ./
 COPY --from=builder ${WORKDIR}/application/ ./
 RUN chown -R acme:acme ${WORKDIR}
 

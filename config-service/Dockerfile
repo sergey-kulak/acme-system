@@ -3,7 +3,7 @@ FROM openjdk:11.0.12-jdk-slim-bullseye as builder
 ARG WORKDIR=/app
 
 WORKDIR ${WORKDIR}
-COPY discovery-service*.jar application.jar
+COPY config-service*.jar application.jar
 RUN java -Djarmode=layertools -jar application.jar extract
 
 FROM openjdk:11.0.12-jdk-slim-bullseye

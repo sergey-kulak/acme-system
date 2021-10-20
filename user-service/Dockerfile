@@ -22,5 +22,4 @@ COPY --from=builder ${WORKDIR}/application/ ./
 RUN chown -R acme:acme ${WORKDIR}
 
 USER acme
-#ENTRYPOINT java ${JAVA_OPTS} -cp .:lib/* com.acme.usersrv.Application
 ENTRYPOINT java ${JAVA_OPTS} org.springframework.boot.loader.JarLauncher

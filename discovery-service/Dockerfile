@@ -13,4 +13,4 @@ COPY BOOT-INF/classes ./
 RUN chown -R acme:acme ${WORKDIR}
 
 USER acme
-ENTRYPOINT pwd && java ${JAVA_OPTS} -cp .:lib/* com.acme.discovery.Application
+ENTRYPOINT java ${JAVA_OPTS} -cp .:lib/* com.acme.discovery.Application

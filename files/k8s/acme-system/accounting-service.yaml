@@ -23,9 +23,8 @@ spec:
             value: "true"
           - name: SPRING_PROFILES_ACTIVE
             value: "lk8s"
-        resources:
-          limits:
-            memory: "800Mi"
+          - name: JAVA_OPTS
+            value: "-Xmx400m"
         ports:
         - containerPort: 7010
           name: http

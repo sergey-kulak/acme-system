@@ -95,10 +95,10 @@ spec:
           ports:
             - containerPort: 27017
           volumeMounts:
-            - name: mongo-storate
-              mountPath: /data
+            - name: mongo-storage
+              mountPath: /data/db
       volumes:
-        - name: mongo-storate
+        - name: mongo-storage
           persistentVolumeClaim:
             claimName: mongo-pvc
 ---
@@ -156,10 +156,10 @@ spec:
             - containerPort: 15672
               name: mhttp
           volumeMounts:
-            - name: rmq-storate
+            - name: rmq-storage
               mountPath: /var/lib/rabbitmq
       volumes:
-        - name: rmq-storate
+        - name: rmq-storage
           persistentVolumeClaim:
             claimName: rmq-pvc
 ---

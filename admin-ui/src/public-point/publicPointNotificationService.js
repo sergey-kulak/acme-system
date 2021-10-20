@@ -13,7 +13,7 @@ function initClient() {
     client = new RSocketClient({
         serializers: JsonSerializers,
         setup: {
-            keepAlive: 60000,
+            keepAlive: 120000,
             lifetime: 180000,
             dataMimeType: 'application/json',
             metadataMimeType: 'application/json',

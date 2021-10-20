@@ -1,0 +1,39 @@
+version: '3.1'
+
+services:
+  admin-ui:
+    image: acme-system/admin-ui:1.0.0-SNAPSHOT
+    container_name: acme-admin-ui
+    ports:
+      - 3500:80
+  client-ui:
+    image: acme-system/client-ui:1.0.0-SNAPSHOT
+    container_name: acme-client-ui
+    ports:
+      - 3501:80
+  discovery-srv:
+    image: acme-system/discovery-service:1.0-SNAPSHOT
+    container_name: acme-discovery-service
+    ports:
+      - 6002:7002
+  config-srv:
+    image: acme-system/config-service:1.0-SNAPSHOT
+    container_name: acme-config-service
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://acme-discovery-service:7002/eureka/
+      EUREKA_INSTANCE_PREFERIPADDRESS: true
+  user-srv:
+    image: acme-system/user-service:1.0-SNAPSHOT
+    container_name: acme-user-service
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://acme-discovery-service:7002/eureka/
+      EUREKA_INSTANCE_PREFERIPADDRESS: true
+      SPRING_PROFILES_ACTIVE: lk8s
+    ports:
+      - 7010:7010
+
+networks:
+  default:
+    external:
+      name: acme-network
+

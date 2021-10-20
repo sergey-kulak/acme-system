@@ -1,0 +1,19 @@
+version: '3.1'
+
+services:
+  admin-ui:
+    image: acme-system/admin-ui:1.0.0-SNAPSHOT
+    container_name: acme-admin-ui
+    ports:
+      - 3500:80
+  client-ui:
+    image: acme-system/client-ui:1.0.0-SNAPSHOT
+    container_name: acme-client-ui
+    ports:
+      - 3501:80
+
+networks:
+  default:
+    external:
+      name: acme-network
+

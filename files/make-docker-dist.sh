@@ -3,5 +3,5 @@ ARTIFACT=$1
 
 rm -f -r $DIST
 mkdir -p $DIST
-cp target/${ARTIFACT}*.jar $DIST
+(cd $DIST && jar -xf ../${ARTIFACT}*.jar)
 cp Dockerfile $DIST

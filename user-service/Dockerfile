@@ -15,11 +15,10 @@ ARG WORKDIR=/app
 RUN addgroup acme && adduser --ingroup acme --shell /bin/false acme
 
 WORKDIR ${WORKDIR}
-COPY --from=builder ${WORKDIR}/dependencies/ ./
-COPY --from=builder ${WORKDIR}/spring-boot-loader/ ./
-COPY --from=builder ${WORKDIR}/snapshot-dependencies/ ./
-COPY --from=builder ${WORKDIR}/application/ ./
-RUN chown -R acme:acme ${WORKDIR}
+COPY --from=builder --chown=acme:acme ${WORKDIR}/dependencies/ ./
+COPY --from=builder --chown=acme:acme ${WORKDIR}/spring-boot-loader/ ./
+COPY --from=builder --chown=acme:acme ${WORKDIR}/snapshot-dependencies/ ./
+COPY --from=builder --chown=acme:acme ${WORKDIR}/application/ ./
 
 USER acme
 ENTRYPOINT java ${JAVA_OPTS} org.springframework.boot.loader.JarLauncher

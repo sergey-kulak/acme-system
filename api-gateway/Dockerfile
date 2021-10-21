@@ -1,3 +1,11 @@
+FROM openjdk:11.0.12-jdk-slim-bullseye as builder
+
+ARG WORKDIR=/app
+
+WORKDIR ${WORKDIR}
+COPY api-gateway*.jar application.jar
+RUN java -Djarmode=layertools -jar application.jar extract
+
 FROM openjdk:11.0.12-jdk-slim-bullseye
 
 EXPOSE 7004
@@ -7,10 +15,9 @@ ARG WORKDIR=/app
 RUN addgroup acme && adduser --ingroup acme --shell /bin/false acme
 
 WORKDIR ${WORKDIR}
-COPY BOOT-INF/lib lib/
-COPY META-INF META-INF/
-COPY BOOT-INF/classes ./
-RUN chown -R acme:acme ${WORKDIR}
+COPY --from=builder --chown=acme:acme ${WORKDIR}/dependencies/ ./
+COPY --from=builder --chown=acme:acme ${WORKDIR}/spring-boot-loader/ ./
+COPY --from=builder --chown=acme:acme ${WORKDIR}/application/ ./
 
 USER acme
-ENTRYPOINT java ${JAVA_OPTS} -cp .:lib/* com.acme.apigw.Application
+ENTRYPOINT java ${JAVA_OPTS} org.springframework.boot.loader.JarLauncher

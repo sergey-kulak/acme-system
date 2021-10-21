@@ -2,8 +2,6 @@ server:
   port: 7002
 
 eureka:
-  instance:
-    hostname: localhost
   server:
     enableSelfPreservation: false
     expectedClientRenewalIntervalSeconds:  5

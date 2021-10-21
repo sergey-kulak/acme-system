@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: discovery-service
+  namespace: acme
+spec:
+  selector:
+    matchLabels:
+      app: discovery-service
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: discovery-service
+    spec:
+      containers:
+      - name: discovery-service
+        image: acme-system/discovery-service:1.0-SNAPSHOT
+        env:
+          - name: JAVA_OPTS
+            value: "-Xmx300m"
+        ports:
+        - containerPort: 7002
+          name: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: discovery-service
+  namespace: acme
+spec:
+  type: ClusterIP
+  selector:
+    app: discovery-service
+  ports:
+    - port: 7002
+      targetPort: 7002

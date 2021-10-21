@@ -84,5 +84,4 @@ public class CollectionUtils {
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
     }
-
 }

@@ -43,8 +43,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 
-@ServiceIntegrationTest
-class PublicPointPlanServiceIntegrationTest {
+class PublicPointPlanServiceIntegrationTest extends ServiceIntegrationTest{
     @Autowired
     PublicPointPlanService publicPointPlanService;
     @Autowired

@@ -1,0 +1,19 @@
+version: '3.1'
+
+services:
+  rmq:
+    image: rabbitmq:3.9.4-management-alpine
+    container_name: acme-rmq
+    ports:
+      - 7672:5672
+      - 17672:15672
+    environment:
+      RABBITMQ_DEFAULT_USER: acmRmqUser
+      RABBITMQ_DEFAULT_PASS: acmRmqPa2s
+
+
+networks:
+  default:
+    external:
+      name: acme-network
+

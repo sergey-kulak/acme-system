@@ -19,9 +19,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>11</java.version>
 
-        <start-class>com.acme.config.Application</start-class>
-        <docker.image.name>acme/config-service</docker.image.name>
-        <docker.image.tag>${project.version}</docker.image.tag>
+        <docker.image.name>acme-system/config-service</docker.image.name>
         <spring.cloud.version>2020.0.3</spring.cloud.version>
     </properties>
 

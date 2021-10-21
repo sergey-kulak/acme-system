@@ -15,19 +15,7 @@ spring:
   liquibase:
     enabled: true
     change-log: db/changelog/master.xml
-    url: jdbc:${accounting-srv.db.url}
-    user: ${accounting-srv.db.user}
-    password: ${accounting-srv.db.password}
   r2dbc:
-    url: r2dbc:${accounting-srv.db.url}
-    username: ${accounting-srv.db.user}
-    password: ${accounting-srv.db.password}
     pool:
       initial-size: 5
       max-size: 10
-
-accounting-srv:
-  db:
-    url: postgresql://localhost:7031/accountingdb
-    user: acUser
-    password: acPass

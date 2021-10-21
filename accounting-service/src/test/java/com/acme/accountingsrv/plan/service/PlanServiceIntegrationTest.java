@@ -46,8 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@ServiceIntegrationTest
-class PlanServiceIntegrationTest {
+class PlanServiceIntegrationTest extends ServiceIntegrationTest{
     @Autowired
     PlanService planService;
     @Autowired

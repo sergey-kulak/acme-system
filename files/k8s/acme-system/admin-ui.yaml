@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin-ui
+  namespace: acme
+spec:
+  selector:
+    matchLabels:
+      app: admin-ui
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: admin-ui
+    spec:
+      containers:
+      - name: admin-ui
+        image: acme-system/admin-ui:1.0.0-SNAPSHOT
+        ports:
+        - containerPort: 80
+          name: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: admin-ui
+  namespace: acme
+spec:
+  type: ClusterIP
+  selector:
+    app: admin-ui
+  ports:
+    - port: 80
+      targetPort: 80          

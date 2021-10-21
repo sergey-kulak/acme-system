@@ -1,0 +1,181 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pg-pvc
+  namespace: acme
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pg-db
+  namespace: acme
+spec:
+  selector:
+    matchLabels:
+      app: pg-db
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: pg-db
+    spec:
+      containers:
+        - name: pg-db
+          image: postgres:13.3-alpine
+          env:
+            - name: POSTGRES_USER
+              value: "acmeUser"
+            - name: POSTGRES_PASSWORD
+              value: "@acmePas2"
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: pg-storate
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: pg-storate
+          persistentVolumeClaim:
+            claimName: pg-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pg-db
+  namespace: acme
+spec:
+  type: ClusterIP
+  selector:
+    app: pg-db
+  ports:
+    - port: 5432
+      targetPort: 5432
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongo-pvc
+  namespace: acme
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo-db
+  namespace: acme
+spec:
+  selector:
+    matchLabels:
+      app: mongo-db
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mongo-db
+    spec:
+      containers:
+        - name: mongo-db
+          image: mongo:5.0.2
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              value: "acmeUser"
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              value: "@acmePas2"
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - name: mongo-storage
+              mountPath: /data/db
+      volumes:
+        - name: mongo-storage
+          persistentVolumeClaim:
+            claimName: mongo-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-db
+  namespace: acme
+spec:
+  type: ClusterIP
+  selector:
+    app: mongo-db
+  ports:
+    - port: 27017
+      targetPort: 27017
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: rmq-pvc
+  namespace: acme
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rmq
+  namespace: acme
+spec:
+  selector:
+    matchLabels:
+      app: rmq
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: rmq
+    spec:
+      containers:
+        - name: rmq
+          image: rabbitmq:3.9.4-management-alpine
+          env:
+            - name: RABBITMQ_DEFAULT_USER
+              value: "acmRmqUser"
+            - name: RABBITMQ_DEFAULT_PASS
+              value: "acmRmqPa2s"
+          ports:
+            - containerPort: 5672
+              name: tcp
+            - containerPort: 15672
+              name: mhttp
+          volumeMounts:
+            - name: rmq-storage
+              mountPath: /var/lib/rabbitmq
+      volumes:
+        - name: rmq-storage
+          persistentVolumeClaim:
+            claimName: rmq-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rmq
+  namespace: acme
+spec:
+  type: ClusterIP
+  selector:
+    app: rmq
+  ports:
+    - port: 5672
+      targetPort: 5672
+      name: tcp
+    - port: 15672
+      targetPort: 15672
+      name: mhttp

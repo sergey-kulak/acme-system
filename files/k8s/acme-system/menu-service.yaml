@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: menu-service
+  namespace: acme
+spec:
+  selector:
+    matchLabels:
+      app: menu-service
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: menu-service
+    spec:
+      containers:
+      - name: menu-service
+        image: acme-system/menu-service:1.0-SNAPSHOT
+        env:
+          - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+            value: "http://discovery-service:7002/eureka/"
+          - name: EUREKA_INSTANCE_PREFERIPADDRESS
+            value: "true"
+          - name: SPRING_PROFILES_ACTIVE
+            value: "lk8s"
+          - name: JAVA_OPTS
+            value: "-Xmx400m"
+        ports:
+        - containerPort: 7050
+          name: http

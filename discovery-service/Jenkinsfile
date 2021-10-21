@@ -1,16 +1,23 @@
-def pom = readMavenPom()
-
 pipeline {
   agent any
 
+  tools {
+     jdk "jdk-11"
+     maven "maven-3.8"
+  }
+
   environment {
-    imageName = pom.getVersion().getProperties().getProperty("docker.image.name")
+    subModule = "discovery-service"
+    pomFile = "${subModule}/pom.xml"
+    pom = readMavenPom(file: pomFile)
+    imageName = pom.getProperties().getProperty("docker.image.name")
     appVersion = pom.getVersion()
+    artifactId = pom.getArtifactId()
   }
 
   stages {
-    // workaround to avoid git detached state otherwise maven git doesn't pull branch name
-    stage('Checkout') {
+    // workaround to avoid git detached state otherwise maven git doesn"t pull branch name
+    stage("Checkout") {
       steps {
         script {
           sh "git fetch"
@@ -20,11 +27,13 @@ pipeline {
       }
     }
     
-    stage('Build App') {
+    stage("Build App") {
       steps {
-        script {
+        dir(env.subModule) {
           sh "echo ${imageName}:${appVersion}"
-          sh " docker build -t ${imageName}:${appVersion} ."
+          sh "mvn clean package -DskipTests=${env.skipTests}"
+          sh "../files/make-docker-dist.sh ${env.artifactId}"
+          sh "docker build -t ${imageName}:${appVersion} target/dist"
         }
       }
     }

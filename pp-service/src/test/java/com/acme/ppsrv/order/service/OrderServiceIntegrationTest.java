@@ -49,8 +49,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@ServiceIntegrationTest
-class OrderServiceIntegrationTest {
+class OrderServiceIntegrationTest extends ServiceIntegrationTest{
     @Autowired
     OrderService orderService;
     @Autowired

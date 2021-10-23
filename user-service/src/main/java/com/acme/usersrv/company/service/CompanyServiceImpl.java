@@ -18,6 +18,7 @@ import com.acme.usersrv.company.mapper.CompanyMapper;
 import com.acme.usersrv.company.repository.CompanyRepository;
 import com.acme.usersrv.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cloud.sleuth.annotation.NewSpan;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -86,6 +87,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
+    @NewSpan
     public Mono<Page<FullDetailsCompanyDto>> findByJooq(CompanyFilter filter, Pageable pageable) {
         return companyRepository.findByJooq(filter, pageable)
                 .map(page -> page.map(companyMapper::toFullDetailsDto));
@@ -122,7 +124,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @NewSpan
     public Mono<CompanyDto> findById(UUID id) {
         return findById(id, companyMapper::toDto);
     }
@@ -135,6 +137,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
+    @NewSpan
     public Mono<FullDetailsCompanyDto> findFullDetailsById(UUID id) {
         return findById(id, companyMapper::toFullDetailsDto);
     }
@@ -153,6 +156,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
+    @NewSpan
     public Flux<CompanyDto> findNames(Collection<CompanyStatus> statuses) {
         return companyRepository.findNames(statuses);
     }

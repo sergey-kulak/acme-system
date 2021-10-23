@@ -32,7 +32,7 @@ spec:
           - name: EUREKA_INSTANCE_PREFERIPADDRESS
             value: "true"
           - name: SPRING_PROFILES_ACTIVE
-            value: "lk8s"
+            value: "lk8s,logstash"
           - name: AWS_ACCESS_KEY_ID
             valueFrom:
               secretKeyRef:

@@ -21,8 +21,12 @@ spec:
             value: "http://discovery-service:7002/eureka/"
           - name: JAVA_OPTS
             value: "-Xmx100m"
+          - name: SPRING_PROFILES_ACTIVE
+            value: "logstash"
           - name: SPRING_ZIPKIN_BASEURL
-            value: "http://zpk:9411/"            
+            value: "http://zpk:9411/"
+          - name: SPRING_LOGSTASH_HOST
+            value: "lgs"
         ports:
         - containerPort: 7004
           name: http

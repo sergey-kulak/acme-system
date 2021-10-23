@@ -324,3 +324,74 @@ spec:
     - port: 5601
       targetPort: 5601
       name: http
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: lgs-config
+  namespace: acme
+data:
+  logstash-tcp.conf: |
+    input {
+      tcp {
+          port => "7500"
+          codec => json_lines
+      }
+    }
+    output {
+        stdout {}
+        elasticsearch {
+            hosts => ["http://es:9200"]
+            index => "acme-logs-%{+YYYY.MM.dd}"
+      }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lgs
+  namespace: acme
+spec:
+  selector:
+    matchLabels:
+      app: lgs
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: lgs
+    spec:
+      containers:
+        - name: lgs
+          image: logstash:7.14.2
+          env:
+            - name: XPACK_MONITORING_ELASTICSEARCH_HOSTS
+              value: "es"
+          ports:
+            - containerPort: 7500
+              name: tcp
+          volumeMounts:
+            - name: config
+              mountPath: "/usr/share/logstash/pipeline/"
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: lgs-config
+            items:
+              - key: "logstash-tcp.conf"
+                path: "logstash-tcp.conf"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lgs
+  namespace: acme
+spec:
+  type: ClusterIP
+  selector:
+    app: lgs
+  ports:
+    - port: 7500
+      targetPort: 7500
+      name: tcp

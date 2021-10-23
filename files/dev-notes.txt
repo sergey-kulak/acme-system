@@ -48,3 +48,5 @@ kubectl port-forward --address 0.0.0.0 service/api-gateway 7004:7004 -n acme
 kubectl port-forward --address 0.0.0.0 service/rmq 15672:15672 -n acme
 kubectl port-forward --address 0.0.0.0 service/admin-ui 3500:80 -n acme
 kubectl port-forward --address 0.0.0.0 service/client-ui 3501:80 -n acme
+kubectl port-forward --address 0.0.0.0 service/zpk 7411:9411 -n acme
+kubectl port-forward --address 0.0.0.0 service/kbn 7601:5601 -n acme

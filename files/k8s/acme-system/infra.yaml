@@ -179,3 +179,148 @@ spec:
     - port: 15672
       targetPort: 15672
       name: mhttp
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: es-pvc
+  namespace: acme
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 3Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: es
+  namespace: acme
+spec:
+  selector:
+    matchLabels:
+      app: es
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: es
+    spec:
+      containers:
+        - name: es
+          image: elasticsearch:7.14.2
+          env:
+            - name: discovery.type
+              value: "single-node"
+            - name: ES_JAVA_OPTS
+              value: "-Xms512m -Xmx512m"
+          ports:
+            - containerPort: 9200
+              name: http
+            - containerPort: 9300
+              name: chttp
+          volumeMounts:
+            - name: es-storage
+              mountPath: /usr/share/elasticsearch/data
+      volumes:
+        - name: es-storage
+          persistentVolumeClaim:
+            claimName: es-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: es
+  namespace: acme
+spec:
+  type: ClusterIP
+  selector:
+    app: es
+  ports:
+    - port: 9200
+      targetPort: 9200
+      name: http
+    - port: 9300
+      targetPort: 9300
+      name: chttp
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zpk
+  namespace: acme
+spec:
+  selector:
+    matchLabels:
+      app: zpk
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: zpk
+    spec:
+      containers:
+        - name: zpk
+          image: openzipkin/zipkin:2.23.4
+          env:
+            - name: STORAGE_TYPE
+              value: "elasticsearch"
+            - name: ES_HOSTS
+              value: "http://es:9200"
+          ports:
+            - containerPort: 9411
+              name: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zpk
+  namespace: acme
+spec:
+  type: ClusterIP
+  selector:
+    app: zpk
+  ports:
+    - port: 9411
+      targetPort: 9411
+      name: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kbn
+  namespace: acme
+spec:
+  selector:
+    matchLabels:
+      app: kbn
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: kbn
+    spec:
+      containers:
+        - name: kbn
+          image: kibana:7.14.2
+          env:
+            - name: ELASTICSEARCH_HOSTS
+              value: "http://es:9200"
+          ports:
+            - containerPort: 5601
+              name: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kbn
+  namespace: acme
+spec:
+  type: ClusterIP
+  selector:
+    app: kbn
+  ports:
+    - port: 5601
+      targetPort: 5601
+      name: http

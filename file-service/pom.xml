@@ -24,6 +24,7 @@
         <openapi-ui.version>1.5.9</openapi-ui.version>
         <acme-commons.version>1.0-SNAPSHOT</acme-commons.version>
         <infinispan.starter.version>2.3.0.Final</infinispan.starter.version>
+        <logstash.encoder.version>6.6</logstash.encoder.version>
     </properties>
 
     <dependencyManagement>
@@ -115,6 +116,12 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-sleuth-zipkin</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+            <version>${logstash.encoder.version}</version>
         </dependency>
     </dependencies>
 

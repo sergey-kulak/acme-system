@@ -21,6 +21,8 @@ spec:
             value: "http://discovery-service:7002/eureka/"
           - name: JAVA_OPTS
             value: "-Xmx100m"
+          - name: SPRING_ZIPKIN_BASEURL
+            value: "http://zpk:9411/"            
         ports:
         - containerPort: 7004
           name: http

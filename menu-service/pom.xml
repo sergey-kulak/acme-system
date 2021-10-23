@@ -28,6 +28,7 @@
         <acme-commons.version>1.0-SNAPSHOT</acme-commons.version>
         <acme-test-commons.version>1.0-SNAPSHOT</acme-test-commons.version>
         <testcontainers.version>1.16.0</testcontainers.version>
+        <logstash.encoder.version>6.6</logstash.encoder.version>
     </properties>
 
     <dependencyManagement>
@@ -160,6 +161,21 @@
             <artifactId>nimbus-jose-jwt</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-sleuth</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-sleuth-zipkin</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+            <version>${logstash.encoder.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

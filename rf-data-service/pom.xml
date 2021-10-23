@@ -26,6 +26,7 @@
         <liquibase-mongodb.version>4.4.3</liquibase-mongodb.version>
         <mapstruct.version>1.4.2.Final</mapstruct.version>
         <acme-commons.version>1.0-SNAPSHOT</acme-commons.version>
+        <logstash.encoder.version>6.6</logstash.encoder.version>
     </properties>
 
     <dependencyManagement>
@@ -119,6 +120,21 @@
             <artifactId>nimbus-jose-jwt</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-sleuth</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-sleuth-zipkin</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+            <version>${logstash.encoder.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

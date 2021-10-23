@@ -32,7 +32,7 @@ spec:
           - name: EUREKA_INSTANCE_PREFERIPADDRESS
             value: "true"
           - name: SPRING_PROFILES_ACTIVE
-            value: "lk8s"
+            value: "lk8s,logstash"
           - name: AWS_ACCESS_KEY_ID
             valueFrom:
               secretKeyRef:
@@ -46,7 +46,7 @@ spec:
           - name: AWS_REGION
             value: "us-east-1"
           - name: JAVA_OPTS
-            value: "-Xmx300m"
+            value: "-Xmx100m"
         ports:
         - containerPort: 7060
           name: http

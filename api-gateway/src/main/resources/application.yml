@@ -4,6 +4,7 @@ server:
 logging:
   level:
     org.springframework: info
+    org.springframework.cloud.gateway.handler.RoutePredicateHandlerMapping: debug
 
 spring:
   application:
@@ -27,6 +28,16 @@ spring:
               args:
                 regexp: "'/' + serviceId + '/?(?<remaining>.*)'"
                 replacement: "'/api/${remaining}'"
+  sleuth:
+    sampler:
+      probability: 1
+  zipkin:
+    enabled: true
+    baseUrl: http://localhost:7411/
+  logstash:
+    host: localhost
+    port: 7500
+
 
 eureka:
   client:

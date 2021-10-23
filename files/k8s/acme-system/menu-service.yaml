@@ -22,9 +22,9 @@ spec:
           - name: EUREKA_INSTANCE_PREFERIPADDRESS
             value: "true"
           - name: SPRING_PROFILES_ACTIVE
-            value: "lk8s"
+            value: "lk8s,logstash"
           - name: JAVA_OPTS
-            value: "-Xmx400m"
+            value: "-Xmx200m"
         ports:
         - containerPort: 7050
           name: http

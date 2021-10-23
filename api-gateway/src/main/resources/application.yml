@@ -34,6 +34,10 @@ spring:
   zipkin:
     enabled: true
     baseUrl: http://localhost:7411/
+  logstash:
+    host: localhost
+    port: 7500
+
 
 eureka:
   client:

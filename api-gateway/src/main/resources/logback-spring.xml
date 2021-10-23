@@ -4,9 +4,11 @@
 
     <springProfile name="logstash">
         <springProperty name="appName" source="spring.application.name"/>
+        <springProperty name="lsHost" source="spring.logstash.host"/>
+        <springProperty name="lsPort" source="spring.logstash.port"/>
 
         <appender name="STASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
-            <destination>localhost:7500</destination>
+            <destination>${lsHost}:${lsPort}</destination>
             <keepAliveDuration>5 minutes</keepAliveDuration>
             <encoder class="net.logstash.logback.encoder.LogstashEncoder">
                 <includeContext>false</includeContext>

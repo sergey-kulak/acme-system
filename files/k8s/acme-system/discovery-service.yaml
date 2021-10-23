@@ -18,7 +18,7 @@ spec:
         image: acme-system/discovery-service:1.0-SNAPSHOT
         env:
           - name: JAVA_OPTS
-            value: "-Xmx300m"
+            value: "-Xmx100m"
         ports:
         - containerPort: 7002
           name: http

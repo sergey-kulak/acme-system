@@ -10,7 +10,39 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: acmRmqUser
       RABBITMQ_DEFAULT_PASS: acmRmqPa2s
-
+  zpk:
+    image: openzipkin/zipkin:2.23.4
+    container_name: acme-zpk
+    ports:
+      - 7411:9411
+    environment:
+      STORAGE_TYPE: elasticsearch
+      ES_HOSTS: http://acme-es:9200
+  es:
+    image: elasticsearch:7.14.2
+    container_name: acme-es
+    ports:
+      - 7920:9200
+      - 7930:9300
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+  kbn:
+    image: kibana:7.14.2
+    container_name: acme-kbn
+    ports:
+      - 7601:5601
+    environment:
+      ELASTICSEARCH_HOSTS: http://acme-es:9200
+  lgs:
+    image: logstash:7.14.2
+    container_name: acme-lgs
+    volumes:
+      - ./config/logstash:/usr/share/logstash/pipeline/
+    ports:
+      - 7500:7500
+    environment:
+      XPACK_MONITORING_ELASTICSEARCH_HOSTS: acme-es
 
 networks:
   default:

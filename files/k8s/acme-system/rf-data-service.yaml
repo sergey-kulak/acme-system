@@ -24,7 +24,7 @@ spec:
           - name: SPRING_PROFILES_ACTIVE
             value: "lk8s"
           - name: JAVA_OPTS
-            value: "-Xmx300m"
+            value: "-Xmx150m"
         ports:
         - containerPort: 7020
           name: http

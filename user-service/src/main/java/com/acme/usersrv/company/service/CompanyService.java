@@ -8,6 +8,8 @@ import com.acme.usersrv.company.dto.FullDetailsCompanyDto;
 import com.acme.usersrv.company.dto.RegisterCompanyDto;
 import com.acme.usersrv.company.dto.UpdateCompanyDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cloud.sleuth.SpanName;
+import org.springframework.cloud.sleuth.annotation.NewSpan;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;

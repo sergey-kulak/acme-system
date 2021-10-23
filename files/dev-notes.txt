@@ -1,3 +1,37 @@
+Port ranges
+
+Config service - 7000 (00, 01)
+Discovery service - 7002 (02, 03)
+RMQ - 7672 (72, 73)
+Zipkin - 7411
+
+Api gateway - 7004(04, 05)
+Info service - 7006
+
+User service - 7010 - 7019
+	HTTP 7010
+	DB 7011 -> 5432
+
+Reference data service - 7020 - 7029
+	HTTP 7020
+	DB 7021 -> 27017
+	DB UI 7022 -> 8081
+
+Accounting service - 7030 - 7039
+	HTTP 7030
+	DB 7031 -> 5432
+
+Public point service - 7040 - 7049
+	HTTP 7040
+	DB 7041 -> 5432
+
+Menu service - 7050 - 7059
+	HTTP 7050
+	DB 7051 -> 27017
+
+File service - 7060 - 7069
+	HTTP 7060
+
 Local k8s deployment notes:
  - before run minickube
 sudo sysctl net/netfilter/nf_conntrack_max=131072    

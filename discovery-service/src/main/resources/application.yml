@@ -1,13 +1,59 @@
 server:
   port: 7002
 
+---
+spring:
+  config:
+    activate:
+      on-profile: standalone
 eureka:
+  instance:
+    hostname: localhost
   server:
     enableSelfPreservation: false
-    expectedClientRenewalIntervalSeconds:  5
-    evictionIntervalTimerInMs: 2000
-    responseCacheAutoExpirationInSeconds: 1
-    responseCacheUpdateIntervalMs: 1000
+    expectedClientRenewalIntervalSeconds:  10
+    evictionIntervalTimerInMs: 10000
+    responseCacheAutoExpirationInSeconds: 5
+    responseCacheUpdateIntervalMs: 5000
   client:
     registerWithEureka: false
     fetchRegistry: false
+
+---
+spring:
+  config:
+    activate:
+      on-profile: cluster
+eureka:
+  server:
+    renewalPercentThreshold: 0.65
+    expectedClientRenewalIntervalSeconds:  10
+    evictionIntervalTimerInMs: 10000
+    responseCacheAutoExpirationInSeconds: 5
+    responseCacheUpdateIntervalMs: 5000
+  instance:
+    leaseRenewalIntervalInSeconds: 10
+    leaseExpirationDurationInSeconds: 30
+  client:
+    serviceUrl:
+      defaultZone: http://peer1:7002/eureka/,http://peer2:7003/eureka/
+
+---
+spring:
+  config:
+    activate:
+      on-profile: peer1
+eureka:
+  instance:
+    hostname: peer1
+
+---
+spring:
+  config:
+    activate:
+      on-profile: peer2
+server:
+  port: 7003
+eureka:
+  instance:
+    hostname: peer2

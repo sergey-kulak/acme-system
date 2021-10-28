@@ -11,6 +11,11 @@ spring:
           uri: https://github.com/sergey-kulak/acme-config-repo
 
 eureka:
+  instance:
+    leaseRenewalIntervalInSeconds: 10
+    leaseExpirationDurationInSeconds: 30
   client:
+    initialInstanceInfoReplicationIntervalSeconds: 5
+    instanceInfoReplicationIntervalSeconds: 10
     serviceUrl:
       defaultZone: http://localhost:7002/eureka/

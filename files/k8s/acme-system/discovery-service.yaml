@@ -54,6 +54,8 @@ spec:
         env:
           - name: JAVA_OPTS
             value: "-Xmx100m"
+          - name: SPRING_PROFILES_ACTIVE
+            value: "cluster"
         ports:
           - containerPort: 7002
             name: http

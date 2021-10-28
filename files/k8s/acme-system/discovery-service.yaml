@@ -1,5 +1,39 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hl-ds
+  namespace: acme
+spec:
+  ports:
+  - port: 7002
+    name: http
+  clusterIP: None
+  selector:
+    app: discovery-service
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ds-config
+  namespace: acme
+data:
+  application.yml: |
+    spring:
+      application:
+        name: discovery-service
+    eureka:
+      server:
+        enableSelfPreservation: true
+      client:
+        registerWithEureka: true
+        fetchRegistry: true
+        serviceUrl:
+          defaultZone: http://discovery-service-0.hl-ds:7002/eureka/,http://discovery-service-1.hl-ds:7002/eureka/
+      instance:
+        hostname: ${HOSTNAME}.hl-ds
+---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: discovery-service
   namespace: acme
@@ -7,7 +41,8 @@ spec:
   selector:
     matchLabels:
       app: discovery-service
-  replicas: 1
+  replicas: 2
+  serviceName: hl-ds
   template:
     metadata:
       labels:
@@ -20,8 +55,19 @@ spec:
           - name: JAVA_OPTS
             value: "-Xmx100m"
         ports:
-        - containerPort: 7002
-          name: http
+          - containerPort: 7002
+            name: http
+        volumeMounts:
+          - name: config
+            mountPath: "/app/config"
+            readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: ds-config
+            items:
+              - key: "application.yml"
+                path: "application.yml"
 ---
 apiVersion: v1
 kind: Service

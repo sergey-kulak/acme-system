@@ -1,3 +1,6 @@
+server:
+  forward-headers-strategy: FRAMEWORK
+
 logging:
   level:
     reactivefeign.client.log.DefaultReactiveLogger: DEBUG

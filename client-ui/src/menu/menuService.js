@@ -1,9 +1,9 @@
 import restApi from '../common/restApi'
 
-const BASE_URL = '/menu-service/menu'
-const DISH_BASE_URL = '/menu-service/dishes'
-const ORDER_BASE_URL = '/pp-service/orders'
-const PP_BASE_URL = '/pp-service/public-points'
+const BASE_URL = '/menu-service/api/menu'
+const DISH_BASE_URL = '/menu-service/api/dishes'
+const ORDER_BASE_URL = '/pp-service/api/orders'
+const PP_BASE_URL = '/pp-service/api/public-points'
 
 const menuService = {
     getCategories: () => {

@@ -3,7 +3,7 @@ server:
 
 logging:
   level:
-    org.springframework: debug
+    org.springframework: info
     org.springframework.cloud.gateway.handler.RoutePredicateHandlerMapping: debug
 
 spring:

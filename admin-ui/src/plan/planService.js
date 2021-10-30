@@ -1,6 +1,6 @@
 import restApi, { buildGetFilterParams } from '../common/restApi'
 
-const BASE_URL = '/accounting-service/plans'
+const BASE_URL = '/accounting-service/api/plans'
 
 const planService = {
     create: function (request) {

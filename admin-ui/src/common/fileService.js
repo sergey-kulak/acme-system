@@ -1,7 +1,7 @@
 import restApi  from '../common/restApi'
 import axios from "axios"
 
-const IMAGE_BASE_URL = '/file-service/images'
+const IMAGE_BASE_URL = '/file-service/api/images'
 const awsApi = axios.create()
 
 const fileService = {

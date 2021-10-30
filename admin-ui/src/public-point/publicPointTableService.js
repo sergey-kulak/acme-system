@@ -1,6 +1,6 @@
 import restApi from '../common/restApi'
 
-const BASE_URL = '/pp-service/public-point-tables'
+const BASE_URL = '/pp-service/api/public-point-tables'
 
 const publicPointTableService = {
     find: function (publicPointId) {

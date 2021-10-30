@@ -42,7 +42,7 @@ spring:
     sampler:
       probability: 1
   zipkin:
-    enabled: false
+    enabled: true
     baseUrl: http://localhost:7411/
   logstash:
     host: localhost

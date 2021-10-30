@@ -1,6 +1,6 @@
 import restApi from '../common/restApi'
 
-const BASE_URL = '/menu-service/categories'
+const BASE_URL = '/menu-service/api/categories'
 
 const categoryService = {
     find: function (filter) {

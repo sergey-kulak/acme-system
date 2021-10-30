@@ -1,6 +1,6 @@
 import restApi from '../common/restApi'
 
-const BASE_URL = '/accounting-service/public-point-plans'
+const BASE_URL = '/accounting-service/api/public-point-plans'
 
 const publicPointPlanService = {
     findActivePlan: function (publicPointId) {

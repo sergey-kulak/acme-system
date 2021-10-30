@@ -4,7 +4,7 @@ import restApi, { buildGetFilterParams } from '../common/restApi'
 const cache = new Cache()
 const COMPANY_NAME_REGION = 'cmp-names'
 
-const BASE_URL = '/user-service/companies'
+const BASE_URL = '/user-service/api/companies'
 
 const companyService = {
     register: function (request) {

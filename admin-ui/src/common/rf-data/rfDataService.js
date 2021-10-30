@@ -6,7 +6,7 @@ const COUNTRY_REGION = 'countries'
 const CURRENCY_REGION = 'currencies'
 const LANG_REGION = 'languages'
 
-const BASE_URL = '/rf-data-service'
+const BASE_URL = '/rf-data-service/api'
 
 const rfDataService = {
     findCountries: function () {

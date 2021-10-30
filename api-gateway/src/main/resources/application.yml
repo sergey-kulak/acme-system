@@ -23,11 +23,21 @@ spring:
           enabled: true
           lower-case-service-id: true
           include-expression: "!serviceId.equals('CONFIG-SERVICE')"
-          filters:
-            - name: RewritePath
-              args:
-                regexp: "'/' + serviceId + '/?(?<remaining>.*)'"
-                replacement: "'/api/${remaining}'"
+          routes:
+            - id: swagger-route
+              predicates:
+                - name: Path
+                  args:
+                    pattern: "'/'+serviceId+'-swagger/**'"
+              filters:
+                - name: AddRequestHeader
+                  args:
+                    name: "'X-Forwarded-Prefix'"
+                    value: "'/' + serviceId"
+                - name: RewritePath
+                  args:
+                    regexp: "'/' + serviceId + '-swagger/?(?<remaining>.*)'"
+                    replacement: "'/' + serviceId + '-swagger/${remaining}'"
   sleuth:
     sampler:
       probability: 1

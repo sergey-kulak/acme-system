@@ -1,6 +1,6 @@
 import restApi, { buildGetFilterParams } from '../common/restApi'
 
-const BASE_URL = '/pp-service/public-points'
+const BASE_URL = '/pp-service/api/public-points'
 
 const publicPointService = {
     find: function (filter, pageable, sort) {

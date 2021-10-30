@@ -1,6 +1,6 @@
 import restApi, { buildGetFilterParams } from '../common/restApi'
 
-const BASE_URL = '/user-service/users'
+const BASE_URL = '/user-service/api/users'
 
 const userService = {
     find: function (filter, pageable, sort) {

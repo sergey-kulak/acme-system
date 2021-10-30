@@ -25,6 +25,8 @@ spec:
             value: "logstash"
           - name: SPRING_ZIPKIN_BASEURL
             value: "http://zpk:9411/"
+          - name: SPRING_ZIPKIN_ENABLED
+            value: "true"            
           - name: SPRING_LOGSTASH_HOST
             value: "lgs"
         ports:

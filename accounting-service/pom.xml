@@ -20,7 +20,7 @@
 
         <docker.image.name>acme-system/accounting-service</docker.image.name>
         <spring.cloud.version>2020.0.3</spring.cloud.version>
-        <liquibase.version>4.4.0</liquibase.version>
+        <liquibase.version>4.8.0</liquibase.version>
         <r2dbc-pg.version>0.8.8.RELEASE</r2dbc-pg.version>
         <pg-jdbc.version>42.2.22</pg-jdbc.version>
         <lombok.version>1.18.20</lombok.version>

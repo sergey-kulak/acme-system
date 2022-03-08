@@ -22,7 +22,7 @@
         <spring.cloud.version>2020.0.3</spring.cloud.version>
         <lombok.version>1.18.20</lombok.version>
         <openapi-ui.version>1.5.9</openapi-ui.version>
-        <liquibase.version>4.4.0</liquibase.version>
+        <liquibase.version>4.8.0</liquibase.version>
         <liquibase-mongodb.version>4.4.3</liquibase-mongodb.version>
         <mapstruct.version>1.4.2.Final</mapstruct.version>
         <acme-commons.version>1.0-SNAPSHOT</acme-commons.version>

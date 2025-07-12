@@ -25,7 +25,7 @@
         <pg-jdbc.version>42.2.22</pg-jdbc.version>
         <lombok.version>1.18.20</lombok.version>
         <mapstruct.version>1.4.2.Final</mapstruct.version>
-        <commons-lang3.version>3.12.0</commons-lang3.version>
+        <commons-lang3.version>3.18.0</commons-lang3.version>
         <openapi-ui.version>1.5.9</openapi-ui.version>
         <jooq.version>3.15.0</jooq.version>
         <testcontainers.version>1.15.3</testcontainers.version>
